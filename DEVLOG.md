@@ -40,3 +40,7 @@
 
 ### Added
 - Persisted the best score with user-scoped application settings so it survives app restarts.
+
+### Changed
+- Renamed the custom game settings type to `GameSettings` to avoid confusion with `Properties.Settings`.
+- Removed unused imports from the main form code.
