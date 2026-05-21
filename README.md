@@ -18,10 +18,12 @@ A small classic Snake game built with C# WinForms.
 ## Controls
 
 - Arrow keys or `WASD`: move the snake
+- Space: pause or resume
+- Enter: start or restart when the game is ready
 - Speed slider: choose the starting speed before the game begins
 
 ## Project Notes
 
 - The game currently targets .NET Framework 4.7.2.
 - Development history is tracked in `DEVLOG.md`.
-- Future work will focus on smoother game flow, scoring feedback, pause/restart controls, and cleaner separation between game rules and UI code.
+- Future work will focus on richer gameplay options and cleaner separation between game rules and UI code.

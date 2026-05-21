@@ -16,10 +16,13 @@ namespace SnakeGame
         private const int MinimumTimerInterval = 80;
         private const int BaseTimerInterval = 320;
         private const int TimerIntervalStep = 22;
+        private const int HudHeight = 40;
 
         // 贪吃蛇的每个部分和食物都将使用Circle类
         private List<Circle> Snake = new List<Circle>();
         private Circle food = new Circle();
+        private int highScore = 0;
+        private bool isPaused = false;
         public Form1()
         {
             InitializeComponent();
@@ -30,12 +33,16 @@ namespace SnakeGame
 
             gameStarted = false; // 确保游戏未开始前不生成食物
             UpdateSettingsFromUI();
+            UpdateHud();
         }
         private void StartGame()
         {
             // UI 控件隐藏
             btnStartGame.Visible = false;  // 隐藏开始按钮
             trackBarSpeed.Visible = false; // 隐藏速度滑块
+            btnPause.Visible = true;
+            btnPause.Text = "Pause";
+            isPaused = false;
             gameStarted = true; // 标记游戏开始，允许食物生成
 
             // 读取设置
@@ -44,9 +51,11 @@ namespace SnakeGame
             // 初始化游戏状态
             ResetGameState();
             GenerateFood();
+            UpdateHud();
 
             // 启动游戏逻辑
             timer1.Start();  // 启动定时器
+            this.Focus();
         }
 
         private void UpdateSettingsFromUI()
@@ -59,6 +68,49 @@ namespace SnakeGame
         private void ApplySpeedSetting()
         {
             timer1.Interval = Math.Max(MinimumTimerInterval, BaseTimerInterval - Settings.Speed * TimerIntervalStep);
+        }
+
+        private int GetMaxGridX()
+        {
+            return Math.Max(1, this.ClientSize.Width / Settings.Width);
+        }
+
+        private int GetMaxGridY()
+        {
+            return Math.Max(1, (this.ClientSize.Height - HudHeight) / Settings.Height);
+        }
+
+        private int GetCanvasY(int gridY)
+        {
+            return HudHeight + gridY * Settings.Height;
+        }
+
+        private void UpdateHud()
+        {
+            lblScore.Text = "Score: " + Settings.Score;
+            lblHighScore.Text = "Best: " + highScore;
+            lblSpeed.Text = "Speed: " + Settings.Speed;
+            lblStatus.Text = GetStatusText();
+        }
+
+        private string GetStatusText()
+        {
+            if (Settings.GameOver)
+            {
+                return "Game Over";
+            }
+
+            if (isPaused)
+            {
+                return "Paused";
+            }
+
+            if (gameStarted)
+            {
+                return "Playing";
+            }
+
+            return "Ready";
         }
 
         private void ResetGameState()
@@ -84,8 +136,8 @@ namespace SnakeGame
                 return; // 如果游戏未开始，不执行食物生成
             }
 
-            int maxXPos = Math.Max(1, this.ClientSize.Width / Settings.Width);
-            int maxYPos = Math.Max(1, this.ClientSize.Height / Settings.Height);
+            int maxXPos = GetMaxGridX();
+            int maxYPos = GetMaxGridY();
 
             food = new Circle();
             bool isOnSnake;
@@ -108,8 +160,8 @@ namespace SnakeGame
 
         private void MovePlayer()
         {
-            int maxXPos = Math.Max(1, this.ClientSize.Width / Settings.Width);
-            int maxYPos = Math.Max(1, this.ClientSize.Height / Settings.Height);
+            int maxXPos = GetMaxGridX();
+            int maxYPos = GetMaxGridY();
 
             for (int i = Snake.Count - 1; i >= 0; i--)
             {
@@ -165,10 +217,17 @@ namespace SnakeGame
         {
             Settings.GameOver = true;
             timer1.Stop();
-            MessageBox.Show("GameOver! YourScore: " + Settings.Score);
+            highScore = Math.Max(highScore, Settings.Score);
+            isPaused = false;
+            btnPause.Visible = false;
+            btnPause.Text = "Pause";
+            UpdateHud();
+            MessageBox.Show("Game over! Your score: " + Settings.Score);
             btnStartGame.Visible = true;  // 显示开始按钮
+            btnStartGame.Text = "Restart Game";
             trackBarSpeed.Visible = true; // 显示速度滑块
             gameStarted = false; // 重置游戏开始标志
+            UpdateHud();
             this.Invalidate();
         }
         private void EatFood()
@@ -183,9 +242,33 @@ namespace SnakeGame
 
             // 更新分数等
             Settings.Score += 10; // 假设每吃一个食物得10分
+            highScore = Math.Max(highScore, Settings.Score);
+            UpdateHud();
 
             // 生成新的食物
             GenerateFood();
+        }
+
+        private void TogglePause()
+        {
+            if (!gameStarted || Settings.GameOver)
+            {
+                return;
+            }
+
+            isPaused = !isPaused;
+            if (isPaused)
+            {
+                timer1.Stop();
+                btnPause.Text = "Resume";
+            }
+            else
+            {
+                timer1.Start();
+                btnPause.Text = "Pause";
+            }
+
+            UpdateHud();
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -203,7 +286,7 @@ namespace SnakeGame
                 // 绘制食物
                 Brush foodColor = Brushes.Red;
                 canvas.FillEllipse(foodColor, new Rectangle(food.X * Settings.Width,
-                                                            food.Y * Settings.Height,
+                                                            GetCanvasY(food.Y),
                                                             Settings.Width, Settings.Height));
 
                 // 绘制蛇
@@ -212,14 +295,14 @@ namespace SnakeGame
                     Brush snakeColor = i == 0 ? Brushes.Black : Brushes.Green; // 头部用黑色表示，其余用绿色
                     canvas.FillRectangle(snakeColor,
                         new Rectangle(Snake[i].X * Settings.Width,
-                                      Snake[i].Y * Settings.Height,
+                                      GetCanvasY(Snake[i].Y),
                                       Settings.Width, Settings.Height));
                 }
             }
             else
             {
                 string gameOverText = "Game over\nYour final score is: " + Settings.Score;
-                canvas.DrawString(gameOverText, new Font("Arial", 12), Brushes.Black, new PointF(10, 10));
+                canvas.DrawString(gameOverText, new Font("Arial", 12), Brushes.Black, new PointF(10, HudHeight + 10));
             }
 
         }
@@ -227,7 +310,27 @@ namespace SnakeGame
         // 捕捉键盘按键用于控制蛇的移动方向
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            base.OnKeyDown(e);
+            if (e.KeyCode == Keys.Space)
+            {
+                TogglePause();
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+                return;
+            }
+
+            if (e.KeyCode == Keys.Enter && (!gameStarted || Settings.GameOver))
+            {
+                StartGame();
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+                return;
+            }
+
+            if (!gameStarted || Settings.GameOver || isPaused)
+            {
+                return;
+            }
+
             switch (e.KeyCode)
             {
                 case Keys.W:
@@ -251,11 +354,13 @@ namespace SnakeGame
                         Settings.direction = Direction.Right;
                     break;
             }
+
+            base.OnKeyDown(e);
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (Settings.GameOver || !gameStarted)
+            if (Settings.GameOver || !gameStarted || isPaused)
             {
                 return;
             }
@@ -273,6 +378,13 @@ namespace SnakeGame
         {
             Settings.Speed = trackBarSpeed.Value; // 更新速度设置
             ApplySpeedSetting(); // 调整 Timer 的 Interval 值
+            UpdateHud();
+        }
+
+        private void btnPause_Click(object sender, EventArgs e)
+        {
+            TogglePause();
+            this.Focus();
         }
     }
 

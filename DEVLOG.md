@@ -13,3 +13,10 @@
 - Prevented the board from drawing food before a round has started.
 - Removed a duplicate paint call that could cause unnecessary redraw work.
 - Added safe default speed slider values and clamped timer intervals.
+
+### Added
+- Added an in-window HUD for score, best score, speed, and game status.
+- Added pause/resume support through a button and the spacebar.
+- Added Enter-to-start support when the game is ready or over.
+- Reserved vertical space for the HUD so gameplay does not draw underneath it.
+- Updated README controls to include pause and keyboard start/restart.
