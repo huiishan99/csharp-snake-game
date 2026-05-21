@@ -23,6 +23,8 @@ namespace SnakeGame
         private Circle food = new Circle();
         private int highScore = 0;
         private bool isPaused = false;
+        private bool gameWon = false;
+        private Direction pendingDirection;
         public Form1()
         {
             InitializeComponent();
@@ -52,6 +54,11 @@ namespace SnakeGame
             ResetGameState();
             GenerateFood();
             UpdateHud();
+
+            if (Settings.GameOver)
+            {
+                return;
+            }
 
             // 启动游戏逻辑
             timer1.Start();  // 启动定时器
@@ -95,6 +102,11 @@ namespace SnakeGame
 
         private string GetStatusText()
         {
+            if (gameWon)
+            {
+                return "You Win";
+            }
+
             if (Settings.GameOver)
             {
                 return "Game Over";
@@ -118,6 +130,8 @@ namespace SnakeGame
             Settings.Score = 0;   // 初始得分
             Settings.GameOver = false;  // 游戏开始时未结束
             Settings.direction = Direction.Down;  // 初始方向
+            pendingDirection = Settings.direction;
+            gameWon = false;
 
             // 创建一个初始蛇
             Snake.Clear();
@@ -139,29 +153,42 @@ namespace SnakeGame
             int maxXPos = GetMaxGridX();
             int maxYPos = GetMaxGridY();
 
-            food = new Circle();
-            bool isOnSnake;
-            do
+            List<Circle> availableCells = new List<Circle>();
+            for (int x = 0; x < maxXPos; x++)
             {
-                isOnSnake = false;
-                food.X = random.Next(0, maxXPos);
-                food.Y = random.Next(0, maxYPos);
-
-                foreach (Circle part in Snake)
+                for (int y = 0; y < maxYPos; y++)
                 {
-                    if (part.X == food.X && part.Y == food.Y)
+                    bool isOnSnake = false;
+                    foreach (Circle part in Snake)
                     {
-                        isOnSnake = true;
-                        break;
+                        if (part.X == x && part.Y == y)
+                        {
+                            isOnSnake = true;
+                            break;
+                        }
+                    }
+
+                    if (!isOnSnake)
+                    {
+                        availableCells.Add(new Circle { X = x, Y = y });
                     }
                 }
-            } while (isOnSnake); // 如果食物在蛇身上，重新生成位置
+            }
+
+            if (availableCells.Count == 0)
+            {
+                WinGame();
+                return;
+            }
+
+            food = availableCells[random.Next(availableCells.Count)];
         }
 
         private void MovePlayer()
         {
             int maxXPos = GetMaxGridX();
             int maxYPos = GetMaxGridY();
+            Settings.direction = pendingDirection;
 
             for (int i = Snake.Count - 1; i >= 0; i--)
             {
@@ -215,14 +242,25 @@ namespace SnakeGame
         }
         private void EndGame()
         {
+            FinishGame("Game over! Your score: " + Settings.Score, false);
+        }
+
+        private void WinGame()
+        {
+            FinishGame("You win! Final score: " + Settings.Score, true);
+        }
+
+        private void FinishGame(string message, bool won)
+        {
             Settings.GameOver = true;
+            gameWon = won;
             timer1.Stop();
             highScore = Math.Max(highScore, Settings.Score);
             isPaused = false;
             btnPause.Visible = false;
             btnPause.Text = "Pause";
             UpdateHud();
-            MessageBox.Show("Game over! Your score: " + Settings.Score);
+            MessageBox.Show(message);
             btnStartGame.Visible = true;  // 显示开始按钮
             btnStartGame.Text = "Restart Game";
             trackBarSpeed.Visible = true; // 显示速度滑块
@@ -271,6 +309,24 @@ namespace SnakeGame
             UpdateHud();
         }
 
+        private void QueueDirection(Direction newDirection)
+        {
+            if (IsOppositeDirection(Settings.direction, newDirection))
+            {
+                return;
+            }
+
+            pendingDirection = newDirection;
+        }
+
+        private bool IsOppositeDirection(Direction currentDirection, Direction newDirection)
+        {
+            return (currentDirection == Direction.Up && newDirection == Direction.Down)
+                || (currentDirection == Direction.Down && newDirection == Direction.Up)
+                || (currentDirection == Direction.Left && newDirection == Direction.Right)
+                || (currentDirection == Direction.Right && newDirection == Direction.Left);
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
@@ -301,7 +357,9 @@ namespace SnakeGame
             }
             else
             {
-                string gameOverText = "Game over\nYour final score is: " + Settings.Score;
+                string gameOverText = gameWon
+                    ? "You win\nYour final score is: " + Settings.Score
+                    : "Game over\nYour final score is: " + Settings.Score;
                 canvas.DrawString(gameOverText, new Font("Arial", 12), Brushes.Black, new PointF(10, HudHeight + 10));
             }
 
@@ -335,23 +393,19 @@ namespace SnakeGame
             {
                 case Keys.W:
                 case Keys.Up:
-                    if (Settings.direction != Direction.Down)
-                        Settings.direction = Direction.Up;
+                    QueueDirection(Direction.Up);
                     break;
                 case Keys.S:
                 case Keys.Down:
-                    if (Settings.direction != Direction.Up)
-                        Settings.direction = Direction.Down;
+                    QueueDirection(Direction.Down);
                     break;
                 case Keys.A:
                 case Keys.Left:
-                    if (Settings.direction != Direction.Right)
-                        Settings.direction = Direction.Left;
+                    QueueDirection(Direction.Left);
                     break;
                 case Keys.D:
                 case Keys.Right:
-                    if (Settings.direction != Direction.Left)
-                        Settings.direction = Direction.Right;
+                    QueueDirection(Direction.Right);
                     break;
             }
 

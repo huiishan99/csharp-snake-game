@@ -20,3 +20,8 @@
 - Added Enter-to-start support when the game is ready or over.
 - Reserved vertical space for the HUD so gameplay does not draw underneath it.
 - Updated README controls to include pause and keyboard start/restart.
+
+### Fixed
+- Buffered direction changes so rapid key presses cannot reverse the snake within a single tick.
+- Reworked food placement to choose from available grid cells and avoid infinite retries.
+- Added a win state when the snake fills the entire playable grid.
