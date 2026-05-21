@@ -53,3 +53,6 @@
 ### Added
 - Added a lightweight `SnakeGame.Tests` console project for rule-level engine checks.
 - Documented how to run the engine checks from Visual Studio or the built executable.
+
+### Added
+- Added a Windows GitHub Actions workflow to build the solution and run engine checks on push and pull requests.

@@ -1,0 +1,22 @@
+name: Windows Build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build solution
+        run: msbuild SnakeGame.sln /p:Configuration=Release /m
+
+      - name: Run engine checks
+        run: .\SnakeGame.Tests\bin\Release\SnakeGame.Tests.exe
