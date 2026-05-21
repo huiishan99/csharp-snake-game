@@ -44,3 +44,8 @@
 ### Changed
 - Renamed the custom game settings type to `GameSettings` to avoid confusion with `Properties.Settings`.
 - Removed unused imports from the main form code.
+
+### Changed
+- Extracted snake movement, food placement, scoring, pause, and win/loss state into `SnakeGameEngine`.
+- Kept `Form1` focused on WinForms input, layout, persistence, and rendering.
+- Clarified engine direction naming and prevented repeated finish dialogs after resizing a completed round.

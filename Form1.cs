@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -7,85 +6,77 @@ namespace SnakeGame
 {
     public partial class Form1 : Form
     {
+        private const int CellSize = 16;
         private const int MinimumTimerInterval = 80;
         private const int BaseTimerInterval = 320;
         private const int TimerIntervalStep = 22;
         private const int HudHeight = 40;
 
-        // 贪吃蛇的每个部分和食物都将使用Circle类
-        private List<Circle> Snake = new List<Circle>();
-        private Circle food = new Circle();
+        private readonly SnakeGameEngine game = new SnakeGameEngine();
         private int highScore = 0;
-        private bool isPaused = false;
-        private bool gameWon = false;
-        private Direction pendingDirection;
+        private int selectedSpeed = 5;
+        private bool finishMessageShown = false;
+
         public Form1()
         {
             InitializeComponent();
 
-            // 启用双缓冲
-            this.DoubleBuffered = true;
-            this.KeyPreview = true;  // 确保窗体可以接收到键盘事件
+            DoubleBuffered = true;
+            KeyPreview = true;
 
-            gameStarted = false; // 确保游戏未开始前不生成食物
             LoadHighScore();
             UpdateSettingsFromUI();
             UpdateHud();
             LayoutControls();
         }
+
         private void StartGame()
         {
-            // UI 控件隐藏
-            btnStartGame.Visible = false;  // 隐藏开始按钮
-            trackBarSpeed.Visible = false; // 隐藏速度滑块
+            btnStartGame.Visible = false;
+            trackBarSpeed.Visible = false;
             btnPause.Visible = true;
             btnPause.Text = "Pause";
-            isPaused = false;
-            gameStarted = true; // 标记游戏开始，允许食物生成
+            finishMessageShown = false;
 
-            // 读取设置
             UpdateSettingsFromUI();
-
-            // 初始化游戏状态
-            ResetGameState();
-            GenerateFood();
+            game.StartNew(GetMaxGridX(), GetMaxGridY());
+            UpdateHighScore();
             UpdateHud();
 
-            if (GameSettings.GameOver)
+            if (game.IsFinished)
             {
+                FinishRoundIfNeeded();
                 return;
             }
 
-            // 启动游戏逻辑
-            timer1.Start();  // 启动定时器
-            this.Focus();
+            timer1.Start();
+            Focus();
         }
 
         private void UpdateSettingsFromUI()
         {
-            // 从 UI 控件读取设置
-            GameSettings.Speed = trackBarSpeed.Value;  // 从滑块读取速度
+            selectedSpeed = trackBarSpeed.Value;
             ApplySpeedSetting();
         }
 
         private void ApplySpeedSetting()
         {
-            timer1.Interval = Math.Max(MinimumTimerInterval, BaseTimerInterval - GameSettings.Speed * TimerIntervalStep);
+            timer1.Interval = Math.Max(MinimumTimerInterval, BaseTimerInterval - selectedSpeed * TimerIntervalStep);
         }
 
         private int GetMaxGridX()
         {
-            return Math.Max(1, this.ClientSize.Width / GameSettings.Width);
+            return Math.Max(1, ClientSize.Width / CellSize);
         }
 
         private int GetMaxGridY()
         {
-            return Math.Max(1, (this.ClientSize.Height - HudHeight) / GameSettings.Height);
+            return Math.Max(1, (ClientSize.Height - HudHeight) / CellSize);
         }
 
         private int GetCanvasY(int gridY)
         {
-            return HudHeight + gridY * GameSettings.Height;
+            return HudHeight + gridY * CellSize;
         }
 
         private void LayoutControls()
@@ -95,45 +86,37 @@ namespace SnakeGame
                 return;
             }
 
-            int centerX = Math.Max(0, (this.ClientSize.Width - btnStartGame.Width) / 2);
-            int menuTop = Math.Max(HudHeight + 20, (this.ClientSize.Height - btnStartGame.Height - trackBarSpeed.Height - 24) / 2);
+            int centerX = Math.Max(0, (ClientSize.Width - btnStartGame.Width) / 2);
+            int menuTop = Math.Max(HudHeight + 20, (ClientSize.Height - btnStartGame.Height - trackBarSpeed.Height - 24) / 2);
 
             btnStartGame.Location = new Point(centerX, menuTop);
             trackBarSpeed.Location = new Point(centerX, btnStartGame.Bottom + 24);
-            btnPause.Location = new Point(Math.Max(12, this.ClientSize.Width - btnPause.Width - 12), 8);
+            btnPause.Location = new Point(Math.Max(12, ClientSize.Width - btnPause.Width - 12), 8);
         }
 
         private void UpdateHud()
         {
-            lblScore.Text = "Score: " + GameSettings.Score;
+            lblScore.Text = "Score: " + game.Score;
             lblHighScore.Text = "Best: " + highScore;
-            lblSpeed.Text = "Speed: " + GameSettings.Speed;
+            lblSpeed.Text = "Speed: " + selectedSpeed;
             lblStatus.Text = GetStatusText();
         }
 
         private string GetStatusText()
         {
-            if (gameWon)
+            switch (game.Status)
             {
-                return "You Win";
+                case GameStatus.Won:
+                    return "You Win";
+                case GameStatus.GameOver:
+                    return "Game Over";
+                case GameStatus.Paused:
+                    return "Paused";
+                case GameStatus.Playing:
+                    return "Playing";
+                default:
+                    return "Ready";
             }
-
-            if (GameSettings.GameOver)
-            {
-                return "Game Over";
-            }
-
-            if (isPaused)
-            {
-                return "Paused";
-            }
-
-            if (gameStarted)
-            {
-                return "Playing";
-            }
-
-            return "Ready";
         }
 
         private void LoadHighScore()
@@ -150,12 +133,12 @@ namespace SnakeGame
 
         private void UpdateHighScore()
         {
-            if (GameSettings.Score <= highScore)
+            if (game.Score <= highScore)
             {
                 return;
             }
 
-            highScore = GameSettings.Score;
+            highScore = game.Score;
             SaveHighScore();
         }
 
@@ -172,219 +155,15 @@ namespace SnakeGame
             }
         }
 
-        private void ResetGameState()
-        {
-            GameSettings.Score = 0;   // 初始得分
-            GameSettings.GameOver = false;  // 游戏开始时未结束
-            GameSettings.Direction = Direction.Down;  // 初始方向
-            pendingDirection = GameSettings.Direction;
-            gameWon = false;
-
-            // 创建一个初始蛇
-            Snake.Clear();
-            Circle head = new Circle { X = GetMaxGridX() / 2, Y = GetMaxGridY() / 2 };
-            Snake.Add(head);
-
-            // 可能需要添加代码来清除屏幕上的旧食物或游戏结束信息
-            this.Invalidate(); // 强制重绘窗体以清除任何旧图形
-        }
-        private bool gameStarted = false; // 新增一个标志来判断游戏是否开始
-        private Random random = new Random(); // 定义为类的成员变量
-        private void GenerateFood()
-        {
-            if (!gameStarted)
-            {
-                return; // 如果游戏未开始，不执行食物生成
-            }
-
-            int maxXPos = GetMaxGridX();
-            int maxYPos = GetMaxGridY();
-
-            List<Circle> availableCells = new List<Circle>();
-            for (int x = 0; x < maxXPos; x++)
-            {
-                for (int y = 0; y < maxYPos; y++)
-                {
-                    if (!IsCellOnSnake(x, y))
-                    {
-                        availableCells.Add(new Circle { X = x, Y = y });
-                    }
-                }
-            }
-
-            if (availableCells.Count == 0)
-            {
-                WinGame();
-                return;
-            }
-
-            food = availableCells[random.Next(availableCells.Count)];
-        }
-
-        private bool IsCellOnSnake(int x, int y)
-        {
-            foreach (Circle part in Snake)
-            {
-                if (part.X == x && part.Y == y)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private int WrapCoordinate(int value, int maxExclusive)
-        {
-            if (maxExclusive <= 0)
-            {
-                return 0;
-            }
-
-            int wrapped = value % maxExclusive;
-            return wrapped < 0 ? wrapped + maxExclusive : wrapped;
-        }
-
-        private void KeepGameObjectsInBounds()
-        {
-            if (Snake.Count == 0)
-            {
-                return;
-            }
-
-            int maxXPos = GetMaxGridX();
-            int maxYPos = GetMaxGridY();
-
-            foreach (Circle part in Snake)
-            {
-                part.X = WrapCoordinate(part.X, maxXPos);
-                part.Y = WrapCoordinate(part.Y, maxYPos);
-            }
-
-            if (!gameStarted || GameSettings.GameOver)
-            {
-                return;
-            }
-
-            bool foodOutOfBounds = food.X < 0 || food.X >= maxXPos || food.Y < 0 || food.Y >= maxYPos;
-            if (foodOutOfBounds || IsCellOnSnake(food.X, food.Y))
-            {
-                GenerateFood();
-            }
-        }
-
-        private void MovePlayer()
-        {
-            int maxXPos = GetMaxGridX();
-            int maxYPos = GetMaxGridY();
-            GameSettings.Direction = pendingDirection;
-
-            for (int i = Snake.Count - 1; i >= 0; i--)
-            {
-                if (i == 0)  // 蛇头
-                {
-                    // 根据方向移动蛇头
-                    switch (GameSettings.Direction)
-                    {
-                        case Direction.Right:
-                            Snake[i].X++;
-                            break;
-                        case Direction.Left:
-                            Snake[i].X--;
-                            break;
-                        case Direction.Up:
-                            Snake[i].Y--;
-                            break;
-                        case Direction.Down:
-                            Snake[i].Y++;
-                            break;
-                    }
-
-                    // 处理蛇穿越边界的情况
-                    if (Snake[i].X < 0) Snake[i].X = maxXPos - 1; // 从左边穿出去，从右边出现
-                    if (Snake[i].X >= maxXPos) Snake[i].X = 0; // 从右边穿出去，从左边出现
-                    if (Snake[i].Y < 0) Snake[i].Y = maxYPos - 1; // 从上面穿出去，从下面出现
-                    if (Snake[i].Y >= maxYPos) Snake[i].Y = 0; // 从下面穿出去，从上面出现
-                    // 检测碰到自己的身体
-                    for (int j = 1; j < Snake.Count; j++)
-                    {
-                        if (Snake[i].X == Snake[j].X && Snake[i].Y == Snake[j].Y)
-                        {
-                            EndGame(); // 结束游戏
-                            return;
-                        }
-                    }
-
-                    // 检测蛇头是否碰到食物
-                    if (Snake[i].X == food.X && Snake[i].Y == food.Y)
-                    {
-                        EatFood();
-                    }
-                }
-                else
-                {
-                    // 其余部分跟随前一个移动
-                    Snake[i].X = Snake[i - 1].X;
-                    Snake[i].Y = Snake[i - 1].Y;
-                }
-            }
-        }
-        private void EndGame()
-        {
-            FinishGame("Game over! Your score: " + GameSettings.Score, false);
-        }
-
-        private void WinGame()
-        {
-            FinishGame("You win! Final score: " + GameSettings.Score, true);
-        }
-
-        private void FinishGame(string message, bool won)
-        {
-            GameSettings.GameOver = true;
-            gameWon = won;
-            timer1.Stop();
-            UpdateHighScore();
-            isPaused = false;
-            btnPause.Visible = false;
-            btnPause.Text = "Pause";
-            UpdateHud();
-            MessageBox.Show(message);
-            btnStartGame.Visible = true;  // 显示开始按钮
-            btnStartGame.Text = "Restart Game";
-            trackBarSpeed.Visible = true; // 显示速度滑块
-            gameStarted = false; // 重置游戏开始标志
-            UpdateHud();
-            this.Invalidate();
-        }
-        private void EatFood()
-        {
-            // 吃食物：在蛇的尾部增加一个新的部分
-            Circle body = new Circle
-            {
-                X = Snake[Snake.Count - 1].X,
-                Y = Snake[Snake.Count - 1].Y
-            };
-            Snake.Add(body);
-
-            // 更新分数等
-            GameSettings.Score += 10; // 假设每吃一个食物得10分
-            UpdateHighScore();
-            UpdateHud();
-
-            // 生成新的食物
-            GenerateFood();
-        }
-
         private void TogglePause()
         {
-            if (!gameStarted || GameSettings.GameOver)
+            if (game.Status != GameStatus.Playing && game.Status != GameStatus.Paused)
             {
                 return;
             }
 
-            isPaused = !isPaused;
-            if (isPaused)
+            game.TogglePause();
+            if (game.Status == GameStatus.Paused)
             {
                 timer1.Stop();
                 btnPause.Text = "Resume";
@@ -398,63 +177,86 @@ namespace SnakeGame
             UpdateHud();
         }
 
-        private void QueueDirection(Direction newDirection)
+        private void FinishRoundIfNeeded()
         {
-            if (IsOppositeDirection(GameSettings.Direction, newDirection))
+            if (!game.IsFinished)
             {
                 return;
             }
 
-            pendingDirection = newDirection;
+            timer1.Stop();
+            UpdateHighScore();
+            btnPause.Visible = false;
+            btnPause.Text = "Pause";
+            btnStartGame.Visible = true;
+            btnStartGame.Text = "Restart Game";
+            trackBarSpeed.Visible = true;
+            UpdateHud();
+            Invalidate();
+
+            if (!finishMessageShown)
+            {
+                finishMessageShown = true;
+                MessageBox.Show(GetFinishMessage());
+            }
         }
 
-        private bool IsOppositeDirection(Direction currentDirection, Direction newDirection)
+        private string GetFinishMessage()
         {
-            return (currentDirection == Direction.Up && newDirection == Direction.Down)
-                || (currentDirection == Direction.Down && newDirection == Direction.Up)
-                || (currentDirection == Direction.Left && newDirection == Direction.Right)
-                || (currentDirection == Direction.Right && newDirection == Direction.Left);
+            if (game.Status == GameStatus.Won)
+            {
+                return "You win! Final score: " + game.Score;
+            }
+
+            return "Game over! Your score: " + game.Score;
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
-            Graphics canvas = e.Graphics;
 
-            if (!gameStarted && Snake.Count == 0)
+            if (game.Status == GameStatus.Ready && game.Snake.Count == 0)
             {
                 return;
             }
 
-            if (!GameSettings.GameOver)
+            if (game.IsFinished)
             {
-                // 绘制食物
-                Brush foodColor = Brushes.Red;
-                canvas.FillEllipse(foodColor, new Rectangle(food.X * GameSettings.Width,
-                                                            GetCanvasY(food.Y),
-                                                            GameSettings.Width, GameSettings.Height));
-
-                // 绘制蛇
-                for (int i = 0; i < Snake.Count; i++)
-                {
-                    Brush snakeColor = i == 0 ? Brushes.Black : Brushes.Green; // 头部用黑色表示，其余用绿色
-                    canvas.FillRectangle(snakeColor,
-                        new Rectangle(Snake[i].X * GameSettings.Width,
-                                      GetCanvasY(Snake[i].Y),
-                                      GameSettings.Width, GameSettings.Height));
-                }
-            }
-            else
-            {
-                string gameOverText = gameWon
-                    ? "You win\nYour final score is: " + GameSettings.Score
-                    : "Game over\nYour final score is: " + GameSettings.Score;
-                canvas.DrawString(gameOverText, new Font("Arial", 12), Brushes.Black, new PointF(10, HudHeight + 10));
+                DrawFinishedState(e.Graphics);
+                return;
             }
 
+            DrawFood(e.Graphics);
+            DrawSnake(e.Graphics);
         }
 
-        // 捕捉键盘按键用于控制蛇的移动方向
+        private void DrawFood(Graphics canvas)
+        {
+            GridCell food = game.Food;
+            canvas.FillEllipse(Brushes.Red, new Rectangle(food.X * CellSize, GetCanvasY(food.Y), CellSize, CellSize));
+        }
+
+        private void DrawSnake(Graphics canvas)
+        {
+            for (int i = 0; i < game.Snake.Count; i++)
+            {
+                GridCell part = game.Snake[i];
+                Brush snakeColor = i == 0 ? Brushes.Black : Brushes.Green;
+                canvas.FillRectangle(
+                    snakeColor,
+                    new Rectangle(part.X * CellSize, GetCanvasY(part.Y), CellSize, CellSize));
+            }
+        }
+
+        private void DrawFinishedState(Graphics canvas)
+        {
+            string text = game.Status == GameStatus.Won
+                ? "You win\nYour final score is: " + game.Score
+                : "Game over\nYour final score is: " + game.Score;
+
+            canvas.DrawString(text, Font, Brushes.Black, new PointF(10, HudHeight + 10));
+        }
+
         protected override void OnKeyDown(KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Space)
@@ -465,7 +267,7 @@ namespace SnakeGame
                 return;
             }
 
-            if (e.KeyCode == Keys.Enter && (!gameStarted || GameSettings.GameOver))
+            if (e.KeyCode == Keys.Enter && (game.Status == GameStatus.Ready || game.IsFinished))
             {
                 StartGame();
                 e.Handled = true;
@@ -473,7 +275,7 @@ namespace SnakeGame
                 return;
             }
 
-            if (!gameStarted || GameSettings.GameOver || isPaused)
+            if (game.Status != GameStatus.Playing)
             {
                 return;
             }
@@ -482,19 +284,19 @@ namespace SnakeGame
             {
                 case Keys.W:
                 case Keys.Up:
-                    QueueDirection(Direction.Up);
+                    game.QueueDirection(Direction.Up);
                     break;
                 case Keys.S:
                 case Keys.Down:
-                    QueueDirection(Direction.Down);
+                    game.QueueDirection(Direction.Down);
                     break;
                 case Keys.A:
                 case Keys.Left:
-                    QueueDirection(Direction.Left);
+                    game.QueueDirection(Direction.Left);
                     break;
                 case Keys.D:
                 case Keys.Right:
-                    QueueDirection(Direction.Right);
+                    game.QueueDirection(Direction.Right);
                     break;
             }
 
@@ -503,70 +305,53 @@ namespace SnakeGame
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (GameSettings.GameOver || !gameStarted || isPaused)
+            if (game.Status != GameStatus.Playing)
             {
                 return;
             }
 
-            MovePlayer();
-            this.Invalidate(); // 强制窗体重绘
+            game.Step();
+            UpdateHighScore();
+            UpdateHud();
+            Invalidate();
+            FinishRoundIfNeeded();
         }
 
         private void btnStartGame_Click(object sender, EventArgs e)
         {
-            StartGame();  // 开始游戏
+            StartGame();
         }
 
         private void trackBarSpeed_ValueChanged(object sender, EventArgs e)
         {
-            GameSettings.Speed = trackBarSpeed.Value; // 更新速度设置
-            ApplySpeedSetting(); // 调整 Timer 的 Interval 值
+            UpdateSettingsFromUI();
             UpdateHud();
         }
 
         private void btnPause_Click(object sender, EventArgs e)
         {
             TogglePause();
-            this.Focus();
+            Focus();
         }
 
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
+
+            if (game == null)
+            {
+                return;
+            }
+
             LayoutControls();
-            KeepGameObjectsInBounds();
-            this.Invalidate();
+            game.ResizeGrid(GetMaxGridX(), GetMaxGridY());
+            if (lblScore != null)
+            {
+                UpdateHud();
+            }
+
+            Invalidate();
+            FinishRoundIfNeeded();
         }
-    }
-
-    public class Circle
-    {
-        public int X { get; set; }
-        public int Y { get; set; }
-
-        public Circle()
-        {
-            X = 0;
-            Y = 0;
-        }
-    }
-
-    // 设置类，可以放在同一个文件中或者分离到其他文件
-    public class GameSettings
-    {
-        public static int Width { get; set; } = 16;  // 每个位置的宽度
-        public static int Height { get; set; } = 16;  // 每个位置的高度
-        public static int Speed { get; set; }
-        public static int Score { get; set; }
-        public static bool GameOver { get; set; }
-        public static Direction Direction { get; set; }
-    }
-
-    public enum Direction
-    {
-        Up,
-        Down,
-        Left,
-        Right
     }
 }
