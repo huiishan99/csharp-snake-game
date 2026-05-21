@@ -37,7 +37,7 @@
             // 
             // timer1
             // 
-            this.timer1.Enabled = true;
+            this.timer1.Enabled = false;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // btnStartGame
@@ -55,10 +55,13 @@
             // trackBarSpeed
             // 
             this.trackBarSpeed.Location = new System.Drawing.Point(280, 292);
+            this.trackBarSpeed.Maximum = 10;
+            this.trackBarSpeed.Minimum = 1;
             this.trackBarSpeed.Name = "trackBarSpeed";
             this.trackBarSpeed.Size = new System.Drawing.Size(200, 56);
             this.trackBarSpeed.TabIndex = 1;
-            this.trackBarSpeed.Scroll += new System.EventHandler(this.trackBarSpeed_ValueChanged);
+            this.trackBarSpeed.Value = 5;
+            this.trackBarSpeed.ValueChanged += new System.EventHandler(this.trackBarSpeed_ValueChanged);
             // 
             // Form1
             // 
@@ -83,4 +86,3 @@
         private System.Windows.Forms.TrackBar trackBarSpeed;
     }
 }
-

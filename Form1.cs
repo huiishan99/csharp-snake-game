@@ -13,6 +13,10 @@ namespace SnakeGame
 {
     public partial class Form1 : Form
     {
+        private const int MinimumTimerInterval = 80;
+        private const int BaseTimerInterval = 320;
+        private const int TimerIntervalStep = 22;
+
         // 贪吃蛇的每个部分和食物都将使用Circle类
         private List<Circle> Snake = new List<Circle>();
         private Circle food = new Circle();
@@ -25,6 +29,7 @@ namespace SnakeGame
             this.KeyPreview = true;  // 确保窗体可以接收到键盘事件
 
             gameStarted = false; // 确保游戏未开始前不生成食物
+            UpdateSettingsFromUI();
         }
         private void StartGame()
         {
@@ -38,6 +43,7 @@ namespace SnakeGame
 
             // 初始化游戏状态
             ResetGameState();
+            GenerateFood();
 
             // 启动游戏逻辑
             timer1.Start();  // 启动定时器
@@ -47,6 +53,12 @@ namespace SnakeGame
         {
             // 从 UI 控件读取设置
             Settings.Speed = trackBarSpeed.Value;  // 从滑块读取速度
+            ApplySpeedSetting();
+        }
+
+        private void ApplySpeedSetting()
+        {
+            timer1.Interval = Math.Max(MinimumTimerInterval, BaseTimerInterval - Settings.Speed * TimerIntervalStep);
         }
 
         private void ResetGameState()
@@ -72,8 +84,8 @@ namespace SnakeGame
                 return; // 如果游戏未开始，不执行食物生成
             }
 
-            int maxXPos = this.ClientSize.Width / Settings.Width;
-            int maxYPos = this.ClientSize.Height / Settings.Height;
+            int maxXPos = Math.Max(1, this.ClientSize.Width / Settings.Width);
+            int maxYPos = Math.Max(1, this.ClientSize.Height / Settings.Height);
 
             food = new Circle();
             bool isOnSnake;
@@ -96,8 +108,8 @@ namespace SnakeGame
 
         private void MovePlayer()
         {
-            int maxXPos = this.ClientSize.Width / Settings.Width;
-            int maxYPos = this.ClientSize.Height / Settings.Height;
+            int maxXPos = Math.Max(1, this.ClientSize.Width / Settings.Width);
+            int maxYPos = Math.Max(1, this.ClientSize.Height / Settings.Height);
 
             for (int i = Snake.Count - 1; i >= 0; i--)
             {
@@ -131,6 +143,7 @@ namespace SnakeGame
                         if (Snake[i].X == Snake[j].X && Snake[i].Y == Snake[j].Y)
                         {
                             EndGame(); // 结束游戏
+                            return;
                         }
                     }
 
@@ -156,6 +169,7 @@ namespace SnakeGame
             btnStartGame.Visible = true;  // 显示开始按钮
             trackBarSpeed.Visible = true; // 显示速度滑块
             gameStarted = false; // 重置游戏开始标志
+            this.Invalidate();
         }
         private void EatFood()
         {
@@ -178,6 +192,11 @@ namespace SnakeGame
         {
             base.OnPaint(e);
             Graphics canvas = e.Graphics;
+
+            if (!gameStarted && Snake.Count == 0)
+            {
+                return;
+            }
 
             if (!Settings.GameOver)
             {
@@ -203,7 +222,6 @@ namespace SnakeGame
                 canvas.DrawString(gameOverText, new Font("Arial", 12), Brushes.Black, new PointF(10, 10));
             }
 
-            base.OnPaint(e);
         }
 
         // 捕捉键盘按键用于控制蛇的移动方向
@@ -237,15 +255,13 @@ namespace SnakeGame
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (Settings.GameOver)
+            if (Settings.GameOver || !gameStarted)
             {
-                // 如果游戏结束，可以显示一些信息
+                return;
             }
-            else
-            {
-                MovePlayer();
-                this.Invalidate(); // 强制窗体重绘
-            }
+
+            MovePlayer();
+            this.Invalidate(); // 强制窗体重绘
         }
 
         private void btnStartGame_Click(object sender, EventArgs e)
@@ -256,7 +272,7 @@ namespace SnakeGame
         private void trackBarSpeed_ValueChanged(object sender, EventArgs e)
         {
             Settings.Speed = trackBarSpeed.Value; // 更新速度设置
-            timer1.Interval = 300 - trackBarSpeed.Value * 20; // 调整 Timer 的 Interval 值
+            ApplySpeedSetting(); // 调整 Timer 的 Interval 值
         }
     }
 
