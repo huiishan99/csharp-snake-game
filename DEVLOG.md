@@ -25,3 +25,6 @@
 - Buffered direction changes so rapid key presses cannot reverse the snake within a single tick.
 - Reworked food placement to choose from available grid cells and avoid infinite retries.
 - Added a win state when the snake fills the entire playable grid.
+
+### Changed
+- Stopped tracking generated Visual Studio state and build output files now covered by `.gitignore`.
