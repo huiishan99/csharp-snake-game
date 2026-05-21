@@ -15,6 +15,10 @@ A small classic Snake game built with C# WinForms.
 2. Restore/build the solution.
 3. Start the `SnakeGame` project.
 
+## Engine Checks
+
+The solution includes a small `SnakeGame.Tests` console project for rule-level checks. Run it from Visual Studio, or build the solution and run `SnakeGame.Tests.exe`.
+
 ## Controls
 
 - Arrow keys or `WASD`: move the snake

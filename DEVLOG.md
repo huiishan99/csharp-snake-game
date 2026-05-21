@@ -49,3 +49,7 @@
 - Extracted snake movement, food placement, scoring, pause, and win/loss state into `SnakeGameEngine`.
 - Kept `Form1` focused on WinForms input, layout, persistence, and rendering.
 - Clarified engine direction naming and prevented repeated finish dialogs after resizing a completed round.
+
+### Added
+- Added a lightweight `SnakeGame.Tests` console project for rule-level engine checks.
+- Documented how to run the engine checks from Visual Studio or the built executable.
