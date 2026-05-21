@@ -34,6 +34,7 @@ namespace SnakeGame
             this.KeyPreview = true;  // 确保窗体可以接收到键盘事件
 
             gameStarted = false; // 确保游戏未开始前不生成食物
+            LoadHighScore();
             UpdateSettingsFromUI();
             UpdateHud();
             LayoutControls();
@@ -139,6 +140,42 @@ namespace SnakeGame
             }
 
             return "Ready";
+        }
+
+        private void LoadHighScore()
+        {
+            try
+            {
+                highScore = Math.Max(0, SnakeGame.Properties.Settings.Default.HighScore);
+            }
+            catch
+            {
+                highScore = 0;
+            }
+        }
+
+        private void UpdateHighScore()
+        {
+            if (Settings.Score <= highScore)
+            {
+                return;
+            }
+
+            highScore = Settings.Score;
+            SaveHighScore();
+        }
+
+        private void SaveHighScore()
+        {
+            try
+            {
+                SnakeGame.Properties.Settings.Default.HighScore = highScore;
+                SnakeGame.Properties.Settings.Default.Save();
+            }
+            catch
+            {
+                // High score persistence should never interrupt gameplay.
+            }
         }
 
         private void ResetGameState()
@@ -313,7 +350,7 @@ namespace SnakeGame
             Settings.GameOver = true;
             gameWon = won;
             timer1.Stop();
-            highScore = Math.Max(highScore, Settings.Score);
+            UpdateHighScore();
             isPaused = false;
             btnPause.Visible = false;
             btnPause.Text = "Pause";
@@ -338,7 +375,7 @@ namespace SnakeGame
 
             // 更新分数等
             Settings.Score += 10; // 假设每吃一个食物得10分
-            highScore = Math.Max(highScore, Settings.Score);
+            UpdateHighScore();
             UpdateHud();
 
             // 生成新的食物

@@ -37,3 +37,6 @@
 - Added a minimum window size to prevent the board from collapsing into unusable dimensions.
 - Repositioned menu and pause controls when the form is resized.
 - Kept existing snake and food coordinates inside the playable grid after resizing.
+
+### Added
+- Persisted the best score with user-scoped application settings so it survives app restarts.
