@@ -28,3 +28,6 @@
 
 ### Changed
 - Stopped tracking generated Visual Studio state and build output files now covered by `.gitignore`.
+
+### Fixed
+- Removed the trailing blank line from `.gitignore` so repository-wide whitespace checks pass.
