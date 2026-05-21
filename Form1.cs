@@ -36,6 +36,7 @@ namespace SnakeGame
             gameStarted = false; // 确保游戏未开始前不生成食物
             UpdateSettingsFromUI();
             UpdateHud();
+            LayoutControls();
         }
         private void StartGame()
         {
@@ -92,6 +93,21 @@ namespace SnakeGame
             return HudHeight + gridY * Settings.Height;
         }
 
+        private void LayoutControls()
+        {
+            if (btnStartGame == null || trackBarSpeed == null || btnPause == null)
+            {
+                return;
+            }
+
+            int centerX = Math.Max(0, (this.ClientSize.Width - btnStartGame.Width) / 2);
+            int menuTop = Math.Max(HudHeight + 20, (this.ClientSize.Height - btnStartGame.Height - trackBarSpeed.Height - 24) / 2);
+
+            btnStartGame.Location = new Point(centerX, menuTop);
+            trackBarSpeed.Location = new Point(centerX, btnStartGame.Bottom + 24);
+            btnPause.Location = new Point(Math.Max(12, this.ClientSize.Width - btnPause.Width - 12), 8);
+        }
+
         private void UpdateHud()
         {
             lblScore.Text = "Score: " + Settings.Score;
@@ -135,7 +151,7 @@ namespace SnakeGame
 
             // 创建一个初始蛇
             Snake.Clear();
-            Circle head = new Circle { X = 10, Y = 5 };
+            Circle head = new Circle { X = GetMaxGridX() / 2, Y = GetMaxGridY() / 2 };
             Snake.Add(head);
 
             // 可能需要添加代码来清除屏幕上的旧食物或游戏结束信息
@@ -158,17 +174,7 @@ namespace SnakeGame
             {
                 for (int y = 0; y < maxYPos; y++)
                 {
-                    bool isOnSnake = false;
-                    foreach (Circle part in Snake)
-                    {
-                        if (part.X == x && part.Y == y)
-                        {
-                            isOnSnake = true;
-                            break;
-                        }
-                    }
-
-                    if (!isOnSnake)
+                    if (!IsCellOnSnake(x, y))
                     {
                         availableCells.Add(new Circle { X = x, Y = y });
                     }
@@ -182,6 +188,58 @@ namespace SnakeGame
             }
 
             food = availableCells[random.Next(availableCells.Count)];
+        }
+
+        private bool IsCellOnSnake(int x, int y)
+        {
+            foreach (Circle part in Snake)
+            {
+                if (part.X == x && part.Y == y)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private int WrapCoordinate(int value, int maxExclusive)
+        {
+            if (maxExclusive <= 0)
+            {
+                return 0;
+            }
+
+            int wrapped = value % maxExclusive;
+            return wrapped < 0 ? wrapped + maxExclusive : wrapped;
+        }
+
+        private void KeepGameObjectsInBounds()
+        {
+            if (Snake.Count == 0)
+            {
+                return;
+            }
+
+            int maxXPos = GetMaxGridX();
+            int maxYPos = GetMaxGridY();
+
+            foreach (Circle part in Snake)
+            {
+                part.X = WrapCoordinate(part.X, maxXPos);
+                part.Y = WrapCoordinate(part.Y, maxYPos);
+            }
+
+            if (!gameStarted || Settings.GameOver)
+            {
+                return;
+            }
+
+            bool foodOutOfBounds = food.X < 0 || food.X >= maxXPos || food.Y < 0 || food.Y >= maxYPos;
+            if (foodOutOfBounds || IsCellOnSnake(food.X, food.Y))
+            {
+                GenerateFood();
+            }
         }
 
         private void MovePlayer()
@@ -439,6 +497,14 @@ namespace SnakeGame
         {
             TogglePause();
             this.Focus();
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            base.OnResize(e);
+            LayoutControls();
+            KeepGameObjectsInBounds();
+            this.Invalidate();
         }
     }
 

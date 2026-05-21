@@ -31,3 +31,9 @@
 
 ### Fixed
 - Removed the trailing blank line from `.gitignore` so repository-wide whitespace checks pass.
+
+### Fixed
+- Centered the initial snake position within the current playable grid instead of using a hard-coded cell.
+- Added a minimum window size to prevent the board from collapsing into unusable dimensions.
+- Repositioned menu and pause controls when the form is resized.
+- Kept existing snake and food coordinates inside the playable grid after resizing.

@@ -120,6 +120,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(782, 453);
+            this.MinimumSize = new System.Drawing.Size(520, 360);
             this.Controls.Add(this.btnPause);
             this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.lblSpeed);
@@ -129,6 +130,7 @@
             this.Controls.Add(this.btnStartGame);
             this.KeyPreview = true;
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Snake Game";
             ((System.ComponentModel.ISupportInitialize)(this.trackBarSpeed)).EndInit();
             this.ResumeLayout(false);
