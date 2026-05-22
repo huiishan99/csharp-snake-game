@@ -59,3 +59,7 @@
 
 ### Changed
 - Split reusable game types (`Direction`, `GameStatus`, and `GridCell`) out of `GameEngine.cs`.
+
+### Changed
+- Reworked HUD label layout so score, best score, speed, and status resize with the window.
+- Enabled ellipsis behavior for HUD labels to avoid overlap when text grows.

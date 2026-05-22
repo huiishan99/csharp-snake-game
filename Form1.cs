@@ -11,6 +11,10 @@ namespace SnakeGame
         private const int BaseTimerInterval = 320;
         private const int TimerIntervalStep = 22;
         private const int HudHeight = 40;
+        private const int HudPadding = 12;
+        private const int HudGap = 10;
+        private const int HudControlTop = 8;
+        private const int HudControlHeight = 24;
 
         private readonly SnakeGameEngine game = new SnakeGameEngine();
         private int highScore = 0;
@@ -24,6 +28,7 @@ namespace SnakeGame
             DoubleBuffered = true;
             KeyPreview = true;
 
+            ConfigureHudLabels();
             LoadHighScore();
             UpdateSettingsFromUI();
             UpdateHud();
@@ -91,7 +96,54 @@ namespace SnakeGame
 
             btnStartGame.Location = new Point(centerX, menuTop);
             trackBarSpeed.Location = new Point(centerX, btnStartGame.Bottom + 24);
-            btnPause.Location = new Point(Math.Max(12, ClientSize.Width - btnPause.Width - 12), 8);
+            LayoutHudControls();
+        }
+
+        private void ConfigureHudLabels()
+        {
+            if (lblScore == null || lblHighScore == null || lblSpeed == null || lblStatus == null)
+            {
+                return;
+            }
+
+            Label[] labels = { lblScore, lblHighScore, lblSpeed, lblStatus };
+            foreach (Label label in labels)
+            {
+                label.AutoSize = false;
+                label.AutoEllipsis = true;
+                label.TextAlign = ContentAlignment.MiddleLeft;
+                label.Height = HudControlHeight;
+            }
+        }
+
+        private void LayoutHudControls()
+        {
+            if (lblScore == null || lblHighScore == null || lblSpeed == null || lblStatus == null || btnPause == null)
+            {
+                return;
+            }
+
+            int pauseX = Math.Max(HudPadding, ClientSize.Width - btnPause.Width - HudPadding);
+            btnPause.Location = new Point(pauseX, HudControlTop);
+
+            int availableWidth = Math.Max(160, pauseX - HudPadding - HudGap);
+            int columnWidth = Math.Max(72, (availableWidth - HudGap * 3) / 4);
+
+            int x = HudPadding;
+            SetHudLabelBounds(lblScore, x, columnWidth);
+            x += columnWidth + HudGap;
+            SetHudLabelBounds(lblHighScore, x, columnWidth);
+            x += columnWidth + HudGap;
+            SetHudLabelBounds(lblSpeed, x, columnWidth);
+            x += columnWidth + HudGap;
+
+            int statusWidth = Math.Max(72, pauseX - x - HudGap);
+            SetHudLabelBounds(lblStatus, x, statusWidth);
+        }
+
+        private void SetHudLabelBounds(Label label, int x, int width)
+        {
+            label.SetBounds(x, HudControlTop, width, HudControlHeight);
         }
 
         private void UpdateHud()
