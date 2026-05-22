@@ -56,3 +56,6 @@
 
 ### Added
 - Added a Windows GitHub Actions workflow to build the solution and run engine checks on push and pull requests.
+
+### Changed
+- Split reusable game types (`Direction`, `GameStatus`, and `GridCell`) out of `GameEngine.cs`.
