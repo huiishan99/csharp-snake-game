@@ -63,3 +63,7 @@
 ### Changed
 - Reworked HUD label layout so score, best score, speed, and status resize with the window.
 - Enabled ellipsis behavior for HUD labels to avoid overlap when text grows.
+
+### Added
+- Added deterministic engine checks for food growth and self-collision behavior.
+- Exposed engine internals to the test project without making test setup APIs public.

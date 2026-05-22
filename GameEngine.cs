@@ -61,6 +61,35 @@ namespace SnakeGame
             GenerateFood();
         }
 
+        internal void LoadStateForTesting(
+            int gridWidth,
+            int gridHeight,
+            IEnumerable<GridCell> initialSnake,
+            GridCell initialFood,
+            Direction initialDirection,
+            int score)
+        {
+            GridWidth = NormalizeDimension(gridWidth);
+            GridHeight = NormalizeDimension(gridHeight);
+            Score = Math.Max(0, score);
+            Status = GameStatus.Playing;
+            CurrentDirection = initialDirection;
+            pendingDirection = initialDirection;
+
+            snake.Clear();
+            foreach (GridCell part in initialSnake)
+            {
+                snake.Add(WrapCell(part));
+            }
+
+            if (snake.Count == 0)
+            {
+                snake.Add(new GridCell(GridWidth / 2, GridHeight / 2));
+            }
+
+            food = WrapCell(initialFood);
+        }
+
         public void ResizeGrid(int gridWidth, int gridHeight)
         {
             GridWidth = NormalizeDimension(gridWidth);
