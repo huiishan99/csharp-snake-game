@@ -29,6 +29,7 @@ jobs:
           Copy-Item bin\Release\SnakeGame.exe artifacts\SnakeGame\
           Copy-Item bin\Release\SnakeGame.exe.config artifacts\SnakeGame\
           Copy-Item README.md artifacts\SnakeGame\
+          Copy-Item docs artifacts\SnakeGame\docs -Recurse
 
       - name: Upload app artifact
         uses: actions/upload-artifact@v4

@@ -116,3 +116,8 @@
 - Added an optional obstacle mode with generated blocked cells and themed obstacle rendering.
 - Prevented food from spawning on obstacles and ended the round when the snake hits one.
 - Persisted the obstacle preference and added obstacle generation/collision checks.
+
+### Added
+- Added a Windows testing guide covering Visual Studio, VS Code/terminal, GitHub Actions artifacts, and gameplay smoke tests.
+- Linked the testing guide from the README.
+- Included project docs in the packaged GitHub Actions artifact.

@@ -15,6 +15,8 @@ A small classic Snake game built with C# WinForms.
 2. Restore/build the solution.
 3. Start the `SnakeGame` project.
 
+For detailed local, VS Code, and GitHub Actions validation steps, see [Windows Testing Guide](docs/WINDOWS_TESTING.md).
+
 ## Checks
 
 The solution includes a small `SnakeGame.Tests` console project for rule-level engine and speed checks. Run it from Visual Studio, or build the solution and run `SnakeGame.Tests.exe`.
