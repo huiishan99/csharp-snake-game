@@ -1,5 +1,6 @@
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace SnakeGame
@@ -15,6 +16,16 @@ namespace SnakeGame
         private const int HudGap = 10;
         private const int HudControlTop = 8;
         private const int HudControlHeight = 24;
+        private static readonly Color WindowBackColor = Color.FromArgb(18, 24, 27);
+        private static readonly Color BoardBackColor = Color.FromArgb(25, 35, 39);
+        private static readonly Color GridColor = Color.FromArgb(34, 48, 52);
+        private static readonly Color HudBackColor = Color.FromArgb(14, 19, 22);
+        private static readonly Color HudTextColor = Color.FromArgb(225, 239, 235);
+        private static readonly Color SnakeHeadColor = Color.FromArgb(180, 255, 190);
+        private static readonly Color SnakeBodyColor = Color.FromArgb(80, 205, 132);
+        private static readonly Color SnakeShadowColor = Color.FromArgb(42, 116, 82);
+        private static readonly Color FoodColor = Color.FromArgb(255, 94, 94);
+        private static readonly Color FoodHighlightColor = Color.FromArgb(255, 176, 128);
 
         private readonly SnakeGameEngine game = new SnakeGameEngine();
         private int highScore = 0;
@@ -27,8 +38,10 @@ namespace SnakeGame
 
             DoubleBuffered = true;
             KeyPreview = true;
+            BackColor = WindowBackColor;
 
             ConfigureHudLabels();
+            ConfigureButtons();
             LoadHighScore();
             UpdateSettingsFromUI();
             UpdateHud();
@@ -111,9 +124,31 @@ namespace SnakeGame
             {
                 label.AutoSize = false;
                 label.AutoEllipsis = true;
+                label.ForeColor = HudTextColor;
+                label.BackColor = HudBackColor;
                 label.TextAlign = ContentAlignment.MiddleLeft;
                 label.Height = HudControlHeight;
             }
+        }
+
+        private void ConfigureButtons()
+        {
+            ConfigureButton(btnStartGame, true);
+            ConfigureButton(btnPause, false);
+        }
+
+        private void ConfigureButton(Button button, bool isPrimary)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            button.FlatStyle = FlatStyle.Flat;
+            button.FlatAppearance.BorderSize = 0;
+            button.BackColor = isPrimary ? SnakeBodyColor : Color.FromArgb(35, 48, 53);
+            button.ForeColor = isPrimary ? Color.FromArgb(8, 22, 14) : HudTextColor;
+            button.Font = new Font(Font.FontFamily, isPrimary ? 11f : 9f, FontStyle.Bold);
         }
 
         private void LayoutHudControls()
@@ -266,6 +301,10 @@ namespace SnakeGame
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            e.Graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.ClearTypeGridFit;
+
+            DrawChrome(e.Graphics);
 
             if (game.Status == GameStatus.Ready && game.Snake.Count == 0)
             {
@@ -282,10 +321,54 @@ namespace SnakeGame
             DrawSnake(e.Graphics);
         }
 
+        private void DrawChrome(Graphics canvas)
+        {
+            using (Brush hudBrush = new SolidBrush(HudBackColor))
+            using (Brush boardBrush = new SolidBrush(BoardBackColor))
+            {
+                canvas.FillRectangle(hudBrush, new Rectangle(0, 0, ClientSize.Width, HudHeight));
+                canvas.FillRectangle(boardBrush, GetBoardBounds());
+            }
+
+            DrawGrid(canvas);
+        }
+
+        private Rectangle GetBoardBounds()
+        {
+            return new Rectangle(0, HudHeight, ClientSize.Width, Math.Max(0, ClientSize.Height - HudHeight));
+        }
+
+        private void DrawGrid(Graphics canvas)
+        {
+            Rectangle board = GetBoardBounds();
+            using (Pen gridPen = new Pen(GridColor, 1))
+            {
+                for (int x = 0; x <= board.Width; x += CellSize)
+                {
+                    canvas.DrawLine(gridPen, x, board.Top, x, board.Bottom);
+                }
+
+                for (int y = board.Top; y <= board.Bottom; y += CellSize)
+                {
+                    canvas.DrawLine(gridPen, board.Left, y, board.Right, y);
+                }
+            }
+        }
+
         private void DrawFood(Graphics canvas)
         {
             GridCell food = game.Food;
-            canvas.FillEllipse(Brushes.Red, new Rectangle(food.X * CellSize, GetCanvasY(food.Y), CellSize, CellSize));
+            Rectangle foodRect = GetCellBounds(food);
+            foodRect.Inflate(-2, -2);
+
+            using (Brush foodBrush = new SolidBrush(FoodColor))
+            using (Brush highlightBrush = new SolidBrush(FoodHighlightColor))
+            {
+                canvas.FillEllipse(foodBrush, foodRect);
+
+                Rectangle highlight = new Rectangle(foodRect.Left + 4, foodRect.Top + 3, 5, 5);
+                canvas.FillEllipse(highlightBrush, highlight);
+            }
         }
 
         private void DrawSnake(Graphics canvas)
@@ -293,11 +376,45 @@ namespace SnakeGame
             for (int i = 0; i < game.Snake.Count; i++)
             {
                 GridCell part = game.Snake[i];
-                Brush snakeColor = i == 0 ? Brushes.Black : Brushes.Green;
-                canvas.FillRectangle(
-                    snakeColor,
-                    new Rectangle(part.X * CellSize, GetCanvasY(part.Y), CellSize, CellSize));
+                DrawSnakePart(canvas, part, i == 0);
             }
+        }
+
+        private void DrawSnakePart(Graphics canvas, GridCell part, bool isHead)
+        {
+            Rectangle partRect = GetCellBounds(part);
+            partRect.Inflate(-1, -1);
+
+            Rectangle shadowRect = partRect;
+            shadowRect.Offset(1, 1);
+
+            using (GraphicsPath shadowPath = CreateRoundedRectangle(shadowRect, 4))
+            using (GraphicsPath partPath = CreateRoundedRectangle(partRect, 4))
+            using (Brush shadowBrush = new SolidBrush(SnakeShadowColor))
+            using (Brush partBrush = new SolidBrush(isHead ? SnakeHeadColor : SnakeBodyColor))
+            {
+                canvas.FillPath(shadowBrush, shadowPath);
+                canvas.FillPath(partBrush, partPath);
+            }
+        }
+
+        private Rectangle GetCellBounds(GridCell cell)
+        {
+            return new Rectangle(cell.X * CellSize, GetCanvasY(cell.Y), CellSize, CellSize);
+        }
+
+        private GraphicsPath CreateRoundedRectangle(Rectangle bounds, int radius)
+        {
+            int diameter = radius * 2;
+            GraphicsPath path = new GraphicsPath();
+
+            path.AddArc(bounds.Left, bounds.Top, diameter, diameter, 180, 90);
+            path.AddArc(bounds.Right - diameter, bounds.Top, diameter, diameter, 270, 90);
+            path.AddArc(bounds.Right - diameter, bounds.Bottom - diameter, diameter, diameter, 0, 90);
+            path.AddArc(bounds.Left, bounds.Bottom - diameter, diameter, diameter, 90, 90);
+            path.CloseFigure();
+
+            return path;
         }
 
         private void DrawFinishedState(Graphics canvas)

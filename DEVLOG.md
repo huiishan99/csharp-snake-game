@@ -70,3 +70,8 @@
 
 ### Added
 - Enabled manual runs for the Windows GitHub Actions build workflow.
+
+### Changed
+- Added a cohesive dark visual theme for the window, HUD, board, snake, and food.
+- Added anti-aliased drawing, board grid lines, rounded snake segments, and food highlights.
+- Styled the start and pause buttons to match the game theme.
