@@ -137,3 +137,7 @@
 
 ### Added
 - Added keyboard shortcuts for changing start-menu speed with Left/Right or `-`/`+`.
+
+### Added
+- Added a release checklist covering build, gameplay, UI review, and release-note checks.
+- Updated Windows smoke testing steps for the new speed shortcuts.

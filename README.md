@@ -17,6 +17,8 @@ A small classic Snake game built with C# WinForms.
 
 For detailed local, VS Code, and GitHub Actions validation steps, see [Windows Testing Guide](docs/WINDOWS_TESTING.md).
 
+For release readiness checks, see [Release Checklist](docs/RELEASE_CHECKLIST.md).
+
 ## Checks
 
 The solution includes a small `SnakeGame.Tests` console project for rule-level engine and speed checks. Run it from Visual Studio, or build the solution and run `SnakeGame.Tests.exe`.
@@ -55,4 +57,4 @@ When the workflow passes, download the `SnakeGame-Windows-Release` artifact from
 
 - The game currently targets .NET Framework 4.7.2.
 - Development history is tracked in `DEVLOG.md`.
-- Future work will focus on richer gameplay options and cleaner separation between game rules and UI code.
+- The current focus is Windows verification and release polish.

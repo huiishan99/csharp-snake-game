@@ -41,7 +41,8 @@ The `Windows Build` workflow builds the Release solution, runs `SnakeGame.Tests`
 2. Move with arrow keys and `WASD`.
 3. Pause and resume with `Space`.
 4. Restart from the game-over overlay with `Enter`.
-5. Turn off `Wrap walls` and confirm the board shows a red border and wall collision ends the run.
-6. Turn on `Progressive speed` and confirm the HUD shows a `+` next to speed.
-7. Turn on `Obstacles` and confirm blocked cells appear and collision ends the run.
-8. Close and reopen the app to confirm speed and mode settings are restored.
+5. Change menu speed with `-`, `+`, Left, and Right.
+6. Turn off `Wrap walls` and confirm the board shows a red border and wall collision ends the run.
+7. Turn on `Progressive speed` and confirm the HUD shows a `+` next to speed.
+8. Turn on `Obstacles` and confirm blocked cells appear and collision ends the run.
+9. Close and reopen the app to confirm speed and mode settings are restored.
