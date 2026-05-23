@@ -64,14 +64,23 @@ namespace SnakeGame
         private static readonly Color StatusFinishedColor = Color.FromArgb(206, 83, 83);
         private static readonly Color StatusTextDarkColor = Color.FromArgb(8, 24, 15);
         private static readonly Color OverlayColor = Color.FromArgb(190, 9, 15, 18);
-        private static readonly Color OverlayTitleColor = Color.FromArgb(234, 255, 238);
+        private static readonly Color PauseOverlayColor = Color.FromArgb(172, 22, 22, 18);
+        private static readonly Color WinBackdropColor = Color.FromArgb(154, 22, 58, 37);
+        private static readonly Color GameOverBackdropColor = Color.FromArgb(166, 58, 22, 24);
         private static readonly Color OverlayTextColor = Color.FromArgb(184, 207, 200);
+        private static readonly Color ScoreFlashBackColor = Color.FromArgb(217, 183, 83);
+        private static readonly Color ScoreFlashTextColor = Color.FromArgb(30, 22, 9);
+        private static readonly Color ScoreFlashBorderColor = Color.FromArgb(255, 219, 120);
 
         private readonly SnakeGameEngine game = new SnakeGameEngine();
         private readonly Timer attractTimer = new Timer();
+        private readonly Timer feedbackTimer = new Timer();
         private int highScore = 0;
         private int selectedSpeed = GameSpeed.DefaultSpeed;
         private int attractFrame = 0;
+        private int scoreFlashFrames = 0;
+        private GridCell eatFeedbackCell;
+        private bool hasEatFeedbackCell = false;
         private bool useProgressiveSpeed = GameSpeed.DefaultProgressiveSpeed;
         private bool useObstacles = DefaultObstacles;
         private bool suppressPlayerSettingSave;
@@ -93,6 +102,7 @@ namespace SnakeGame
             BackColor = WindowBackColor;
 
             ConfigureAttractTimer();
+            ConfigureFeedbackTimer();
             ConfigureFonts();
             ConfigureHudLabels();
             ConfigureStartPanel();
@@ -112,6 +122,7 @@ namespace SnakeGame
             SetStartMenuVisible(false);
             btnPause.Visible = true;
             btnPause.Text = "Pause";
+            ClearEatFeedback();
 
             UpdateSettingsFromUI();
             SavePlayerSettings();
@@ -192,6 +203,12 @@ namespace SnakeGame
         {
             attractTimer.Interval = 140;
             attractTimer.Tick += attractTimer_Tick;
+        }
+
+        private void ConfigureFeedbackTimer()
+        {
+            feedbackTimer.Interval = 34;
+            feedbackTimer.Tick += feedbackTimer_Tick;
         }
 
         private void ConfigureFonts()
@@ -424,8 +441,36 @@ namespace SnakeGame
             lblHighScore.Text = "Best " + highScore;
             lblSpeed.Text = "Speed " + GameSpeed.GetDisplayValue(selectedSpeed, useProgressiveSpeed);
             lblStatus.Text = GetStatusText();
+            StyleScoreLabel();
             StyleStatusLabel();
             UpdateStartMenuText();
+        }
+
+        private void StyleScoreLabel()
+        {
+            if (lblScore == null)
+            {
+                return;
+            }
+
+            Color backColor = scoreFlashFrames > 0 ? ScoreFlashBackColor : HudPillBackColor;
+            Color textColor = scoreFlashFrames > 0 ? ScoreFlashTextColor : HudTextColor;
+            Color borderColor = scoreFlashFrames > 0 ? ScoreFlashBorderColor : HudPillBorderColor;
+
+            ThemePillLabel scorePill = lblScore as ThemePillLabel;
+            if (scorePill != null)
+            {
+                lblScore.BackColor = HudBackColor;
+                lblScore.ForeColor = textColor;
+                scorePill.PillBackColor = backColor;
+                scorePill.PillBorderColor = borderColor;
+                scorePill.PillTextColor = textColor;
+                scorePill.Invalidate();
+                return;
+            }
+
+            lblScore.BackColor = backColor;
+            lblScore.ForeColor = textColor;
         }
 
         private void StyleStatusLabel()
@@ -690,7 +735,7 @@ namespace SnakeGame
 
             DrawChrome(e.Graphics);
 
-            if ((game.Status == GameStatus.Ready && game.Snake.Count == 0) || game.IsFinished)
+            if (game.Status == GameStatus.Ready && game.Snake.Count == 0)
             {
                 DrawStartBackdrop(e.Graphics);
                 return;
@@ -699,10 +744,17 @@ namespace SnakeGame
             DrawObstacles(e.Graphics);
             DrawFood(e.Graphics);
             DrawSnake(e.Graphics);
+            DrawEatFeedback(e.Graphics);
+
+            if (game.IsFinished)
+            {
+                DrawStartBackdrop(e.Graphics);
+                return;
+            }
 
             if (game.Status == GameStatus.Paused)
             {
-                DrawOverlay(e.Graphics, "Paused", "Press Space or Resume", "Your run is waiting.");
+                DrawOverlay(e.Graphics, "Paused", "Press Space or Resume", "Your run is waiting.", PauseOverlayColor, StatusPausedColor);
             }
         }
 
@@ -742,12 +794,43 @@ namespace SnakeGame
                 return;
             }
 
-            using (Brush overlayBrush = new SolidBrush(OverlayColor))
+            Color overlayColor = OverlayColor;
+            Color signalColor = StartPanelBorderColor;
+            if (game.Status == GameStatus.Won)
+            {
+                overlayColor = WinBackdropColor;
+                signalColor = SnakeHeadColor;
+            }
+            else if (game.Status == GameStatus.GameOver)
+            {
+                overlayColor = GameOverBackdropColor;
+                signalColor = FoodColor;
+            }
+
+            using (Brush overlayBrush = new SolidBrush(overlayColor))
             {
                 canvas.FillRectangle(overlayBrush, board);
             }
 
+            if (game.IsFinished)
+            {
+                DrawBackdropSignal(canvas, board, signalColor);
+            }
+
             DrawBoundaryIndicator(canvas);
+        }
+
+        private void DrawBackdropSignal(Graphics canvas, Rectangle board, Color signalColor)
+        {
+            using (Pen signalPen = new Pen(Color.FromArgb(80, signalColor), 1))
+            using (Pen dimSignalPen = new Pen(Color.FromArgb(34, signalColor), 1))
+            {
+                for (int y = board.Top + 18; y < board.Bottom; y += 34)
+                {
+                    canvas.DrawLine(signalPen, board.Left, y, board.Right, y);
+                    canvas.DrawLine(dimSignalPen, board.Left, y + 3, board.Right, y + 3);
+                }
+            }
         }
 
         private Rectangle GetBoardBounds()
@@ -846,8 +929,11 @@ namespace SnakeGame
 
             using (Brush foodBrush = new SolidBrush(FoodColor))
             using (Brush highlightBrush = new SolidBrush(FoodHighlightColor))
+            using (Pen stemPen = new Pen(Color.FromArgb(150, SnakeBodyColor), 2))
             {
                 canvas.FillEllipse(foodBrush, foodRect);
+                int stemTop = Math.Max(GetBoardBounds().Top + 1, foodRect.Top - 3);
+                canvas.DrawLine(stemPen, foodRect.Left + foodRect.Width / 2, foodRect.Top + 1, foodRect.Left + foodRect.Width / 2 + 3, stemTop);
 
                 Rectangle highlight = new Rectangle(foodRect.Left + 4, foodRect.Top + 3, 5, 5);
                 canvas.FillEllipse(highlightBrush, highlight);
@@ -865,9 +951,11 @@ namespace SnakeGame
                 using (GraphicsPath obstaclePath = CreateRoundedRectangle(obstacleRect, 3))
                 using (Brush obstacleBrush = new SolidBrush(ObstacleColor))
                 using (Brush highlightBrush = new SolidBrush(ObstacleHighlightColor))
+                using (Pen groovePen = new Pen(Color.FromArgb(95, 45, 56, 60), 1))
                 {
                     canvas.FillPath(obstacleBrush, obstaclePath);
                     canvas.FillRectangle(highlightBrush, highlightRect);
+                    canvas.DrawLine(groovePen, obstacleRect.Left + 3, obstacleRect.Bottom - 3, obstacleRect.Right - 3, obstacleRect.Top + 3);
                 }
             }
         }
@@ -897,6 +985,72 @@ namespace SnakeGame
                 canvas.FillPath(shadowBrush, shadowPath);
                 canvas.FillPath(partBrush, partPath);
             }
+
+            if (isHead)
+            {
+                DrawSnakeHeadDetail(canvas, partRect);
+            }
+        }
+
+        private void DrawSnakeHeadDetail(Graphics canvas, Rectangle headRect)
+        {
+            Point firstEye;
+            Point secondEye;
+            int eyeSize = 2;
+
+            switch (game.CurrentDirection)
+            {
+                case Direction.Up:
+                    firstEye = new Point(headRect.Left + 4, headRect.Top + 4);
+                    secondEye = new Point(headRect.Right - 6, headRect.Top + 4);
+                    break;
+                case Direction.Left:
+                    firstEye = new Point(headRect.Left + 4, headRect.Top + 4);
+                    secondEye = new Point(headRect.Left + 4, headRect.Bottom - 6);
+                    break;
+                case Direction.Right:
+                    firstEye = new Point(headRect.Right - 6, headRect.Top + 4);
+                    secondEye = new Point(headRect.Right - 6, headRect.Bottom - 6);
+                    break;
+                default:
+                    firstEye = new Point(headRect.Left + 4, headRect.Bottom - 6);
+                    secondEye = new Point(headRect.Right - 6, headRect.Bottom - 6);
+                    break;
+            }
+
+            using (Brush eyeBrush = new SolidBrush(Color.FromArgb(38, 71, 45)))
+            {
+                canvas.FillRectangle(eyeBrush, firstEye.X, firstEye.Y, eyeSize, eyeSize);
+                canvas.FillRectangle(eyeBrush, secondEye.X, secondEye.Y, eyeSize, eyeSize);
+            }
+        }
+
+        private void DrawEatFeedback(Graphics canvas)
+        {
+            if (!hasEatFeedbackCell || scoreFlashFrames <= 0)
+            {
+                return;
+            }
+
+            Rectangle cellBounds = GetCellBounds(eatFeedbackCell);
+            int age = 10 - scoreFlashFrames;
+            int alpha = Math.Max(0, Math.Min(230, scoreFlashFrames * 23));
+            Rectangle burstBounds = cellBounds;
+            burstBounds.Inflate(2 + age * 2, 2 + age * 2);
+
+            using (Pen burstPen = new Pen(Color.FromArgb(alpha, FoodHighlightColor), 2))
+            {
+                canvas.DrawEllipse(burstPen, burstBounds);
+
+                Rectangle textBounds = new Rectangle(cellBounds.Left - 12, Math.Max(HudHeight, cellBounds.Top - 22 - age), 40, 18);
+                TextRenderer.DrawText(
+                    canvas,
+                    "+10",
+                    hudFont ?? Font,
+                    textBounds,
+                    Color.FromArgb(alpha, FoodHighlightColor),
+                    TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis);
+            }
         }
 
         private Rectangle GetCellBounds(GridCell cell)
@@ -918,7 +1072,7 @@ namespace SnakeGame
             return path;
         }
 
-        private void DrawOverlay(Graphics canvas, string title, string subtitle, string hint)
+        private void DrawOverlay(Graphics canvas, string title, string subtitle, string hint, Color overlayBackColor, Color titleColor)
         {
             Rectangle board = GetBoardBounds();
             if (board.Width <= 0 || board.Height <= 0)
@@ -926,8 +1080,8 @@ namespace SnakeGame
                 return;
             }
 
-            using (Brush overlayBrush = new SolidBrush(OverlayColor))
-            using (Brush titleBrush = new SolidBrush(OverlayTitleColor))
+            using (Brush overlayBrush = new SolidBrush(overlayBackColor))
+            using (Brush titleBrush = new SolidBrush(titleColor))
             using (Brush textBrush = new SolidBrush(OverlayTextColor))
             using (StringFormat centeredFormat = new StringFormat())
             {
@@ -1182,12 +1336,35 @@ namespace SnakeGame
                 return;
             }
 
+            int scoreBeforeStep = game.Score;
+            GridCell foodBeforeStep = game.Food;
             game.Step();
+            if (game.Score > scoreBeforeStep)
+            {
+                TriggerEatFeedback(foodBeforeStep);
+            }
+
             UpdateHighScore();
             ApplySpeedSetting();
             UpdateHud();
             Invalidate();
             FinishRoundIfNeeded();
+        }
+
+        private void TriggerEatFeedback(GridCell eatenCell)
+        {
+            eatFeedbackCell = eatenCell;
+            hasEatFeedbackCell = true;
+            scoreFlashFrames = 10;
+            feedbackTimer.Start();
+        }
+
+        private void ClearEatFeedback()
+        {
+            scoreFlashFrames = 0;
+            hasEatFeedbackCell = false;
+            feedbackTimer.Stop();
+            StyleScoreLabel();
         }
 
         private void attractTimer_Tick(object sender, EventArgs e)
@@ -1200,6 +1377,23 @@ namespace SnakeGame
 
             attractFrame = (attractFrame + 1) % 96;
             pnlStartMenu.Invalidate();
+        }
+
+        private void feedbackTimer_Tick(object sender, EventArgs e)
+        {
+            if (scoreFlashFrames > 0)
+            {
+                scoreFlashFrames--;
+            }
+
+            if (scoreFlashFrames == 0)
+            {
+                hasEatFeedbackCell = false;
+                feedbackTimer.Stop();
+            }
+
+            StyleScoreLabel();
+            Invalidate();
         }
 
         private void btnStartGame_Click(object sender, EventArgs e)
@@ -1288,6 +1482,10 @@ namespace SnakeGame
             attractTimer.Stop();
             attractTimer.Tick -= attractTimer_Tick;
             attractTimer.Dispose();
+
+            feedbackTimer.Stop();
+            feedbackTimer.Tick -= feedbackTimer_Tick;
+            feedbackTimer.Dispose();
 
             if (hudFont != null)
             {

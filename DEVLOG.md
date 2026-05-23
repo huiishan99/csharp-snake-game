@@ -10,6 +10,9 @@
 - Reworked the start panel toward an arcade title-screen feel with left-aligned title text, a best-score callout, and a compact animated preview snake.
 - Muted the themed control gradients, primary button color, and generic accent-line styling so the UI feels less like a modern template.
 - Raised the minimum window height so the taller title-screen panel has enough room at small sizes.
+- Added short eat feedback with a score-pill flash, `+10` board text, and a fading burst at the eaten food cell.
+- Added state-specific pause, win, and game-over backdrops so each game state has a clearer visual tone.
+- Added directional snake-head detail, a small food stem, and obstacle grooves for more game-like board assets.
 
 ## 2026-05-21
 
