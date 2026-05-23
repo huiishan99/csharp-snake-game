@@ -36,10 +36,10 @@
             this.btnStartGame = new SnakeGame.ThemeButton();
             this.btnSpeedDown = new SnakeGame.ThemeButton();
             this.btnSpeedUp = new SnakeGame.ThemeButton();
-            this.lblScore = new System.Windows.Forms.Label();
-            this.lblHighScore = new System.Windows.Forms.Label();
-            this.lblSpeed = new System.Windows.Forms.Label();
-            this.lblStatus = new System.Windows.Forms.Label();
+            this.lblScore = new SnakeGame.ThemePillLabel();
+            this.lblHighScore = new SnakeGame.ThemePillLabel();
+            this.lblSpeed = new SnakeGame.ThemePillLabel();
+            this.lblStatus = new SnakeGame.ThemePillLabel();
             this.btnPause = new SnakeGame.ThemeButton();
             this.chkWrapWalls = new SnakeGame.ThemeToggle();
             this.chkProgressiveSpeed = new SnakeGame.ThemeToggle();
@@ -71,7 +71,7 @@
             this.lblStartTitle.Name = "lblStartTitle";
             this.lblStartTitle.Size = new System.Drawing.Size(282, 30);
             this.lblStartTitle.TabIndex = 0;
-            this.lblStartTitle.Text = "Snake Game";
+            this.lblStartTitle.Text = "SNAKE";
             this.lblStartTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             //
             // lblStartHint
@@ -80,7 +80,7 @@
             this.lblStartHint.Name = "lblStartHint";
             this.lblStartHint.Size = new System.Drawing.Size(282, 20);
             this.lblStartHint.TabIndex = 1;
-            this.lblStartHint.Text = "Choose your run";
+            this.lblStartHint.Text = "Ready when you are";
             this.lblStartHint.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             //
             // timer1
@@ -240,10 +240,10 @@
         private SnakeGame.ThemeButton btnStartGame;
         private SnakeGame.ThemeButton btnSpeedDown;
         private SnakeGame.ThemeButton btnSpeedUp;
-        private System.Windows.Forms.Label lblScore;
-        private System.Windows.Forms.Label lblHighScore;
-        private System.Windows.Forms.Label lblSpeed;
-        private System.Windows.Forms.Label lblStatus;
+        private SnakeGame.ThemePillLabel lblScore;
+        private SnakeGame.ThemePillLabel lblHighScore;
+        private SnakeGame.ThemePillLabel lblSpeed;
+        private SnakeGame.ThemePillLabel lblStatus;
         private SnakeGame.ThemeButton btnPause;
         private SnakeGame.ThemeToggle chkWrapWalls;
         private SnakeGame.ThemeToggle chkProgressiveSpeed;

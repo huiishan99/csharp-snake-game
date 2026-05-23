@@ -1,5 +1,13 @@
 # Devlog
 
+## 2026-05-24
+
+### Changed
+- Added layered board gradient, alternating cell texture, and stronger major-grid lines to reduce the flat single-color look.
+- Added gradient, focus, and parent-background-aware painting to themed buttons and toggles.
+- Added self-painted HUD pills with gradient fills, borders, and status-aware colors.
+- Gave the start panel display typography, a subtle accent line, and a small snake/food motif.
+
 ## 2026-05-21
 
 ### Added

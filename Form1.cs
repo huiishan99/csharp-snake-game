@@ -24,15 +24,21 @@ namespace SnakeGame
         private const int StartButtonHeight = 36;
         private const int ToggleHeight = 28;
         private const string UiFontFamily = "Segoe UI";
+        private const string UiDisplayFontFamily = "Bahnschrift";
         private const string UiHeadingFontFamily = "Segoe UI Semibold";
         private const bool DefaultWrapWalls = true;
         private const bool DefaultObstacles = false;
         private static readonly Color WindowBackColor = Color.FromArgb(18, 24, 27);
-        private static readonly Color BoardBackColor = Color.FromArgb(25, 35, 39);
+        private static readonly Color BoardTopColor = Color.FromArgb(28, 40, 44);
+        private static readonly Color BoardBottomColor = Color.FromArgb(19, 28, 31);
+        private static readonly Color BoardTextureColor = Color.FromArgb(22, 65, 82, 76);
         private static readonly Color GridColor = Color.FromArgb(34, 48, 52);
+        private static readonly Color GridMajorColor = Color.FromArgb(43, 62, 66);
         private static readonly Color HudBackColor = Color.FromArgb(14, 19, 22);
         private static readonly Color HudPillBackColor = Color.FromArgb(31, 43, 47);
+        private static readonly Color HudPillBorderColor = Color.FromArgb(44, 62, 66);
         private static readonly Color HudDividerColor = Color.FromArgb(50, 70, 75);
+        private static readonly Color HudAccentColor = Color.FromArgb(232, 112, 92);
         private static readonly Color HudTextColor = Color.FromArgb(225, 239, 235);
         private static readonly Color SnakeHeadColor = Color.FromArgb(180, 255, 190);
         private static readonly Color SnakeBodyColor = Color.FromArgb(80, 205, 132);
@@ -43,8 +49,12 @@ namespace SnakeGame
         private static readonly Color ObstacleHighlightColor = Color.FromArgb(140, 161, 166);
         private static readonly Color SolidWallColor = Color.FromArgb(235, 93, 93);
         private static readonly Color StartPanelBackColor = Color.FromArgb(28, 39, 43);
+        private static readonly Color StartPanelTopColor = Color.FromArgb(33, 48, 52);
+        private static readonly Color StartPanelBottomColor = Color.FromArgb(23, 34, 38);
         private static readonly Color StartPanelBorderColor = Color.FromArgb(74, 98, 102);
         private static readonly Color StartPanelMutedTextColor = Color.FromArgb(156, 184, 178);
+        private static readonly Color StartPanelMotifColor = Color.FromArgb(60, 116, 96);
+        private static readonly Color StartPanelMotifAccentColor = Color.FromArgb(220, 110, 96);
         private static readonly Color ToggleBackColor = Color.FromArgb(37, 52, 57);
         private static readonly Color ToggleBorderColor = Color.FromArgb(76, 99, 104);
         private static readonly Color ToggleActiveBackColor = Color.FromArgb(90, 220, 145);
@@ -182,14 +192,21 @@ namespace SnakeGame
             hudFont = CreateUiFont(UiFontFamily, 8.75f, FontStyle.Regular);
             primaryButtonFont = CreateUiFont(UiHeadingFontFamily, 10.5f, FontStyle.Regular);
             secondaryButtonFont = CreateUiFont(UiHeadingFontFamily, 8.75f, FontStyle.Regular);
-            startTitleFont = CreateUiFont(UiHeadingFontFamily, 18f, FontStyle.Regular);
+            startTitleFont = CreateUiFont(UiDisplayFontFamily, 18.5f, FontStyle.Bold);
             startHintFont = CreateUiFont(UiFontFamily, 8.75f, FontStyle.Regular);
             toggleFont = CreateUiFont(UiHeadingFontFamily, 8.5f, FontStyle.Regular);
         }
 
         private Font CreateUiFont(string familyName, float size, FontStyle style)
         {
-            return new Font(familyName, size, style, GraphicsUnit.Point);
+            try
+            {
+                return new Font(familyName, size, style, GraphicsUnit.Point);
+            }
+            catch
+            {
+                return new Font(FontFamily.GenericSansSerif, size, style, GraphicsUnit.Point);
+            }
         }
 
         private void ConfigureHudLabels()
@@ -205,11 +222,20 @@ namespace SnakeGame
                 label.AutoSize = false;
                 label.AutoEllipsis = true;
                 label.ForeColor = HudTextColor;
-                label.BackColor = HudPillBackColor;
+                label.BackColor = HudBackColor;
                 label.Font = hudFont;
                 label.Padding = new Padding(8, 0, 8, 0);
                 label.TextAlign = ContentAlignment.MiddleCenter;
                 label.Height = HudControlHeight;
+
+                ThemePillLabel pillLabel = label as ThemePillLabel;
+                if (pillLabel != null)
+                {
+                    pillLabel.CornerRadius = 8;
+                    pillLabel.PillBackColor = HudPillBackColor;
+                    pillLabel.PillBorderColor = HudPillBorderColor;
+                    pillLabel.PillTextColor = HudTextColor;
+                }
             }
         }
 
@@ -232,22 +258,22 @@ namespace SnakeGame
 
             lblStartTitle.AutoSize = false;
             lblStartTitle.AutoEllipsis = true;
-            lblStartTitle.ForeColor = OverlayTitleColor;
-            lblStartTitle.BackColor = StartPanelBackColor;
+            lblStartTitle.ForeColor = SnakeHeadColor;
+            lblStartTitle.BackColor = Color.Transparent;
             lblStartTitle.Font = startTitleFont;
             lblStartTitle.TextAlign = ContentAlignment.MiddleCenter;
 
             lblStartHint.AutoSize = false;
             lblStartHint.AutoEllipsis = true;
             lblStartHint.ForeColor = StartPanelMutedTextColor;
-            lblStartHint.BackColor = StartPanelBackColor;
+            lblStartHint.BackColor = Color.Transparent;
             lblStartHint.Font = startHintFont;
             lblStartHint.TextAlign = ContentAlignment.MiddleCenter;
 
             lblStartSpeed.AutoSize = false;
             lblStartSpeed.AutoEllipsis = true;
             lblStartSpeed.ForeColor = OverlayTextColor;
-            lblStartSpeed.BackColor = StartPanelBackColor;
+            lblStartSpeed.BackColor = Color.Transparent;
             lblStartSpeed.Font = secondaryButtonFont;
             lblStartSpeed.TextAlign = ContentAlignment.MiddleCenter;
         }
@@ -422,6 +448,18 @@ namespace SnakeGame
                     break;
             }
 
+            ThemePillLabel statusPill = lblStatus as ThemePillLabel;
+            if (statusPill != null)
+            {
+                lblStatus.BackColor = HudBackColor;
+                lblStatus.ForeColor = textColor;
+                statusPill.PillBackColor = statusColor;
+                statusPill.PillBorderColor = ThemeButton.Mix(statusColor, HudBackColor, 36);
+                statusPill.PillTextColor = textColor;
+                statusPill.Invalidate();
+                return;
+            }
+
             lblStatus.BackColor = statusColor;
             lblStatus.ForeColor = textColor;
         }
@@ -437,13 +475,13 @@ namespace SnakeGame
             {
                 lblStartTitle.Text = game.Status == GameStatus.Won ? "You Win" : "Game Over";
                 lblStartHint.Text = "Score " + game.Score + "  |  Best " + highScore;
-                btnStartGame.Text = "Restart";
+                btnStartGame.Text = "Again";
             }
             else
             {
-                lblStartTitle.Text = "Snake Game";
-                lblStartHint.Text = "Choose your run";
-                btnStartGame.Text = "Start";
+                lblStartTitle.Text = "SNAKE";
+                lblStartHint.Text = "Ready when you are";
+                btnStartGame.Text = "Play";
             }
 
             lblStartSpeed.Text = "Speed " + GameSpeed.GetDisplayValue(selectedSpeed, useProgressiveSpeed);
@@ -650,16 +688,31 @@ namespace SnakeGame
 
         private void DrawChrome(Graphics canvas)
         {
-            using (Brush hudBrush = new SolidBrush(HudBackColor))
-            using (Brush boardBrush = new SolidBrush(BoardBackColor))
+            Rectangle hudBounds = new Rectangle(0, 0, ClientSize.Width, HudHeight);
+            Rectangle board = GetBoardBounds();
+
+            using (LinearGradientBrush hudBrush = new LinearGradientBrush(hudBounds, Color.FromArgb(17, 23, 26), HudBackColor, LinearGradientMode.Vertical))
             {
-                canvas.FillRectangle(hudBrush, new Rectangle(0, 0, ClientSize.Width, HudHeight));
-                canvas.FillRectangle(boardBrush, GetBoardBounds());
+                canvas.FillRectangle(hudBrush, hudBounds);
             }
 
+            if (board.Width > 0 && board.Height > 0)
+            {
+                using (LinearGradientBrush boardBrush = new LinearGradientBrush(board, BoardTopColor, BoardBottomColor, LinearGradientMode.Vertical))
+                {
+                    canvas.FillRectangle(boardBrush, board);
+                }
+            }
+
+            DrawBoardTexture(canvas);
             using (Pen dividerPen = new Pen(HudDividerColor, 1))
             {
                 canvas.DrawLine(dividerPen, 0, HudHeight - 1, ClientSize.Width, HudHeight - 1);
+            }
+
+            using (Pen accentPen = new Pen(HudAccentColor, 1))
+            {
+                canvas.DrawLine(accentPen, HudPadding, HudHeight - 3, Math.Max(HudPadding, ClientSize.Width - HudPadding), HudHeight - 3);
             }
 
             DrawGrid(canvas);
@@ -691,15 +744,45 @@ namespace SnakeGame
         {
             Rectangle board = GetBoardBounds();
             using (Pen gridPen = new Pen(GridColor, 1))
+            using (Pen majorGridPen = new Pen(GridMajorColor, 1))
             {
                 for (int x = 0; x <= board.Width; x += CellSize)
                 {
-                    canvas.DrawLine(gridPen, x, board.Top, x, board.Bottom);
+                    Pen pen = (x / CellSize) % 4 == 0 ? majorGridPen : gridPen;
+                    canvas.DrawLine(pen, x, board.Top, x, board.Bottom);
                 }
 
                 for (int y = board.Top; y <= board.Bottom; y += CellSize)
                 {
-                    canvas.DrawLine(gridPen, board.Left, y, board.Right, y);
+                    Pen pen = ((y - board.Top) / CellSize) % 4 == 0 ? majorGridPen : gridPen;
+                    canvas.DrawLine(pen, board.Left, y, board.Right, y);
+                }
+            }
+        }
+
+        private void DrawBoardTexture(Graphics canvas)
+        {
+            Rectangle board = GetBoardBounds();
+            if (board.Width <= 0 || board.Height <= 0)
+            {
+                return;
+            }
+
+            using (Brush textureBrush = new SolidBrush(BoardTextureColor))
+            {
+                for (int y = board.Top; y < board.Bottom; y += CellSize)
+                {
+                    int row = (y - board.Top) / CellSize;
+                    for (int x = board.Left; x < board.Right; x += CellSize)
+                    {
+                        int column = (x - board.Left) / CellSize;
+                        if ((row + column) % 2 != 0)
+                        {
+                            continue;
+                        }
+
+                        canvas.FillRectangle(textureBrush, x + 1, y + 1, CellSize - 2, CellSize - 2);
+                    }
                 }
             }
         }
@@ -866,9 +949,57 @@ namespace SnakeGame
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             Rectangle border = new Rectangle(0, 0, pnlStartMenu.Width - 1, pnlStartMenu.Height - 1);
             using (GraphicsPath borderPath = CreateRoundedRectangle(border, StartPanelRadius))
+            using (LinearGradientBrush panelBrush = new LinearGradientBrush(border, StartPanelTopColor, StartPanelBottomColor, LinearGradientMode.Vertical))
             using (Pen borderPen = new Pen(StartPanelBorderColor, 1))
             {
+                e.Graphics.FillPath(panelBrush, borderPath);
+                DrawStartPanelAccent(e.Graphics);
+                DrawStartPanelMotif(e.Graphics);
                 e.Graphics.DrawPath(borderPen, borderPath);
+            }
+        }
+
+        private void DrawStartPanelAccent(Graphics canvas)
+        {
+            Rectangle accentBounds = new Rectangle(StartPanelPadding, 64, Math.Max(0, pnlStartMenu.Width - StartPanelPadding * 2), 1);
+            if (accentBounds.Width <= 0)
+            {
+                return;
+            }
+
+            using (LinearGradientBrush accentBrush = new LinearGradientBrush(accentBounds, Color.FromArgb(0, HudAccentColor), HudAccentColor, LinearGradientMode.Horizontal))
+            {
+                ColorBlend blend = new ColorBlend();
+                blend.Positions = new[] { 0f, 0.42f, 1f };
+                blend.Colors = new[] { Color.FromArgb(0, HudAccentColor), Color.FromArgb(155, HudAccentColor), Color.FromArgb(0, SnakeHeadColor) };
+                accentBrush.InterpolationColors = blend;
+                canvas.FillRectangle(accentBrush, accentBounds);
+            }
+        }
+
+        private void DrawStartPanelMotif(Graphics canvas)
+        {
+            int cell = 7;
+            int startX = pnlStartMenu.Width - 78;
+            int startY = 18;
+
+            using (Brush bodyBrush = new SolidBrush(Color.FromArgb(110, StartPanelMotifColor)))
+            using (Brush headBrush = new SolidBrush(Color.FromArgb(170, SnakeHeadColor)))
+            using (Brush foodBrush = new SolidBrush(Color.FromArgb(170, StartPanelMotifAccentColor)))
+            {
+                DrawMotifCell(canvas, bodyBrush, startX, startY + cell, cell);
+                DrawMotifCell(canvas, bodyBrush, startX + cell, startY + cell, cell);
+                DrawMotifCell(canvas, bodyBrush, startX + cell * 2, startY + cell, cell);
+                DrawMotifCell(canvas, headBrush, startX + cell * 3, startY, cell);
+                canvas.FillEllipse(foodBrush, startX + cell * 6, startY + cell, cell + 2, cell + 2);
+            }
+        }
+
+        private void DrawMotifCell(Graphics canvas, Brush brush, int x, int y, int size)
+        {
+            using (GraphicsPath path = CreateRoundedRectangle(new Rectangle(x, y, size, size), 2))
+            {
+                canvas.FillPath(brush, path);
             }
         }
 
