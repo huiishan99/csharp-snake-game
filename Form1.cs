@@ -8,11 +8,11 @@ namespace SnakeGame
     public partial class Form1 : Form
     {
         private const int CellSize = 16;
-        private const int HudHeight = 40;
+        private const int HudHeight = 48;
         private const int HudPadding = 12;
         private const int HudGap = 10;
-        private const int HudControlTop = 8;
-        private const int HudControlHeight = 24;
+        private const int HudControlTop = 10;
+        private const int HudControlHeight = 28;
         private const int StartPanelWidth = 360;
         private const int StartPanelHeight = 286;
         private const int StartPanelRadius = 8;
@@ -26,6 +26,8 @@ namespace SnakeGame
         private static readonly Color BoardBackColor = Color.FromArgb(25, 35, 39);
         private static readonly Color GridColor = Color.FromArgb(34, 48, 52);
         private static readonly Color HudBackColor = Color.FromArgb(14, 19, 22);
+        private static readonly Color HudPillBackColor = Color.FromArgb(31, 43, 47);
+        private static readonly Color HudDividerColor = Color.FromArgb(50, 70, 75);
         private static readonly Color HudTextColor = Color.FromArgb(225, 239, 235);
         private static readonly Color SnakeHeadColor = Color.FromArgb(180, 255, 190);
         private static readonly Color SnakeBodyColor = Color.FromArgb(80, 205, 132);
@@ -44,6 +46,11 @@ namespace SnakeGame
         private static readonly Color ToggleActiveTextColor = Color.FromArgb(8, 24, 15);
         private static readonly Color SpeedStepInactiveBackColor = Color.FromArgb(25, 34, 38);
         private static readonly Color SpeedStepInactiveTextColor = Color.FromArgb(104, 126, 128);
+        private static readonly Color StatusReadyColor = Color.FromArgb(68, 92, 100);
+        private static readonly Color StatusPlayingColor = Color.FromArgb(66, 166, 108);
+        private static readonly Color StatusPausedColor = Color.FromArgb(205, 166, 74);
+        private static readonly Color StatusFinishedColor = Color.FromArgb(206, 83, 83);
+        private static readonly Color StatusTextDarkColor = Color.FromArgb(8, 24, 15);
         private static readonly Color OverlayColor = Color.FromArgb(190, 9, 15, 18);
         private static readonly Color OverlayTitleColor = Color.FromArgb(234, 255, 238);
         private static readonly Color OverlayTextColor = Color.FromArgb(184, 207, 200);
@@ -193,9 +200,10 @@ namespace SnakeGame
                 label.AutoSize = false;
                 label.AutoEllipsis = true;
                 label.ForeColor = HudTextColor;
-                label.BackColor = HudBackColor;
+                label.BackColor = HudPillBackColor;
                 label.Font = hudFont;
-                label.TextAlign = ContentAlignment.MiddleLeft;
+                label.Padding = new Padding(8, 0, 8, 0);
+                label.TextAlign = ContentAlignment.MiddleCenter;
                 label.Height = HudControlHeight;
             }
         }
@@ -263,6 +271,8 @@ namespace SnakeGame
             button.ForeColor = isPrimary ? Color.FromArgb(8, 22, 14) : HudTextColor;
             button.Font = isPrimary ? primaryButtonFont : secondaryButtonFont;
             button.UseVisualStyleBackColor = false;
+            button.FlatAppearance.MouseOverBackColor = isPrimary ? SnakeHeadColor : Color.FromArgb(47, 65, 70);
+            button.FlatAppearance.MouseDownBackColor = isPrimary ? SnakeBodyColor : Color.FromArgb(31, 43, 48);
         }
 
         private void ConfigureCheckBox(CheckBox checkBox)
@@ -337,11 +347,43 @@ namespace SnakeGame
 
         private void UpdateHud()
         {
-            lblScore.Text = "Score: " + game.Score;
-            lblHighScore.Text = "Best: " + highScore;
-            lblSpeed.Text = GameSpeed.GetDisplayLabel(selectedSpeed, useProgressiveSpeed);
+            lblScore.Text = "Score " + game.Score;
+            lblHighScore.Text = "Best " + highScore;
+            lblSpeed.Text = "Speed " + GameSpeed.GetDisplayValue(selectedSpeed, useProgressiveSpeed);
             lblStatus.Text = GetStatusText();
+            StyleStatusLabel();
             UpdateStartMenuText();
+        }
+
+        private void StyleStatusLabel()
+        {
+            if (lblStatus == null)
+            {
+                return;
+            }
+
+            Color statusColor;
+            Color textColor = StatusTextDarkColor;
+            switch (game.Status)
+            {
+                case GameStatus.Playing:
+                    statusColor = StatusPlayingColor;
+                    break;
+                case GameStatus.Paused:
+                    statusColor = StatusPausedColor;
+                    break;
+                case GameStatus.GameOver:
+                case GameStatus.Won:
+                    statusColor = StatusFinishedColor;
+                    break;
+                default:
+                    statusColor = StatusReadyColor;
+                    textColor = HudTextColor;
+                    break;
+            }
+
+            lblStatus.BackColor = statusColor;
+            lblStatus.ForeColor = textColor;
         }
 
         private void UpdateStartMenuText()
@@ -565,6 +607,11 @@ namespace SnakeGame
             {
                 canvas.FillRectangle(hudBrush, new Rectangle(0, 0, ClientSize.Width, HudHeight));
                 canvas.FillRectangle(boardBrush, GetBoardBounds());
+            }
+
+            using (Pen dividerPen = new Pen(HudDividerColor, 1))
+            {
+                canvas.DrawLine(dividerPen, 0, HudHeight - 1, ClientSize.Width, HudHeight - 1);
             }
 
             DrawGrid(canvas);

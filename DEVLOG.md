@@ -130,3 +130,7 @@
 ### Changed
 - Replaced the default Windows speed slider with themed `-` and `+` speed step buttons.
 - Kept speed persistence and progressive-speed labels working with the new stepper control.
+
+### Changed
+- Restyled the top HUD as compact pill labels with status-aware colors.
+- Added a HUD divider and stronger hover/press colors for themed buttons.
