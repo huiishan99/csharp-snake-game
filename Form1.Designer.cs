@@ -34,7 +34,8 @@
             this.lblStartHint = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.btnStartGame = new System.Windows.Forms.Button();
-            this.trackBarSpeed = new System.Windows.Forms.TrackBar();
+            this.btnSpeedDown = new System.Windows.Forms.Button();
+            this.btnSpeedUp = new System.Windows.Forms.Button();
             this.lblScore = new System.Windows.Forms.Label();
             this.lblHighScore = new System.Windows.Forms.Label();
             this.lblSpeed = new System.Windows.Forms.Label();
@@ -45,7 +46,6 @@
             this.chkObstacles = new System.Windows.Forms.CheckBox();
             this.lblStartSpeed = new System.Windows.Forms.Label();
             this.pnlStartMenu.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarSpeed)).BeginInit();
             this.SuspendLayout();
             //
             // pnlStartMenu
@@ -54,7 +54,8 @@
             this.pnlStartMenu.Controls.Add(this.chkProgressiveSpeed);
             this.pnlStartMenu.Controls.Add(this.chkWrapWalls);
             this.pnlStartMenu.Controls.Add(this.lblStartSpeed);
-            this.pnlStartMenu.Controls.Add(this.trackBarSpeed);
+            this.pnlStartMenu.Controls.Add(this.btnSpeedUp);
+            this.pnlStartMenu.Controls.Add(this.btnSpeedDown);
             this.pnlStartMenu.Controls.Add(this.btnStartGame);
             this.pnlStartMenu.Controls.Add(this.lblStartHint);
             this.pnlStartMenu.Controls.Add(this.lblStartTitle);
@@ -99,16 +100,25 @@
             this.btnStartGame.UseVisualStyleBackColor = true;
             this.btnStartGame.Click += new System.EventHandler(this.btnStartGame_Click);
             //
-            // trackBarSpeed
+            // btnSpeedDown
             //
-            this.trackBarSpeed.Location = new System.Drawing.Point(24, 150);
-            this.trackBarSpeed.Maximum = 10;
-            this.trackBarSpeed.Minimum = 1;
-            this.trackBarSpeed.Name = "trackBarSpeed";
-            this.trackBarSpeed.Size = new System.Drawing.Size(312, 45);
-            this.trackBarSpeed.TabIndex = 4;
-            this.trackBarSpeed.Value = 5;
-            this.trackBarSpeed.ValueChanged += new System.EventHandler(this.trackBarSpeed_ValueChanged);
+            this.btnSpeedDown.Location = new System.Drawing.Point(24, 138);
+            this.btnSpeedDown.Name = "btnSpeedDown";
+            this.btnSpeedDown.Size = new System.Drawing.Size(44, 38);
+            this.btnSpeedDown.TabIndex = 3;
+            this.btnSpeedDown.Text = "-";
+            this.btnSpeedDown.UseVisualStyleBackColor = true;
+            this.btnSpeedDown.Click += new System.EventHandler(this.btnSpeedDown_Click);
+            //
+            // btnSpeedUp
+            //
+            this.btnSpeedUp.Location = new System.Drawing.Point(292, 138);
+            this.btnSpeedUp.Name = "btnSpeedUp";
+            this.btnSpeedUp.Size = new System.Drawing.Size(44, 38);
+            this.btnSpeedUp.TabIndex = 5;
+            this.btnSpeedUp.Text = "+";
+            this.btnSpeedUp.UseVisualStyleBackColor = true;
+            this.btnSpeedUp.Click += new System.EventHandler(this.btnSpeedUp_Click);
             //
             // lblScore
             //
@@ -161,10 +171,10 @@
             //
             this.chkWrapWalls.Checked = true;
             this.chkWrapWalls.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkWrapWalls.Location = new System.Drawing.Point(24, 204);
+            this.chkWrapWalls.Location = new System.Drawing.Point(24, 190);
             this.chkWrapWalls.Name = "chkWrapWalls";
             this.chkWrapWalls.Size = new System.Drawing.Size(152, 34);
-            this.chkWrapWalls.TabIndex = 5;
+            this.chkWrapWalls.TabIndex = 6;
             this.chkWrapWalls.Text = "Wrap";
             this.chkWrapWalls.UseVisualStyleBackColor = true;
             this.chkWrapWalls.CheckedChanged += new System.EventHandler(this.chkWrapWalls_CheckedChanged);
@@ -173,31 +183,31 @@
             //
             this.chkProgressiveSpeed.Checked = true;
             this.chkProgressiveSpeed.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkProgressiveSpeed.Location = new System.Drawing.Point(184, 204);
+            this.chkProgressiveSpeed.Location = new System.Drawing.Point(184, 190);
             this.chkProgressiveSpeed.Name = "chkProgressiveSpeed";
             this.chkProgressiveSpeed.Size = new System.Drawing.Size(152, 34);
-            this.chkProgressiveSpeed.TabIndex = 6;
+            this.chkProgressiveSpeed.TabIndex = 7;
             this.chkProgressiveSpeed.Text = "Progressive";
             this.chkProgressiveSpeed.UseVisualStyleBackColor = true;
             this.chkProgressiveSpeed.CheckedChanged += new System.EventHandler(this.chkProgressiveSpeed_CheckedChanged);
             //
             // chkObstacles
             //
-            this.chkObstacles.Location = new System.Drawing.Point(24, 246);
+            this.chkObstacles.Location = new System.Drawing.Point(24, 232);
             this.chkObstacles.Name = "chkObstacles";
             this.chkObstacles.Size = new System.Drawing.Size(312, 34);
-            this.chkObstacles.TabIndex = 7;
+            this.chkObstacles.TabIndex = 8;
             this.chkObstacles.Text = "Obstacles";
             this.chkObstacles.UseVisualStyleBackColor = true;
             this.chkObstacles.CheckedChanged += new System.EventHandler(this.chkObstacles_CheckedChanged);
             //
             // lblStartSpeed
             //
-            this.lblStartSpeed.Location = new System.Drawing.Point(24, 126);
+            this.lblStartSpeed.Location = new System.Drawing.Point(76, 138);
             this.lblStartSpeed.Name = "lblStartSpeed";
-            this.lblStartSpeed.Size = new System.Drawing.Size(312, 22);
-            this.lblStartSpeed.TabIndex = 3;
-            this.lblStartSpeed.Text = "Starting speed 5+";
+            this.lblStartSpeed.Size = new System.Drawing.Size(208, 38);
+            this.lblStartSpeed.TabIndex = 4;
+            this.lblStartSpeed.Text = "Speed 5+";
             this.lblStartSpeed.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             //
             // Form1
@@ -216,7 +226,6 @@
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Snake Game";
-            ((System.ComponentModel.ISupportInitialize)(this.trackBarSpeed)).EndInit();
             this.pnlStartMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -229,7 +238,8 @@
         private System.Windows.Forms.Label lblStartHint;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Button btnStartGame;
-        private System.Windows.Forms.TrackBar trackBarSpeed;
+        private System.Windows.Forms.Button btnSpeedDown;
+        private System.Windows.Forms.Button btnSpeedUp;
         private System.Windows.Forms.Label lblScore;
         private System.Windows.Forms.Label lblHighScore;
         private System.Windows.Forms.Label lblSpeed;

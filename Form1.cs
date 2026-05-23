@@ -18,6 +18,7 @@ namespace SnakeGame
         private const int StartPanelRadius = 8;
         private const int StartPanelPadding = 24;
         private const int StartPanelGap = 8;
+        private const int SpeedButtonWidth = 44;
         private const string UiFontFamily = "Segoe UI";
         private const bool DefaultWrapWalls = true;
         private const bool DefaultObstacles = false;
@@ -41,6 +42,8 @@ namespace SnakeGame
         private static readonly Color ToggleBorderColor = Color.FromArgb(76, 99, 104);
         private static readonly Color ToggleActiveBackColor = Color.FromArgb(90, 220, 145);
         private static readonly Color ToggleActiveTextColor = Color.FromArgb(8, 24, 15);
+        private static readonly Color SpeedStepInactiveBackColor = Color.FromArgb(25, 34, 38);
+        private static readonly Color SpeedStepInactiveTextColor = Color.FromArgb(104, 126, 128);
         private static readonly Color OverlayColor = Color.FromArgb(190, 9, 15, 18);
         private static readonly Color OverlayTitleColor = Color.FromArgb(234, 255, 238);
         private static readonly Color OverlayTextColor = Color.FromArgb(184, 207, 200);
@@ -105,7 +108,6 @@ namespace SnakeGame
 
         private void UpdateSettingsFromUI()
         {
-            selectedSpeed = trackBarSpeed.Value;
             useProgressiveSpeed = chkProgressiveSpeed.Checked;
             useObstacles = chkObstacles.Checked;
             UpdateToggleStyles();
@@ -134,7 +136,7 @@ namespace SnakeGame
 
         private void LayoutControls()
         {
-            if (pnlStartMenu == null || btnStartGame == null || lblStartTitle == null || lblStartHint == null || lblStartSpeed == null || trackBarSpeed == null || btnPause == null || chkWrapWalls == null || chkProgressiveSpeed == null || chkObstacles == null)
+            if (pnlStartMenu == null || btnStartGame == null || btnSpeedDown == null || btnSpeedUp == null || lblStartTitle == null || lblStartHint == null || lblStartSpeed == null || btnPause == null || chkWrapWalls == null || chkProgressiveSpeed == null || chkObstacles == null)
             {
                 return;
             }
@@ -154,11 +156,12 @@ namespace SnakeGame
             lblStartTitle.SetBounds(x, 18, contentWidth, 34);
             lblStartHint.SetBounds(x, 52, contentWidth, 22);
             btnStartGame.SetBounds(x, 80, contentWidth, 44);
-            lblStartSpeed.SetBounds(x, 126, contentWidth, 22);
-            trackBarSpeed.SetBounds(x, 150, contentWidth, 45);
-            chkWrapWalls.SetBounds(x, 204, toggleWidth, 34);
-            chkProgressiveSpeed.SetBounds(x + toggleWidth + StartPanelGap, 204, toggleWidth, 34);
-            chkObstacles.SetBounds(x, 246, contentWidth, 34);
+            btnSpeedDown.SetBounds(x, 138, SpeedButtonWidth, 38);
+            lblStartSpeed.SetBounds(x + SpeedButtonWidth + StartPanelGap, 138, contentWidth - SpeedButtonWidth * 2 - StartPanelGap * 2, 38);
+            btnSpeedUp.SetBounds(x + contentWidth - SpeedButtonWidth, 138, SpeedButtonWidth, 38);
+            chkWrapWalls.SetBounds(x, 190, toggleWidth, 34);
+            chkProgressiveSpeed.SetBounds(x + toggleWidth + StartPanelGap, 190, toggleWidth, 34);
+            chkObstacles.SetBounds(x, 232, contentWidth, 34);
             LayoutHudControls();
         }
 
@@ -205,10 +208,6 @@ namespace SnakeGame
             }
 
             pnlStartMenu.BackColor = StartPanelBackColor;
-            if (trackBarSpeed != null)
-            {
-                trackBarSpeed.BackColor = StartPanelBackColor;
-            }
         }
 
         private void ConfigureSetupLabels()
@@ -244,6 +243,8 @@ namespace SnakeGame
         {
             ConfigureButton(btnStartGame, true);
             ConfigureButton(btnPause, false);
+            ConfigureButton(btnSpeedDown, false);
+            ConfigureButton(btnSpeedUp, false);
             ConfigureCheckBox(chkWrapWalls);
             ConfigureCheckBox(chkProgressiveSpeed);
             ConfigureCheckBox(chkObstacles);
@@ -345,7 +346,7 @@ namespace SnakeGame
 
         private void UpdateStartMenuText()
         {
-            if (lblStartTitle == null || lblStartHint == null || lblStartSpeed == null || btnStartGame == null)
+            if (lblStartTitle == null || lblStartHint == null || lblStartSpeed == null || btnStartGame == null || btnSpeedDown == null || btnSpeedUp == null)
             {
                 return;
             }
@@ -363,7 +364,20 @@ namespace SnakeGame
                 btnStartGame.Text = "Start";
             }
 
-            lblStartSpeed.Text = "Starting speed " + GameSpeed.GetDisplayValue(selectedSpeed, useProgressiveSpeed);
+            lblStartSpeed.Text = "Speed " + GameSpeed.GetDisplayValue(selectedSpeed, useProgressiveSpeed);
+            StyleSpeedButton(btnSpeedDown, selectedSpeed > GameSpeed.MinimumSpeed);
+            StyleSpeedButton(btnSpeedUp, selectedSpeed < GameSpeed.MaximumSpeed);
+        }
+
+        private void StyleSpeedButton(Button button, bool canChange)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            button.BackColor = canChange ? Color.FromArgb(35, 48, 53) : SpeedStepInactiveBackColor;
+            button.ForeColor = canChange ? HudTextColor : SpeedStepInactiveTextColor;
         }
 
         private void SetStartMenuVisible(bool visible)
@@ -408,14 +422,14 @@ namespace SnakeGame
             suppressPlayerSettingSave = true;
             try
             {
-                trackBarSpeed.Value = ClampSpeed(SnakeGame.Properties.Settings.Default.Speed);
+                selectedSpeed = ClampSpeed(SnakeGame.Properties.Settings.Default.Speed);
                 chkWrapWalls.Checked = SnakeGame.Properties.Settings.Default.WrapWalls;
                 chkProgressiveSpeed.Checked = SnakeGame.Properties.Settings.Default.ProgressiveSpeed;
                 chkObstacles.Checked = SnakeGame.Properties.Settings.Default.Obstacles;
             }
             catch
             {
-                trackBarSpeed.Value = ClampSpeed(GameSpeed.DefaultSpeed);
+                selectedSpeed = ClampSpeed(GameSpeed.DefaultSpeed);
                 chkWrapWalls.Checked = DefaultWrapWalls;
                 chkProgressiveSpeed.Checked = GameSpeed.DefaultProgressiveSpeed;
                 chkObstacles.Checked = DefaultObstacles;
@@ -428,7 +442,7 @@ namespace SnakeGame
 
         private int ClampSpeed(int speed)
         {
-            return GameSpeed.ClampSpeed(speed, trackBarSpeed.Minimum, trackBarSpeed.Maximum);
+            return GameSpeed.ClampSpeed(speed);
         }
 
         private void SavePlayerSettings()
@@ -440,7 +454,7 @@ namespace SnakeGame
 
             try
             {
-                SnakeGame.Properties.Settings.Default.Speed = trackBarSpeed.Value;
+                SnakeGame.Properties.Settings.Default.Speed = selectedSpeed;
                 SnakeGame.Properties.Settings.Default.WrapWalls = chkWrapWalls.Checked;
                 SnakeGame.Properties.Settings.Default.ProgressiveSpeed = chkProgressiveSpeed.Checked;
                 SnakeGame.Properties.Settings.Default.Obstacles = chkObstacles.Checked;
@@ -849,11 +863,29 @@ namespace SnakeGame
             StartGame();
         }
 
-        private void trackBarSpeed_ValueChanged(object sender, EventArgs e)
+        private void btnSpeedDown_Click(object sender, EventArgs e)
         {
+            ChangeSpeed(-1);
+        }
+
+        private void btnSpeedUp_Click(object sender, EventArgs e)
+        {
+            ChangeSpeed(1);
+        }
+
+        private void ChangeSpeed(int delta)
+        {
+            int nextSpeed = ClampSpeed(selectedSpeed + delta);
+            if (nextSpeed == selectedSpeed)
+            {
+                return;
+            }
+
+            selectedSpeed = nextSpeed;
             UpdateSettingsFromUI();
             UpdateHud();
             SavePlayerSettings();
+            Focus();
         }
 
         private void btnPause_Click(object sender, EventArgs e)

@@ -32,7 +32,7 @@ When the workflow passes, download the `SnakeGame-Windows-Release` artifact from
 - Arrow keys or `WASD`: move the snake
 - Space: pause or resume
 - Enter: start or restart when the game is ready
-- Speed slider: choose the starting speed before the game begins
+- Speed `-` / `+`: choose the starting speed before the game begins
 - Wrap walls: turn classic edge wrapping on or off before starting
 - Progressive speed: make the snake gradually speed up as the score rises
 - Obstacles: add blocked cells for a harder run
@@ -41,6 +41,7 @@ When the workflow passes, download the `SnakeGame-Windows-Release` artifact from
 
 - Themed board with grid, styled snake, and highlighted food
 - Modernized Segoe UI start panel with compact mode toggles
+- Theme-matched speed stepper instead of the default Windows slider
 - Solid-wall mode shows a visible board border before and during play
 - Optional obstacle mode with collision checks and safe food placement
 - In-board start, pause, game-over, and win overlays

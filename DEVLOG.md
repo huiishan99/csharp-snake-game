@@ -126,3 +126,7 @@
 - Reworked the start and restart UI into a centered themed settings panel.
 - Switched HUD, overlay, button, and menu text to a Segoe UI font stack.
 - Restyled game options as compact toggle buttons instead of default WinForms checkboxes.
+
+### Changed
+- Replaced the default Windows speed slider with themed `-` and `+` speed step buttons.
+- Kept speed persistence and progressive-speed labels working with the new stepper control.
