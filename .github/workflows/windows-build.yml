@@ -21,3 +21,17 @@ jobs:
 
       - name: Run engine checks
         run: .\SnakeGame.Tests\bin\Release\SnakeGame.Tests.exe
+
+      - name: Package app artifact
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts\SnakeGame
+          Copy-Item bin\Release\SnakeGame.exe artifacts\SnakeGame\
+          Copy-Item bin\Release\SnakeGame.exe.config artifacts\SnakeGame\
+          Copy-Item README.md artifacts\SnakeGame\
+
+      - name: Upload app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SnakeGame-Windows-Release
+          path: artifacts/SnakeGame

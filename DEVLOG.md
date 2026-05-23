@@ -90,3 +90,7 @@
 ### Added
 - Added a boundary mode option for classic wrap-wall play or solid-wall game-over behavior.
 - Added UI and engine checks for solid-wall mode.
+
+### Added
+- Packaged the Release build as a downloadable `SnakeGame-Windows-Release` GitHub Actions artifact.
+- Documented how to download the packaged executable from a workflow run.

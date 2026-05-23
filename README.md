@@ -23,6 +23,8 @@ The solution includes a small `SnakeGame.Tests` console project for rule-level c
 
 The `Windows Build` workflow builds the solution and runs the engine checks on push, pull request, or manual runs from the GitHub Actions tab.
 
+When the workflow passes, download the `SnakeGame-Windows-Release` artifact from the workflow run to get the packaged executable and config file.
+
 ## Controls
 
 - Arrow keys or `WASD`: move the snake
