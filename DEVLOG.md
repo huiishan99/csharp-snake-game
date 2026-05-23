@@ -79,3 +79,6 @@
 ### Changed
 - Replaced finish message boxes with in-board start, pause, game-over, and win overlays.
 - Added overlay typography and hints for keyboard controls.
+
+### Changed
+- Updated README with current UI features and GitHub Actions usage.

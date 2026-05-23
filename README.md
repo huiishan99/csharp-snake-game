@@ -19,12 +19,23 @@ A small classic Snake game built with C# WinForms.
 
 The solution includes a small `SnakeGame.Tests` console project for rule-level checks. Run it from Visual Studio, or build the solution and run `SnakeGame.Tests.exe`.
 
+## GitHub Actions
+
+The `Windows Build` workflow builds the solution and runs the engine checks on push, pull request, or manual runs from the GitHub Actions tab.
+
 ## Controls
 
 - Arrow keys or `WASD`: move the snake
 - Space: pause or resume
 - Enter: start or restart when the game is ready
 - Speed slider: choose the starting speed before the game begins
+
+## Features
+
+- Themed board with grid, styled snake, and highlighted food
+- In-board start, pause, game-over, and win overlays
+- Persistent best score
+- Rule-level engine checks in `SnakeGame.Tests`
 
 ## Project Notes
 
