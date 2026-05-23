@@ -37,7 +37,7 @@ When the workflow passes, download the `SnakeGame-Windows-Release` artifact from
 
 - Themed board with grid, styled snake, and highlighted food
 - In-board start, pause, game-over, and win overlays
-- Persistent best score
+- Persistent best score, speed, and wall-mode preferences
 - Optional classic wrap-wall or solid-wall play
 - Rule-level engine checks in `SnakeGame.Tests`
 

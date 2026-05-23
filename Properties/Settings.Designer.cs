@@ -41,5 +41,35 @@ namespace SnakeGame.Properties
                 this["HighScore"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("5")]
+        public int Speed
+        {
+            get
+            {
+                return ((int)(this["Speed"]));
+            }
+            set
+            {
+                this["Speed"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool WrapWalls
+        {
+            get
+            {
+                return ((bool)(this["WrapWalls"]));
+            }
+            set
+            {
+                this["WrapWalls"] = value;
+            }
+        }
     }
 }

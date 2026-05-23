@@ -16,6 +16,8 @@ namespace SnakeGame
         private const int HudGap = 10;
         private const int HudControlTop = 8;
         private const int HudControlHeight = 24;
+        private const int DefaultSpeed = 5;
+        private const bool DefaultWrapWalls = true;
         private static readonly Color WindowBackColor = Color.FromArgb(18, 24, 27);
         private static readonly Color BoardBackColor = Color.FromArgb(25, 35, 39);
         private static readonly Color GridColor = Color.FromArgb(34, 48, 52);
@@ -32,7 +34,8 @@ namespace SnakeGame
 
         private readonly SnakeGameEngine game = new SnakeGameEngine();
         private int highScore = 0;
-        private int selectedSpeed = 5;
+        private int selectedSpeed = DefaultSpeed;
+        private bool suppressPlayerSettingSave;
         private Font primaryButtonFont;
         private Font secondaryButtonFont;
         private Font overlayTitleFont;
@@ -50,6 +53,7 @@ namespace SnakeGame
             ConfigureButtons();
             ConfigureOverlayFonts();
             LoadHighScore();
+            LoadPlayerSettings();
             UpdateSettingsFromUI();
             UpdateHud();
             LayoutControls();
@@ -64,6 +68,7 @@ namespace SnakeGame
             btnPause.Text = "Pause";
 
             UpdateSettingsFromUI();
+            SavePlayerSettings();
             game.StartNew(GetMaxGridX(), GetMaxGridY(), GetSelectedBoundaryMode());
             UpdateHighScore();
             UpdateHud();
@@ -238,6 +243,49 @@ namespace SnakeGame
             catch
             {
                 highScore = 0;
+            }
+        }
+
+        private void LoadPlayerSettings()
+        {
+            suppressPlayerSettingSave = true;
+            try
+            {
+                trackBarSpeed.Value = ClampSpeed(SnakeGame.Properties.Settings.Default.Speed);
+                chkWrapWalls.Checked = SnakeGame.Properties.Settings.Default.WrapWalls;
+            }
+            catch
+            {
+                trackBarSpeed.Value = ClampSpeed(DefaultSpeed);
+                chkWrapWalls.Checked = DefaultWrapWalls;
+            }
+            finally
+            {
+                suppressPlayerSettingSave = false;
+            }
+        }
+
+        private int ClampSpeed(int speed)
+        {
+            return Math.Max(trackBarSpeed.Minimum, Math.Min(trackBarSpeed.Maximum, speed));
+        }
+
+        private void SavePlayerSettings()
+        {
+            if (suppressPlayerSettingSave)
+            {
+                return;
+            }
+
+            try
+            {
+                SnakeGame.Properties.Settings.Default.Speed = trackBarSpeed.Value;
+                SnakeGame.Properties.Settings.Default.WrapWalls = chkWrapWalls.Checked;
+                SnakeGame.Properties.Settings.Default.Save();
+            }
+            catch
+            {
+                // Player preference persistence should never interrupt gameplay.
             }
         }
 
@@ -553,11 +601,18 @@ namespace SnakeGame
         {
             UpdateSettingsFromUI();
             UpdateHud();
+            SavePlayerSettings();
         }
 
         private void btnPause_Click(object sender, EventArgs e)
         {
             TogglePause();
+            Focus();
+        }
+
+        private void chkWrapWalls_CheckedChanged(object sender, EventArgs e)
+        {
+            SavePlayerSettings();
             Focus();
         }
 

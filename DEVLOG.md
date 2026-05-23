@@ -94,3 +94,7 @@
 ### Added
 - Packaged the Release build as a downloadable `SnakeGame-Windows-Release` GitHub Actions artifact.
 - Documented how to download the packaged executable from a workflow run.
+
+### Added
+- Persisted the selected speed and wrap-wall preference with user-scoped application settings.
+- Restored saved player preferences when the game window opens.

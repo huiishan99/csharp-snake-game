@@ -127,6 +127,7 @@
             this.chkWrapWalls.TabIndex = 7;
             this.chkWrapWalls.Text = "Wrap walls";
             this.chkWrapWalls.UseVisualStyleBackColor = true;
+            this.chkWrapWalls.CheckedChanged += new System.EventHandler(this.chkWrapWalls_CheckedChanged);
             //
             // Form1
             //
