@@ -23,6 +23,7 @@ namespace SnakeGame
             this.random = random;
             Status = GameStatus.Ready;
             CurrentDirection = Direction.Down;
+            CurrentBoundaryMode = BoundaryMode.Wrap;
         }
 
         public IReadOnlyList<GridCell> Snake
@@ -39,6 +40,7 @@ namespace SnakeGame
         public int GridWidth { get; private set; }
         public int GridHeight { get; private set; }
         public Direction CurrentDirection { get; private set; }
+        public BoundaryMode CurrentBoundaryMode { get; private set; }
         public GameStatus Status { get; private set; }
 
         public bool IsFinished
@@ -48,10 +50,16 @@ namespace SnakeGame
 
         public void StartNew(int gridWidth, int gridHeight)
         {
+            StartNew(gridWidth, gridHeight, BoundaryMode.Wrap);
+        }
+
+        public void StartNew(int gridWidth, int gridHeight, BoundaryMode boundaryMode)
+        {
             GridWidth = NormalizeDimension(gridWidth);
             GridHeight = NormalizeDimension(gridHeight);
             Score = 0;
             Status = GameStatus.Playing;
+            CurrentBoundaryMode = boundaryMode;
             CurrentDirection = Direction.Down;
             directionQueue.Clear();
 
@@ -67,12 +75,14 @@ namespace SnakeGame
             IEnumerable<GridCell> initialSnake,
             GridCell initialFood,
             Direction initialDirection,
-            int score)
+            int score,
+            BoundaryMode boundaryMode = BoundaryMode.Wrap)
         {
             GridWidth = NormalizeDimension(gridWidth);
             GridHeight = NormalizeDimension(gridHeight);
             Score = Math.Max(0, score);
             Status = GameStatus.Playing;
+            CurrentBoundaryMode = boundaryMode;
             CurrentDirection = initialDirection;
             directionQueue.Clear();
 
@@ -165,6 +175,12 @@ namespace SnakeGame
             }
 
             GridCell nextHead = GetNextHead();
+            if (!IsInBounds(nextHead))
+            {
+                Status = GameStatus.GameOver;
+                return;
+            }
+
             bool willEat = nextHead.Equals(food);
 
             HashSet<GridCell> occupied = UniqueSnakeCells();
@@ -234,17 +250,24 @@ namespace SnakeGame
         private GridCell GetNextHead()
         {
             GridCell head = snake[0];
+            GridCell nextHead;
             switch (CurrentDirection)
             {
                 case Direction.Right:
-                    return WrapCell(new GridCell(head.X + 1, head.Y));
+                    nextHead = new GridCell(head.X + 1, head.Y);
+                    break;
                 case Direction.Left:
-                    return WrapCell(new GridCell(head.X - 1, head.Y));
+                    nextHead = new GridCell(head.X - 1, head.Y);
+                    break;
                 case Direction.Up:
-                    return WrapCell(new GridCell(head.X, head.Y - 1));
+                    nextHead = new GridCell(head.X, head.Y - 1);
+                    break;
                 default:
-                    return WrapCell(new GridCell(head.X, head.Y + 1));
+                    nextHead = new GridCell(head.X, head.Y + 1);
+                    break;
             }
+
+            return CurrentBoundaryMode == BoundaryMode.Wrap ? WrapCell(nextHead) : nextHead;
         }
 
         private Direction GetDirectionForQueueValidation()

@@ -24,6 +24,7 @@ namespace SnakeGame.Tests
         {
             StartsCenteredAndPlacesFoodOffSnake();
             MovesAndWrapsAcrossEdges();
+            SolidWallsEndAtBoundary();
             IgnoresImmediateReverseDirection();
             BuffersCornerInputs();
             DoesNotMoveWhilePaused();
@@ -53,6 +54,25 @@ namespace SnakeGame.Tests
             game.Step();
 
             AssertEqual(new GridCell(0, 1), game.Snake[0], "snake should wrap at the right edge");
+        }
+
+        private static void SolidWallsEndAtBoundary()
+        {
+            SnakeGameEngine game = new SnakeGameEngine();
+
+            game.LoadStateForTesting(
+                3,
+                3,
+                new[] { new GridCell(1, 0) },
+                new GridCell(2, 2),
+                Direction.Up,
+                0,
+                BoundaryMode.SolidWalls);
+
+            game.Step();
+
+            AssertEqual(GameStatus.GameOver, game.Status, "solid wall boundary status");
+            AssertEqual(new GridCell(1, 0), game.Snake[0], "solid wall boundary head");
         }
 
         private static void IgnoresImmediateReverseDirection()

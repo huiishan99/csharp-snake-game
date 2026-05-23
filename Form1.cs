@@ -59,11 +59,12 @@ namespace SnakeGame
         {
             btnStartGame.Visible = false;
             trackBarSpeed.Visible = false;
+            chkWrapWalls.Visible = false;
             btnPause.Visible = true;
             btnPause.Text = "Pause";
 
             UpdateSettingsFromUI();
-            game.StartNew(GetMaxGridX(), GetMaxGridY());
+            game.StartNew(GetMaxGridX(), GetMaxGridY(), GetSelectedBoundaryMode());
             UpdateHighScore();
             UpdateHud();
 
@@ -105,16 +106,17 @@ namespace SnakeGame
 
         private void LayoutControls()
         {
-            if (btnStartGame == null || trackBarSpeed == null || btnPause == null)
+            if (btnStartGame == null || trackBarSpeed == null || btnPause == null || chkWrapWalls == null)
             {
                 return;
             }
 
             int centerX = Math.Max(0, (ClientSize.Width - btnStartGame.Width) / 2);
-            int menuTop = Math.Max(HudHeight + 20, (ClientSize.Height - btnStartGame.Height - trackBarSpeed.Height - 24) / 2);
+            int menuTop = Math.Max(HudHeight + 20, (ClientSize.Height - btnStartGame.Height - trackBarSpeed.Height - chkWrapWalls.Height - 40) / 2);
 
             btnStartGame.Location = new Point(centerX, menuTop);
             trackBarSpeed.Location = new Point(centerX, btnStartGame.Bottom + 24);
+            chkWrapWalls.Location = new Point(centerX, trackBarSpeed.Bottom + 8);
             LayoutHudControls();
         }
 
@@ -143,6 +145,7 @@ namespace SnakeGame
             secondaryButtonFont = new Font(Font.FontFamily, 9f, FontStyle.Bold);
             ConfigureButton(btnStartGame, true);
             ConfigureButton(btnPause, false);
+            ConfigureCheckBox(chkWrapWalls);
         }
 
         private void ConfigureButton(Button button, bool isPrimary)
@@ -157,6 +160,18 @@ namespace SnakeGame
             button.BackColor = isPrimary ? SnakeBodyColor : Color.FromArgb(35, 48, 53);
             button.ForeColor = isPrimary ? Color.FromArgb(8, 22, 14) : HudTextColor;
             button.Font = isPrimary ? primaryButtonFont : secondaryButtonFont;
+        }
+
+        private void ConfigureCheckBox(CheckBox checkBox)
+        {
+            if (checkBox == null)
+            {
+                return;
+            }
+
+            checkBox.ForeColor = HudTextColor;
+            checkBox.BackColor = WindowBackColor;
+            checkBox.FlatStyle = FlatStyle.Flat;
         }
 
         private void LayoutHudControls()
@@ -287,8 +302,14 @@ namespace SnakeGame
             btnStartGame.Visible = true;
             btnStartGame.Text = "Restart Game";
             trackBarSpeed.Visible = true;
+            chkWrapWalls.Visible = true;
             UpdateHud();
             Invalidate();
+        }
+
+        private BoundaryMode GetSelectedBoundaryMode()
+        {
+            return chkWrapWalls.Checked ? BoundaryMode.Wrap : BoundaryMode.SolidWalls;
         }
 
         protected override void OnPaint(PaintEventArgs e)

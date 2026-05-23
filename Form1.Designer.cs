@@ -37,6 +37,7 @@
             this.lblSpeed = new System.Windows.Forms.Label();
             this.lblStatus = new System.Windows.Forms.Label();
             this.btnPause = new System.Windows.Forms.Button();
+            this.chkWrapWalls = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarSpeed)).BeginInit();
             this.SuspendLayout();
             //
@@ -115,12 +116,25 @@
             this.btnPause.Visible = false;
             this.btnPause.Click += new System.EventHandler(this.btnPause_Click);
             //
+            // chkWrapWalls
+            //
+            this.chkWrapWalls.AutoSize = true;
+            this.chkWrapWalls.Checked = true;
+            this.chkWrapWalls.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkWrapWalls.Location = new System.Drawing.Point(280, 354);
+            this.chkWrapWalls.Name = "chkWrapWalls";
+            this.chkWrapWalls.Size = new System.Drawing.Size(97, 20);
+            this.chkWrapWalls.TabIndex = 7;
+            this.chkWrapWalls.Text = "Wrap walls";
+            this.chkWrapWalls.UseVisualStyleBackColor = true;
+            //
             // Form1
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(782, 453);
             this.MinimumSize = new System.Drawing.Size(520, 360);
+            this.Controls.Add(this.chkWrapWalls);
             this.Controls.Add(this.btnPause);
             this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.lblSpeed);
@@ -148,5 +162,6 @@
         private System.Windows.Forms.Label lblSpeed;
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.Button btnPause;
+        private System.Windows.Forms.CheckBox chkWrapWalls;
     }
 }

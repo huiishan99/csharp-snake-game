@@ -29,12 +29,14 @@ The `Windows Build` workflow builds the solution and runs the engine checks on p
 - Space: pause or resume
 - Enter: start or restart when the game is ready
 - Speed slider: choose the starting speed before the game begins
+- Wrap walls: turn classic edge wrapping on or off before starting
 
 ## Features
 
 - Themed board with grid, styled snake, and highlighted food
 - In-board start, pause, game-over, and win overlays
 - Persistent best score
+- Optional classic wrap-wall or solid-wall play
 - Rule-level engine checks in `SnakeGame.Tests`
 
 ## Project Notes

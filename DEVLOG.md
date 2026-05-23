@@ -86,3 +86,7 @@
 ### Changed
 - Added a short direction input queue so fast corner turns are preserved across ticks.
 - Added an engine check for buffered corner input behavior.
+
+### Added
+- Added a boundary mode option for classic wrap-wall play or solid-wall game-over behavior.
+- Added UI and engine checks for solid-wall mode.

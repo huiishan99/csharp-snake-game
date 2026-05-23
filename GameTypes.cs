@@ -11,6 +11,12 @@ namespace SnakeGame
         Won
     }
 
+    public enum BoundaryMode
+    {
+        Wrap,
+        SolidWalls
+    }
+
     public enum Direction
     {
         Up,
