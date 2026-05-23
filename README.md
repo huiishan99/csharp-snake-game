@@ -32,13 +32,15 @@ When the workflow passes, download the `SnakeGame-Windows-Release` artifact from
 - Enter: start or restart when the game is ready
 - Speed slider: choose the starting speed before the game begins
 - Wrap walls: turn classic edge wrapping on or off before starting
+- Progressive speed: make the snake gradually speed up as the score rises
 
 ## Features
 
 - Themed board with grid, styled snake, and highlighted food
 - In-board start, pause, game-over, and win overlays
-- Persistent best score, speed, and wall-mode preferences
+- Persistent best score, speed, wall-mode, and progressive-speed preferences
 - Optional classic wrap-wall or solid-wall play
+- Optional progressive speed for longer, more intense runs
 - Rule-level engine checks in `SnakeGame.Tests`
 
 ## Project Notes

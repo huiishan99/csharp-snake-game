@@ -38,6 +38,7 @@
             this.lblStatus = new System.Windows.Forms.Label();
             this.btnPause = new System.Windows.Forms.Button();
             this.chkWrapWalls = new System.Windows.Forms.CheckBox();
+            this.chkProgressiveSpeed = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarSpeed)).BeginInit();
             this.SuspendLayout();
             //
@@ -129,12 +130,26 @@
             this.chkWrapWalls.UseVisualStyleBackColor = true;
             this.chkWrapWalls.CheckedChanged += new System.EventHandler(this.chkWrapWalls_CheckedChanged);
             //
+            // chkProgressiveSpeed
+            //
+            this.chkProgressiveSpeed.AutoSize = true;
+            this.chkProgressiveSpeed.Checked = true;
+            this.chkProgressiveSpeed.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkProgressiveSpeed.Location = new System.Drawing.Point(280, 380);
+            this.chkProgressiveSpeed.Name = "chkProgressiveSpeed";
+            this.chkProgressiveSpeed.Size = new System.Drawing.Size(139, 20);
+            this.chkProgressiveSpeed.TabIndex = 8;
+            this.chkProgressiveSpeed.Text = "Progressive speed";
+            this.chkProgressiveSpeed.UseVisualStyleBackColor = true;
+            this.chkProgressiveSpeed.CheckedChanged += new System.EventHandler(this.chkProgressiveSpeed_CheckedChanged);
+            //
             // Form1
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(782, 453);
             this.MinimumSize = new System.Drawing.Size(520, 360);
+            this.Controls.Add(this.chkProgressiveSpeed);
             this.Controls.Add(this.chkWrapWalls);
             this.Controls.Add(this.btnPause);
             this.Controls.Add(this.lblStatus);
@@ -164,5 +179,6 @@
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.Button btnPause;
         private System.Windows.Forms.CheckBox chkWrapWalls;
+        private System.Windows.Forms.CheckBox chkProgressiveSpeed;
     }
 }

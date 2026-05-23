@@ -11,6 +11,9 @@ namespace SnakeGame
         private const int MinimumTimerInterval = 80;
         private const int BaseTimerInterval = 320;
         private const int TimerIntervalStep = 22;
+        private const int ProgressiveScoreStep = 40;
+        private const int ProgressiveTimerStep = 8;
+        private const int ProgressiveTimerBonusMax = 96;
         private const int HudHeight = 40;
         private const int HudPadding = 12;
         private const int HudGap = 10;
@@ -18,6 +21,7 @@ namespace SnakeGame
         private const int HudControlHeight = 24;
         private const int DefaultSpeed = 5;
         private const bool DefaultWrapWalls = true;
+        private const bool DefaultProgressiveSpeed = true;
         private static readonly Color WindowBackColor = Color.FromArgb(18, 24, 27);
         private static readonly Color BoardBackColor = Color.FromArgb(25, 35, 39);
         private static readonly Color GridColor = Color.FromArgb(34, 48, 52);
@@ -35,6 +39,7 @@ namespace SnakeGame
         private readonly SnakeGameEngine game = new SnakeGameEngine();
         private int highScore = 0;
         private int selectedSpeed = DefaultSpeed;
+        private bool useProgressiveSpeed = DefaultProgressiveSpeed;
         private bool suppressPlayerSettingSave;
         private Font primaryButtonFont;
         private Font secondaryButtonFont;
@@ -64,6 +69,7 @@ namespace SnakeGame
             btnStartGame.Visible = false;
             trackBarSpeed.Visible = false;
             chkWrapWalls.Visible = false;
+            chkProgressiveSpeed.Visible = false;
             btnPause.Visible = true;
             btnPause.Text = "Pause";
 
@@ -86,12 +92,25 @@ namespace SnakeGame
         private void UpdateSettingsFromUI()
         {
             selectedSpeed = trackBarSpeed.Value;
+            useProgressiveSpeed = chkProgressiveSpeed.Checked;
             ApplySpeedSetting();
         }
 
         private void ApplySpeedSetting()
         {
-            timer1.Interval = Math.Max(MinimumTimerInterval, BaseTimerInterval - selectedSpeed * TimerIntervalStep);
+            int interval = BaseTimerInterval - selectedSpeed * TimerIntervalStep - GetProgressiveTimerBonus();
+            timer1.Interval = Math.Max(MinimumTimerInterval, interval);
+        }
+
+        private int GetProgressiveTimerBonus()
+        {
+            if (!useProgressiveSpeed)
+            {
+                return 0;
+            }
+
+            int scoreSteps = Math.Max(0, game.Score / ProgressiveScoreStep);
+            return Math.Min(ProgressiveTimerBonusMax, scoreSteps * ProgressiveTimerStep);
         }
 
         private int GetMaxGridX()
@@ -111,17 +130,19 @@ namespace SnakeGame
 
         private void LayoutControls()
         {
-            if (btnStartGame == null || trackBarSpeed == null || btnPause == null || chkWrapWalls == null)
+            if (btnStartGame == null || trackBarSpeed == null || btnPause == null || chkWrapWalls == null || chkProgressiveSpeed == null)
             {
                 return;
             }
 
             int centerX = Math.Max(0, (ClientSize.Width - btnStartGame.Width) / 2);
-            int menuTop = Math.Max(HudHeight + 20, (ClientSize.Height - btnStartGame.Height - trackBarSpeed.Height - chkWrapWalls.Height - 40) / 2);
+            int menuHeight = btnStartGame.Height + trackBarSpeed.Height + chkWrapWalls.Height + chkProgressiveSpeed.Height + 46;
+            int menuTop = Math.Max(HudHeight + 20, (ClientSize.Height - menuHeight) / 2);
 
             btnStartGame.Location = new Point(centerX, menuTop);
             trackBarSpeed.Location = new Point(centerX, btnStartGame.Bottom + 24);
             chkWrapWalls.Location = new Point(centerX, trackBarSpeed.Bottom + 8);
+            chkProgressiveSpeed.Location = new Point(centerX, chkWrapWalls.Bottom + 6);
             LayoutHudControls();
         }
 
@@ -151,6 +172,7 @@ namespace SnakeGame
             ConfigureButton(btnStartGame, true);
             ConfigureButton(btnPause, false);
             ConfigureCheckBox(chkWrapWalls);
+            ConfigureCheckBox(chkProgressiveSpeed);
         }
 
         private void ConfigureButton(Button button, bool isPrimary)
@@ -213,7 +235,7 @@ namespace SnakeGame
         {
             lblScore.Text = "Score: " + game.Score;
             lblHighScore.Text = "Best: " + highScore;
-            lblSpeed.Text = "Speed: " + selectedSpeed;
+            lblSpeed.Text = "Speed: " + selectedSpeed + (useProgressiveSpeed ? "+" : string.Empty);
             lblStatus.Text = GetStatusText();
         }
 
@@ -253,11 +275,13 @@ namespace SnakeGame
             {
                 trackBarSpeed.Value = ClampSpeed(SnakeGame.Properties.Settings.Default.Speed);
                 chkWrapWalls.Checked = SnakeGame.Properties.Settings.Default.WrapWalls;
+                chkProgressiveSpeed.Checked = SnakeGame.Properties.Settings.Default.ProgressiveSpeed;
             }
             catch
             {
                 trackBarSpeed.Value = ClampSpeed(DefaultSpeed);
                 chkWrapWalls.Checked = DefaultWrapWalls;
+                chkProgressiveSpeed.Checked = DefaultProgressiveSpeed;
             }
             finally
             {
@@ -281,6 +305,7 @@ namespace SnakeGame
             {
                 SnakeGame.Properties.Settings.Default.Speed = trackBarSpeed.Value;
                 SnakeGame.Properties.Settings.Default.WrapWalls = chkWrapWalls.Checked;
+                SnakeGame.Properties.Settings.Default.ProgressiveSpeed = chkProgressiveSpeed.Checked;
                 SnakeGame.Properties.Settings.Default.Save();
             }
             catch
@@ -351,6 +376,7 @@ namespace SnakeGame
             btnStartGame.Text = "Restart Game";
             trackBarSpeed.Visible = true;
             chkWrapWalls.Visible = true;
+            chkProgressiveSpeed.Visible = true;
             UpdateHud();
             Invalidate();
         }
@@ -587,6 +613,7 @@ namespace SnakeGame
 
             game.Step();
             UpdateHighScore();
+            ApplySpeedSetting();
             UpdateHud();
             Invalidate();
             FinishRoundIfNeeded();
@@ -612,6 +639,14 @@ namespace SnakeGame
 
         private void chkWrapWalls_CheckedChanged(object sender, EventArgs e)
         {
+            SavePlayerSettings();
+            Focus();
+        }
+
+        private void chkProgressiveSpeed_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateSettingsFromUI();
+            UpdateHud();
             SavePlayerSettings();
             Focus();
         }

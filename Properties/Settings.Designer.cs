@@ -71,5 +71,20 @@ namespace SnakeGame.Properties
                 this["WrapWalls"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ProgressiveSpeed
+        {
+            get
+            {
+                return ((bool)(this["ProgressiveSpeed"]));
+            }
+            set
+            {
+                this["ProgressiveSpeed"] = value;
+            }
+        }
     }
 }

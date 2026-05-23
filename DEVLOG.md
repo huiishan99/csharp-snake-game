@@ -98,3 +98,8 @@
 ### Added
 - Persisted the selected speed and wrap-wall preference with user-scoped application settings.
 - Restored saved player preferences when the game window opens.
+
+### Added
+- Added an optional progressive-speed mode that increases game pace as score rises.
+- Added a start-menu checkbox and saved preference for progressive speed.
+- Updated the HUD speed label to show when progressive speed is active.
