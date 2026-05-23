@@ -130,8 +130,8 @@ namespace SnakeGame
 
             Rectangle bounds = new Rectangle(0, 0, Width - 1, Height - 1);
             Color currentBackColor = GetCurrentBackColor();
-            Color topColor = Mix(currentBackColor, Color.White, Enabled ? 14 : 4);
-            Color bottomColor = Mix(currentBackColor, Color.Black, Enabled ? 8 : 0);
+            Color topColor = Mix(currentBackColor, Color.White, Enabled ? 7 : 3);
+            Color bottomColor = Mix(currentBackColor, Color.Black, Enabled ? 5 : 0);
             using (GraphicsPath path = CreateRoundedRectangle(bounds, CornerRadius))
             using (LinearGradientBrush backBrush = new LinearGradientBrush(bounds, topColor, bottomColor, LinearGradientMode.Vertical))
             {
@@ -303,8 +303,8 @@ namespace SnakeGame
 
             Rectangle bounds = new Rectangle(0, 0, Width - 1, Height - 1);
             Color currentBackColor = GetCurrentBackColor();
-            Color topColor = ThemeButton.Mix(currentBackColor, Color.White, 10);
-            Color bottomColor = ThemeButton.Mix(currentBackColor, Color.Black, 8);
+            Color topColor = ThemeButton.Mix(currentBackColor, Color.White, 6);
+            Color bottomColor = ThemeButton.Mix(currentBackColor, Color.Black, 4);
             using (GraphicsPath path = ThemeButton.CreateRoundedRectangle(bounds, CornerRadius))
             using (LinearGradientBrush backBrush = new LinearGradientBrush(bounds, topColor, bottomColor, LinearGradientMode.Vertical))
             using (Pen borderPen = new Pen(Checked ? CheckedBorderColor : BorderColor, 1))
@@ -405,8 +405,8 @@ namespace SnakeGame
             ThemePaint.PaintParentBackground(this, canvas, BackColor, InvokePaintBackground, InvokePaint);
 
             Rectangle bounds = new Rectangle(0, 0, Width - 1, Height - 1);
-            Color topColor = ThemeButton.Mix(PillBackColor, Color.White, 9);
-            Color bottomColor = ThemeButton.Mix(PillBackColor, Color.Black, 8);
+            Color topColor = ThemeButton.Mix(PillBackColor, Color.White, 5);
+            Color bottomColor = ThemeButton.Mix(PillBackColor, Color.Black, 4);
             using (GraphicsPath path = ThemeButton.CreateRoundedRectangle(bounds, CornerRadius))
             using (LinearGradientBrush backBrush = new LinearGradientBrush(bounds, topColor, bottomColor, LinearGradientMode.Vertical))
             {
