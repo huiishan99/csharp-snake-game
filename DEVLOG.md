@@ -121,3 +121,8 @@
 - Added a Windows testing guide covering Visual Studio, VS Code/terminal, GitHub Actions artifacts, and gameplay smoke tests.
 - Linked the testing guide from the README.
 - Included project docs in the packaged GitHub Actions artifact.
+
+### Changed
+- Reworked the start and restart UI into a centered themed settings panel.
+- Switched HUD, overlay, button, and menu text to a Segoe UI font stack.
+- Restyled game options as compact toggle buttons instead of default WinForms checkboxes.

@@ -13,6 +13,12 @@ namespace SnakeGame
         private const int HudGap = 10;
         private const int HudControlTop = 8;
         private const int HudControlHeight = 24;
+        private const int StartPanelWidth = 360;
+        private const int StartPanelHeight = 286;
+        private const int StartPanelRadius = 8;
+        private const int StartPanelPadding = 24;
+        private const int StartPanelGap = 8;
+        private const string UiFontFamily = "Segoe UI";
         private const bool DefaultWrapWalls = true;
         private const bool DefaultObstacles = false;
         private static readonly Color WindowBackColor = Color.FromArgb(18, 24, 27);
@@ -28,6 +34,13 @@ namespace SnakeGame
         private static readonly Color ObstacleColor = Color.FromArgb(103, 121, 126);
         private static readonly Color ObstacleHighlightColor = Color.FromArgb(140, 161, 166);
         private static readonly Color SolidWallColor = Color.FromArgb(235, 93, 93);
+        private static readonly Color StartPanelBackColor = Color.FromArgb(28, 39, 43);
+        private static readonly Color StartPanelBorderColor = Color.FromArgb(74, 98, 102);
+        private static readonly Color StartPanelMutedTextColor = Color.FromArgb(156, 184, 178);
+        private static readonly Color ToggleBackColor = Color.FromArgb(37, 52, 57);
+        private static readonly Color ToggleBorderColor = Color.FromArgb(76, 99, 104);
+        private static readonly Color ToggleActiveBackColor = Color.FromArgb(90, 220, 145);
+        private static readonly Color ToggleActiveTextColor = Color.FromArgb(8, 24, 15);
         private static readonly Color OverlayColor = Color.FromArgb(190, 9, 15, 18);
         private static readonly Color OverlayTitleColor = Color.FromArgb(234, 255, 238);
         private static readonly Color OverlayTextColor = Color.FromArgb(184, 207, 200);
@@ -38,8 +51,12 @@ namespace SnakeGame
         private bool useProgressiveSpeed = GameSpeed.DefaultProgressiveSpeed;
         private bool useObstacles = DefaultObstacles;
         private bool suppressPlayerSettingSave;
+        private Font hudFont;
         private Font primaryButtonFont;
         private Font secondaryButtonFont;
+        private Font startTitleFont;
+        private Font startHintFont;
+        private Font toggleFont;
         private Font overlayTitleFont;
         private Font overlayTextFont;
 
@@ -51,7 +68,9 @@ namespace SnakeGame
             KeyPreview = true;
             BackColor = WindowBackColor;
 
+            ConfigureFonts();
             ConfigureHudLabels();
+            ConfigureStartPanel();
             ConfigureButtons();
             ConfigureSetupLabels();
             ConfigureOverlayFonts();
@@ -64,12 +83,7 @@ namespace SnakeGame
 
         private void StartGame()
         {
-            btnStartGame.Visible = false;
-            lblStartSpeed.Visible = false;
-            trackBarSpeed.Visible = false;
-            chkWrapWalls.Visible = false;
-            chkProgressiveSpeed.Visible = false;
-            chkObstacles.Visible = false;
+            SetStartMenuVisible(false);
             btnPause.Visible = true;
             btnPause.Text = "Pause";
 
@@ -94,6 +108,7 @@ namespace SnakeGame
             selectedSpeed = trackBarSpeed.Value;
             useProgressiveSpeed = chkProgressiveSpeed.Checked;
             useObstacles = chkObstacles.Checked;
+            UpdateToggleStyles();
             ApplySpeedSetting();
         }
 
@@ -119,22 +134,47 @@ namespace SnakeGame
 
         private void LayoutControls()
         {
-            if (btnStartGame == null || lblStartSpeed == null || trackBarSpeed == null || btnPause == null || chkWrapWalls == null || chkProgressiveSpeed == null || chkObstacles == null)
+            if (pnlStartMenu == null || btnStartGame == null || lblStartTitle == null || lblStartHint == null || lblStartSpeed == null || trackBarSpeed == null || btnPause == null || chkWrapWalls == null || chkProgressiveSpeed == null || chkObstacles == null)
             {
                 return;
             }
 
-            int centerX = Math.Max(0, (ClientSize.Width - btnStartGame.Width) / 2);
-            int menuHeight = btnStartGame.Height + lblStartSpeed.Height + trackBarSpeed.Height + chkWrapWalls.Height + chkProgressiveSpeed.Height + chkObstacles.Height + 64;
-            int menuTop = Math.Max(HudHeight + 20, (ClientSize.Height - menuHeight) / 2);
+            int panelWidth = Math.Max(280, Math.Min(StartPanelWidth, ClientSize.Width - 40));
+            int panelHeight = StartPanelHeight;
+            int panelX = Math.Max(0, (ClientSize.Width - panelWidth) / 2);
+            int boardHeight = Math.Max(0, ClientSize.Height - HudHeight);
+            int panelY = HudHeight + Math.Max(12, (boardHeight - panelHeight) / 2);
+            pnlStartMenu.SetBounds(panelX, panelY, panelWidth, panelHeight);
+            UpdateStartPanelRegion();
 
-            btnStartGame.Location = new Point(centerX, menuTop);
-            lblStartSpeed.SetBounds(centerX, btnStartGame.Bottom + 16, btnStartGame.Width, 24);
-            trackBarSpeed.Location = new Point(centerX, lblStartSpeed.Bottom + 4);
-            chkWrapWalls.Location = new Point(centerX, trackBarSpeed.Bottom + 8);
-            chkProgressiveSpeed.Location = new Point(centerX, chkWrapWalls.Bottom + 6);
-            chkObstacles.Location = new Point(centerX, chkProgressiveSpeed.Bottom + 6);
+            int contentWidth = Math.Max(160, panelWidth - StartPanelPadding * 2);
+            int x = StartPanelPadding;
+            int toggleWidth = Math.Max(80, (contentWidth - StartPanelGap) / 2);
+
+            lblStartTitle.SetBounds(x, 18, contentWidth, 34);
+            lblStartHint.SetBounds(x, 52, contentWidth, 22);
+            btnStartGame.SetBounds(x, 80, contentWidth, 44);
+            lblStartSpeed.SetBounds(x, 126, contentWidth, 22);
+            trackBarSpeed.SetBounds(x, 150, contentWidth, 45);
+            chkWrapWalls.SetBounds(x, 204, toggleWidth, 34);
+            chkProgressiveSpeed.SetBounds(x + toggleWidth + StartPanelGap, 204, toggleWidth, 34);
+            chkObstacles.SetBounds(x, 246, contentWidth, 34);
             LayoutHudControls();
+        }
+
+        private void ConfigureFonts()
+        {
+            hudFont = CreateUiFont(9f, FontStyle.Regular);
+            primaryButtonFont = CreateUiFont(12f, FontStyle.Bold);
+            secondaryButtonFont = CreateUiFont(9.5f, FontStyle.Bold);
+            startTitleFont = CreateUiFont(22f, FontStyle.Bold);
+            startHintFont = CreateUiFont(9.5f, FontStyle.Regular);
+            toggleFont = CreateUiFont(9.25f, FontStyle.Bold);
+        }
+
+        private Font CreateUiFont(float size, FontStyle style)
+        {
+            return new Font(UiFontFamily, size, style, GraphicsUnit.Point);
         }
 
         private void ConfigureHudLabels()
@@ -151,30 +191,57 @@ namespace SnakeGame
                 label.AutoEllipsis = true;
                 label.ForeColor = HudTextColor;
                 label.BackColor = HudBackColor;
+                label.Font = hudFont;
                 label.TextAlign = ContentAlignment.MiddleLeft;
                 label.Height = HudControlHeight;
             }
         }
 
-        private void ConfigureSetupLabels()
+        private void ConfigureStartPanel()
         {
-            if (lblStartSpeed == null)
+            if (pnlStartMenu == null)
             {
                 return;
             }
 
+            pnlStartMenu.BackColor = StartPanelBackColor;
+            if (trackBarSpeed != null)
+            {
+                trackBarSpeed.BackColor = StartPanelBackColor;
+            }
+        }
+
+        private void ConfigureSetupLabels()
+        {
+            if (lblStartTitle == null || lblStartHint == null || lblStartSpeed == null)
+            {
+                return;
+            }
+
+            lblStartTitle.AutoSize = false;
+            lblStartTitle.AutoEllipsis = true;
+            lblStartTitle.ForeColor = OverlayTitleColor;
+            lblStartTitle.BackColor = StartPanelBackColor;
+            lblStartTitle.Font = startTitleFont;
+            lblStartTitle.TextAlign = ContentAlignment.MiddleCenter;
+
+            lblStartHint.AutoSize = false;
+            lblStartHint.AutoEllipsis = true;
+            lblStartHint.ForeColor = StartPanelMutedTextColor;
+            lblStartHint.BackColor = StartPanelBackColor;
+            lblStartHint.Font = startHintFont;
+            lblStartHint.TextAlign = ContentAlignment.MiddleCenter;
+
             lblStartSpeed.AutoSize = false;
             lblStartSpeed.AutoEllipsis = true;
             lblStartSpeed.ForeColor = OverlayTextColor;
-            lblStartSpeed.BackColor = WindowBackColor;
+            lblStartSpeed.BackColor = StartPanelBackColor;
             lblStartSpeed.Font = secondaryButtonFont;
             lblStartSpeed.TextAlign = ContentAlignment.MiddleCenter;
         }
 
         private void ConfigureButtons()
         {
-            primaryButtonFont = new Font(Font.FontFamily, 11f, FontStyle.Bold);
-            secondaryButtonFont = new Font(Font.FontFamily, 9f, FontStyle.Bold);
             ConfigureButton(btnStartGame, true);
             ConfigureButton(btnPause, false);
             ConfigureCheckBox(chkWrapWalls);
@@ -194,6 +261,7 @@ namespace SnakeGame
             button.BackColor = isPrimary ? SnakeBodyColor : Color.FromArgb(35, 48, 53);
             button.ForeColor = isPrimary ? Color.FromArgb(8, 22, 14) : HudTextColor;
             button.Font = isPrimary ? primaryButtonFont : secondaryButtonFont;
+            button.UseVisualStyleBackColor = false;
         }
 
         private void ConfigureCheckBox(CheckBox checkBox)
@@ -203,9 +271,37 @@ namespace SnakeGame
                 return;
             }
 
-            checkBox.ForeColor = HudTextColor;
-            checkBox.BackColor = WindowBackColor;
+            checkBox.Appearance = Appearance.Button;
+            checkBox.AutoSize = false;
             checkBox.FlatStyle = FlatStyle.Flat;
+            checkBox.FlatAppearance.BorderSize = 1;
+            checkBox.Font = toggleFont;
+            checkBox.TextAlign = ContentAlignment.MiddleCenter;
+            checkBox.UseVisualStyleBackColor = false;
+            StyleToggle(checkBox);
+        }
+
+        private void UpdateToggleStyles()
+        {
+            StyleToggle(chkWrapWalls);
+            StyleToggle(chkProgressiveSpeed);
+            StyleToggle(chkObstacles);
+        }
+
+        private void StyleToggle(CheckBox checkBox)
+        {
+            if (checkBox == null)
+            {
+                return;
+            }
+
+            bool isChecked = checkBox.Checked;
+            checkBox.BackColor = isChecked ? ToggleActiveBackColor : ToggleBackColor;
+            checkBox.ForeColor = isChecked ? ToggleActiveTextColor : HudTextColor;
+            checkBox.FlatAppearance.BorderColor = isChecked ? ToggleActiveBackColor : ToggleBorderColor;
+            checkBox.FlatAppearance.CheckedBackColor = ToggleActiveBackColor;
+            checkBox.FlatAppearance.MouseOverBackColor = isChecked ? SnakeHeadColor : Color.FromArgb(47, 65, 70);
+            checkBox.FlatAppearance.MouseDownBackColor = isChecked ? SnakeBodyColor : Color.FromArgb(31, 43, 48);
         }
 
         private void LayoutHudControls()
@@ -244,17 +340,38 @@ namespace SnakeGame
             lblHighScore.Text = "Best: " + highScore;
             lblSpeed.Text = GameSpeed.GetDisplayLabel(selectedSpeed, useProgressiveSpeed);
             lblStatus.Text = GetStatusText();
-            UpdateSetupLabels();
+            UpdateStartMenuText();
         }
 
-        private void UpdateSetupLabels()
+        private void UpdateStartMenuText()
         {
-            if (lblStartSpeed == null)
+            if (lblStartTitle == null || lblStartHint == null || lblStartSpeed == null || btnStartGame == null)
             {
                 return;
             }
 
-            lblStartSpeed.Text = "Starting speed: " + GameSpeed.GetDisplayValue(selectedSpeed, useProgressiveSpeed);
+            if (game.Status == GameStatus.GameOver || game.Status == GameStatus.Won)
+            {
+                lblStartTitle.Text = game.Status == GameStatus.Won ? "You Win" : "Game Over";
+                lblStartHint.Text = "Score " + game.Score + "  |  Best " + highScore;
+                btnStartGame.Text = "Restart";
+            }
+            else
+            {
+                lblStartTitle.Text = "Snake Game";
+                lblStartHint.Text = "Choose your run";
+                btnStartGame.Text = "Start";
+            }
+
+            lblStartSpeed.Text = "Starting speed " + GameSpeed.GetDisplayValue(selectedSpeed, useProgressiveSpeed);
+        }
+
+        private void SetStartMenuVisible(bool visible)
+        {
+            if (pnlStartMenu != null)
+            {
+                pnlStartMenu.Visible = visible;
+            }
         }
 
         private string GetStatusText()
@@ -393,13 +510,7 @@ namespace SnakeGame
             UpdateHighScore();
             btnPause.Visible = false;
             btnPause.Text = "Pause";
-            btnStartGame.Visible = true;
-            btnStartGame.Text = "Restart Game";
-            lblStartSpeed.Visible = true;
-            trackBarSpeed.Visible = true;
-            chkWrapWalls.Visible = true;
-            chkProgressiveSpeed.Visible = true;
-            chkObstacles.Visible = true;
+            SetStartMenuVisible(true);
             UpdateHud();
             Invalidate();
         }
@@ -417,19 +528,9 @@ namespace SnakeGame
 
             DrawChrome(e.Graphics);
 
-            if (game.Status == GameStatus.Ready && game.Snake.Count == 0)
+            if ((game.Status == GameStatus.Ready && game.Snake.Count == 0) || game.IsFinished)
             {
-                DrawOverlay(
-                    e.Graphics,
-                    "Snake Game",
-                    "Press Enter or click Start Game",
-                    "Arrow keys or WASD to move. Space pauses.");
-                return;
-            }
-
-            if (game.IsFinished)
-            {
-                DrawFinishedState(e.Graphics);
+                DrawStartBackdrop(e.Graphics);
                 return;
             }
 
@@ -453,6 +554,22 @@ namespace SnakeGame
             }
 
             DrawGrid(canvas);
+            DrawBoundaryIndicator(canvas);
+        }
+
+        private void DrawStartBackdrop(Graphics canvas)
+        {
+            Rectangle board = GetBoardBounds();
+            if (board.Width <= 0 || board.Height <= 0)
+            {
+                return;
+            }
+
+            using (Brush overlayBrush = new SolidBrush(OverlayColor))
+            {
+                canvas.FillRectangle(overlayBrush, board);
+            }
+
             DrawBoundaryIndicator(canvas);
         }
 
@@ -594,14 +711,6 @@ namespace SnakeGame
             return path;
         }
 
-        private void DrawFinishedState(Graphics canvas)
-        {
-            string title = game.Status == GameStatus.Won ? "You Win" : "Game Over";
-            string subtitle = "Score " + game.Score + "  |  Best " + highScore;
-
-            DrawOverlay(canvas, title, subtitle, "Press Enter or click Restart Game");
-        }
-
         private void DrawOverlay(Graphics canvas, string title, string subtitle, string hint)
         {
             Rectangle board = GetBoardBounds();
@@ -634,8 +743,44 @@ namespace SnakeGame
 
         private void ConfigureOverlayFonts()
         {
-            overlayTitleFont = new Font(Font.FontFamily, 24f, FontStyle.Bold);
-            overlayTextFont = new Font(Font.FontFamily, 10f, FontStyle.Regular);
+            overlayTitleFont = CreateUiFont(24f, FontStyle.Bold);
+            overlayTextFont = CreateUiFont(10f, FontStyle.Regular);
+        }
+
+        private void pnlStartMenu_Paint(object sender, PaintEventArgs e)
+        {
+            if (pnlStartMenu.Width <= 1 || pnlStartMenu.Height <= 1)
+            {
+                return;
+            }
+
+            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            Rectangle border = new Rectangle(0, 0, pnlStartMenu.Width - 1, pnlStartMenu.Height - 1);
+            using (GraphicsPath borderPath = CreateRoundedRectangle(border, StartPanelRadius))
+            using (Pen borderPen = new Pen(StartPanelBorderColor, 1))
+            {
+                e.Graphics.DrawPath(borderPen, borderPath);
+            }
+        }
+
+        private void UpdateStartPanelRegion()
+        {
+            if (pnlStartMenu.Width <= 0 || pnlStartMenu.Height <= 0)
+            {
+                return;
+            }
+
+            Region oldRegion = pnlStartMenu.Region;
+            Rectangle bounds = new Rectangle(0, 0, pnlStartMenu.Width, pnlStartMenu.Height);
+            using (GraphicsPath panelPath = CreateRoundedRectangle(bounds, StartPanelRadius))
+            {
+                pnlStartMenu.Region = new Region(panelPath);
+            }
+
+            if (oldRegion != null)
+            {
+                oldRegion.Dispose();
+            }
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -719,6 +864,8 @@ namespace SnakeGame
 
         private void chkWrapWalls_CheckedChanged(object sender, EventArgs e)
         {
+            UpdateSettingsFromUI();
+            UpdateHud();
             SavePlayerSettings();
             Invalidate();
             Focus();
@@ -735,6 +882,7 @@ namespace SnakeGame
         private void chkObstacles_CheckedChanged(object sender, EventArgs e)
         {
             UpdateSettingsFromUI();
+            UpdateHud();
             SavePlayerSettings();
             Focus();
         }
@@ -761,6 +909,11 @@ namespace SnakeGame
 
         protected override void OnFormClosed(FormClosedEventArgs e)
         {
+            if (hudFont != null)
+            {
+                hudFont.Dispose();
+            }
+
             if (overlayTitleFont != null)
             {
                 overlayTitleFont.Dispose();
@@ -779,6 +932,26 @@ namespace SnakeGame
             if (secondaryButtonFont != null)
             {
                 secondaryButtonFont.Dispose();
+            }
+
+            if (startTitleFont != null)
+            {
+                startTitleFont.Dispose();
+            }
+
+            if (startHintFont != null)
+            {
+                startHintFont.Dispose();
+            }
+
+            if (toggleFont != null)
+            {
+                toggleFont.Dispose();
+            }
+
+            if (pnlStartMenu != null && pnlStartMenu.Region != null)
+            {
+                pnlStartMenu.Region.Dispose();
             }
 
             base.OnFormClosed(e);
