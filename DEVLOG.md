@@ -67,3 +67,6 @@
 ### Added
 - Added deterministic engine checks for food growth and self-collision behavior.
 - Exposed engine internals to the test project without making test setup APIs public.
+
+### Added
+- Enabled manual runs for the Windows GitHub Actions build workflow.
