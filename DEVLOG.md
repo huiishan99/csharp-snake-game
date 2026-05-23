@@ -134,3 +134,6 @@
 ### Changed
 - Restyled the top HUD as compact pill labels with status-aware colors.
 - Added a HUD divider and stronger hover/press colors for themed buttons.
+
+### Added
+- Added keyboard shortcuts for changing start-menu speed with Left/Right or `-`/`+`.

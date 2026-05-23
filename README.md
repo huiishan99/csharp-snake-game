@@ -32,7 +32,7 @@ When the workflow passes, download the `SnakeGame-Windows-Release` artifact from
 - Arrow keys or `WASD`: move the snake
 - Space: pause or resume
 - Enter: start or restart when the game is ready
-- Speed `-` / `+`: choose the starting speed before the game begins
+- Speed `-` / `+`, Left / Right: choose the starting speed before the game begins
 - Wrap walls: turn classic edge wrapping on or off before starting
 - Progressive speed: make the snake gradually speed up as the score rises
 - Obstacles: add blocked cells for a harder run

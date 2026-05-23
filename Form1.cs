@@ -862,6 +862,13 @@ namespace SnakeGame
                 return;
             }
 
+            if ((game.Status == GameStatus.Ready || game.IsFinished) && HandleStartMenuKey(e.KeyCode))
+            {
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+                return;
+            }
+
             if (game.Status != GameStatus.Playing)
             {
                 return;
@@ -888,6 +895,25 @@ namespace SnakeGame
             }
 
             base.OnKeyDown(e);
+        }
+
+        private bool HandleStartMenuKey(Keys keyCode)
+        {
+            switch (keyCode)
+            {
+                case Keys.Left:
+                case Keys.OemMinus:
+                case Keys.Subtract:
+                    ChangeSpeed(-1);
+                    return true;
+                case Keys.Right:
+                case Keys.Oemplus:
+                case Keys.Add:
+                    ChangeSpeed(1);
+                    return true;
+                default:
+                    return false;
+            }
         }
 
         private void timer1_Tick(object sender, EventArgs e)
