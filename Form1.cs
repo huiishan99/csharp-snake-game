@@ -26,11 +26,17 @@ namespace SnakeGame
         private static readonly Color SnakeShadowColor = Color.FromArgb(42, 116, 82);
         private static readonly Color FoodColor = Color.FromArgb(255, 94, 94);
         private static readonly Color FoodHighlightColor = Color.FromArgb(255, 176, 128);
+        private static readonly Color OverlayColor = Color.FromArgb(190, 9, 15, 18);
+        private static readonly Color OverlayTitleColor = Color.FromArgb(234, 255, 238);
+        private static readonly Color OverlayTextColor = Color.FromArgb(184, 207, 200);
 
         private readonly SnakeGameEngine game = new SnakeGameEngine();
         private int highScore = 0;
         private int selectedSpeed = 5;
-        private bool finishMessageShown = false;
+        private Font primaryButtonFont;
+        private Font secondaryButtonFont;
+        private Font overlayTitleFont;
+        private Font overlayTextFont;
 
         public Form1()
         {
@@ -42,6 +48,7 @@ namespace SnakeGame
 
             ConfigureHudLabels();
             ConfigureButtons();
+            ConfigureOverlayFonts();
             LoadHighScore();
             UpdateSettingsFromUI();
             UpdateHud();
@@ -54,7 +61,6 @@ namespace SnakeGame
             trackBarSpeed.Visible = false;
             btnPause.Visible = true;
             btnPause.Text = "Pause";
-            finishMessageShown = false;
 
             UpdateSettingsFromUI();
             game.StartNew(GetMaxGridX(), GetMaxGridY());
@@ -133,6 +139,8 @@ namespace SnakeGame
 
         private void ConfigureButtons()
         {
+            primaryButtonFont = new Font(Font.FontFamily, 11f, FontStyle.Bold);
+            secondaryButtonFont = new Font(Font.FontFamily, 9f, FontStyle.Bold);
             ConfigureButton(btnStartGame, true);
             ConfigureButton(btnPause, false);
         }
@@ -148,7 +156,7 @@ namespace SnakeGame
             button.FlatAppearance.BorderSize = 0;
             button.BackColor = isPrimary ? SnakeBodyColor : Color.FromArgb(35, 48, 53);
             button.ForeColor = isPrimary ? Color.FromArgb(8, 22, 14) : HudTextColor;
-            button.Font = new Font(Font.FontFamily, isPrimary ? 11f : 9f, FontStyle.Bold);
+            button.Font = isPrimary ? primaryButtonFont : secondaryButtonFont;
         }
 
         private void LayoutHudControls()
@@ -262,6 +270,7 @@ namespace SnakeGame
             }
 
             UpdateHud();
+            Invalidate();
         }
 
         private void FinishRoundIfNeeded()
@@ -280,22 +289,6 @@ namespace SnakeGame
             trackBarSpeed.Visible = true;
             UpdateHud();
             Invalidate();
-
-            if (!finishMessageShown)
-            {
-                finishMessageShown = true;
-                MessageBox.Show(GetFinishMessage());
-            }
-        }
-
-        private string GetFinishMessage()
-        {
-            if (game.Status == GameStatus.Won)
-            {
-                return "You win! Final score: " + game.Score;
-            }
-
-            return "Game over! Your score: " + game.Score;
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -308,6 +301,11 @@ namespace SnakeGame
 
             if (game.Status == GameStatus.Ready && game.Snake.Count == 0)
             {
+                DrawOverlay(
+                    e.Graphics,
+                    "Snake Game",
+                    "Press Enter or click Start Game",
+                    "Arrow keys or WASD to move. Space pauses.");
                 return;
             }
 
@@ -319,6 +317,11 @@ namespace SnakeGame
 
             DrawFood(e.Graphics);
             DrawSnake(e.Graphics);
+
+            if (game.Status == GameStatus.Paused)
+            {
+                DrawOverlay(e.Graphics, "Paused", "Press Space or Resume", "Your run is waiting.");
+            }
         }
 
         private void DrawChrome(Graphics canvas)
@@ -419,11 +422,45 @@ namespace SnakeGame
 
         private void DrawFinishedState(Graphics canvas)
         {
-            string text = game.Status == GameStatus.Won
-                ? "You win\nYour final score is: " + game.Score
-                : "Game over\nYour final score is: " + game.Score;
+            string title = game.Status == GameStatus.Won ? "You Win" : "Game Over";
+            string subtitle = "Score " + game.Score + "  |  Best " + highScore;
 
-            canvas.DrawString(text, Font, Brushes.Black, new PointF(10, HudHeight + 10));
+            DrawOverlay(canvas, title, subtitle, "Press Enter or click Restart Game");
+        }
+
+        private void DrawOverlay(Graphics canvas, string title, string subtitle, string hint)
+        {
+            Rectangle board = GetBoardBounds();
+            if (board.Width <= 0 || board.Height <= 0)
+            {
+                return;
+            }
+
+            using (Brush overlayBrush = new SolidBrush(OverlayColor))
+            using (Brush titleBrush = new SolidBrush(OverlayTitleColor))
+            using (Brush textBrush = new SolidBrush(OverlayTextColor))
+            using (StringFormat centeredFormat = new StringFormat())
+            {
+                centeredFormat.Alignment = StringAlignment.Center;
+                centeredFormat.LineAlignment = StringAlignment.Center;
+
+                canvas.FillRectangle(overlayBrush, board);
+
+                int centerY = board.Top + board.Height / 2;
+                Rectangle titleBounds = new Rectangle(board.Left + 20, centerY - 64, board.Width - 40, 44);
+                Rectangle subtitleBounds = new Rectangle(board.Left + 20, centerY - 16, board.Width - 40, 28);
+                Rectangle hintBounds = new Rectangle(board.Left + 20, centerY + 20, board.Width - 40, 26);
+
+                canvas.DrawString(title, overlayTitleFont, titleBrush, titleBounds, centeredFormat);
+                canvas.DrawString(subtitle, overlayTextFont, textBrush, subtitleBounds, centeredFormat);
+                canvas.DrawString(hint, overlayTextFont, textBrush, hintBounds, centeredFormat);
+            }
+        }
+
+        private void ConfigureOverlayFonts()
+        {
+            overlayTitleFont = new Font(Font.FontFamily, 24f, FontStyle.Bold);
+            overlayTextFont = new Font(Font.FontFamily, 10f, FontStyle.Regular);
         }
 
         protected override void OnKeyDown(KeyEventArgs e)
@@ -521,6 +558,31 @@ namespace SnakeGame
 
             Invalidate();
             FinishRoundIfNeeded();
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            if (overlayTitleFont != null)
+            {
+                overlayTitleFont.Dispose();
+            }
+
+            if (overlayTextFont != null)
+            {
+                overlayTextFont.Dispose();
+            }
+
+            if (primaryButtonFont != null)
+            {
+                primaryButtonFont.Dispose();
+            }
+
+            if (secondaryButtonFont != null)
+            {
+                secondaryButtonFont.Dispose();
+            }
+
+            base.OnFormClosed(e);
         }
     }
 }

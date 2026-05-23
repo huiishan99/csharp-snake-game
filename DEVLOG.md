@@ -75,3 +75,7 @@
 - Added a cohesive dark visual theme for the window, HUD, board, snake, and food.
 - Added anti-aliased drawing, board grid lines, rounded snake segments, and food highlights.
 - Styled the start and pause buttons to match the game theme.
+
+### Changed
+- Replaced finish message boxes with in-board start, pause, game-over, and win overlays.
+- Added overlay typography and hints for keyboard controls.
