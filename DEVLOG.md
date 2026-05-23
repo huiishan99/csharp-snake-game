@@ -141,3 +141,8 @@
 ### Added
 - Added a release checklist covering build, gameplay, UI review, and release-note checks.
 - Updated Windows smoke testing steps for the new speed shortcuts.
+
+### Changed
+- Replaced flat default-style menu controls with custom rounded theme buttons and toggles.
+- Reduced start-panel, button, toggle, speed-stepper, and HUD proportions for a lighter layout.
+- Added a clearer typography hierarchy with semibold headings and smaller supporting text.

@@ -43,6 +43,7 @@ When the workflow passes, download the `SnakeGame-Windows-Release` artifact from
 
 - Themed board with grid, styled snake, and highlighted food
 - Modernized Segoe UI start panel with compact mode toggles
+- Custom rounded buttons and toggles with more restrained proportions
 - Theme-matched speed stepper instead of the default Windows slider
 - Compact HUD pills with status-aware colors
 - Solid-wall mode shows a visible board border before and during play

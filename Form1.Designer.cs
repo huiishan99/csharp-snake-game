@@ -33,17 +33,17 @@
             this.lblStartTitle = new System.Windows.Forms.Label();
             this.lblStartHint = new System.Windows.Forms.Label();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.btnStartGame = new System.Windows.Forms.Button();
-            this.btnSpeedDown = new System.Windows.Forms.Button();
-            this.btnSpeedUp = new System.Windows.Forms.Button();
+            this.btnStartGame = new SnakeGame.ThemeButton();
+            this.btnSpeedDown = new SnakeGame.ThemeButton();
+            this.btnSpeedUp = new SnakeGame.ThemeButton();
             this.lblScore = new System.Windows.Forms.Label();
             this.lblHighScore = new System.Windows.Forms.Label();
             this.lblSpeed = new System.Windows.Forms.Label();
             this.lblStatus = new System.Windows.Forms.Label();
-            this.btnPause = new System.Windows.Forms.Button();
-            this.chkWrapWalls = new System.Windows.Forms.CheckBox();
-            this.chkProgressiveSpeed = new System.Windows.Forms.CheckBox();
-            this.chkObstacles = new System.Windows.Forms.CheckBox();
+            this.btnPause = new SnakeGame.ThemeButton();
+            this.chkWrapWalls = new SnakeGame.ThemeToggle();
+            this.chkProgressiveSpeed = new SnakeGame.ThemeToggle();
+            this.chkObstacles = new SnakeGame.ThemeToggle();
             this.lblStartSpeed = new System.Windows.Forms.Label();
             this.pnlStartMenu.SuspendLayout();
             this.SuspendLayout();
@@ -59,26 +59,26 @@
             this.pnlStartMenu.Controls.Add(this.btnStartGame);
             this.pnlStartMenu.Controls.Add(this.lblStartHint);
             this.pnlStartMenu.Controls.Add(this.lblStartTitle);
-            this.pnlStartMenu.Location = new System.Drawing.Point(211, 80);
+            this.pnlStartMenu.Location = new System.Drawing.Point(228, 92);
             this.pnlStartMenu.Name = "pnlStartMenu";
-            this.pnlStartMenu.Size = new System.Drawing.Size(360, 286);
+            this.pnlStartMenu.Size = new System.Drawing.Size(326, 246);
             this.pnlStartMenu.TabIndex = 0;
             this.pnlStartMenu.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlStartMenu_Paint);
             //
             // lblStartTitle
             //
-            this.lblStartTitle.Location = new System.Drawing.Point(24, 18);
+            this.lblStartTitle.Location = new System.Drawing.Point(22, 14);
             this.lblStartTitle.Name = "lblStartTitle";
-            this.lblStartTitle.Size = new System.Drawing.Size(312, 34);
+            this.lblStartTitle.Size = new System.Drawing.Size(282, 30);
             this.lblStartTitle.TabIndex = 0;
             this.lblStartTitle.Text = "Snake Game";
             this.lblStartTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             //
             // lblStartHint
             //
-            this.lblStartHint.Location = new System.Drawing.Point(24, 52);
+            this.lblStartHint.Location = new System.Drawing.Point(22, 43);
             this.lblStartHint.Name = "lblStartHint";
-            this.lblStartHint.Size = new System.Drawing.Size(312, 22);
+            this.lblStartHint.Size = new System.Drawing.Size(282, 20);
             this.lblStartHint.TabIndex = 1;
             this.lblStartHint.Text = "Choose your run";
             this.lblStartHint.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -92,9 +92,9 @@
             //
             this.btnStartGame.AccessibleName = "";
             this.btnStartGame.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
-            this.btnStartGame.Location = new System.Drawing.Point(24, 80);
+            this.btnStartGame.Location = new System.Drawing.Point(22, 68);
             this.btnStartGame.Name = "btnStartGame";
-            this.btnStartGame.Size = new System.Drawing.Size(312, 44);
+            this.btnStartGame.Size = new System.Drawing.Size(282, 36);
             this.btnStartGame.TabIndex = 2;
             this.btnStartGame.Text = "Start";
             this.btnStartGame.UseVisualStyleBackColor = true;
@@ -102,9 +102,9 @@
             //
             // btnSpeedDown
             //
-            this.btnSpeedDown.Location = new System.Drawing.Point(24, 138);
+            this.btnSpeedDown.Location = new System.Drawing.Point(22, 116);
             this.btnSpeedDown.Name = "btnSpeedDown";
-            this.btnSpeedDown.Size = new System.Drawing.Size(44, 38);
+            this.btnSpeedDown.Size = new System.Drawing.Size(36, 32);
             this.btnSpeedDown.TabIndex = 3;
             this.btnSpeedDown.Text = "-";
             this.btnSpeedDown.UseVisualStyleBackColor = true;
@@ -112,9 +112,9 @@
             //
             // btnSpeedUp
             //
-            this.btnSpeedUp.Location = new System.Drawing.Point(292, 138);
+            this.btnSpeedUp.Location = new System.Drawing.Point(268, 116);
             this.btnSpeedUp.Name = "btnSpeedUp";
-            this.btnSpeedUp.Size = new System.Drawing.Size(44, 38);
+            this.btnSpeedUp.Size = new System.Drawing.Size(36, 32);
             this.btnSpeedUp.TabIndex = 5;
             this.btnSpeedUp.Text = "+";
             this.btnSpeedUp.UseVisualStyleBackColor = true;
@@ -171,9 +171,9 @@
             //
             this.chkWrapWalls.Checked = true;
             this.chkWrapWalls.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkWrapWalls.Location = new System.Drawing.Point(24, 190);
+            this.chkWrapWalls.Location = new System.Drawing.Point(22, 166);
             this.chkWrapWalls.Name = "chkWrapWalls";
-            this.chkWrapWalls.Size = new System.Drawing.Size(152, 34);
+            this.chkWrapWalls.Size = new System.Drawing.Size(138, 28);
             this.chkWrapWalls.TabIndex = 6;
             this.chkWrapWalls.Text = "Wrap";
             this.chkWrapWalls.UseVisualStyleBackColor = true;
@@ -183,9 +183,9 @@
             //
             this.chkProgressiveSpeed.Checked = true;
             this.chkProgressiveSpeed.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkProgressiveSpeed.Location = new System.Drawing.Point(184, 190);
+            this.chkProgressiveSpeed.Location = new System.Drawing.Point(166, 166);
             this.chkProgressiveSpeed.Name = "chkProgressiveSpeed";
-            this.chkProgressiveSpeed.Size = new System.Drawing.Size(152, 34);
+            this.chkProgressiveSpeed.Size = new System.Drawing.Size(138, 28);
             this.chkProgressiveSpeed.TabIndex = 7;
             this.chkProgressiveSpeed.Text = "Progressive";
             this.chkProgressiveSpeed.UseVisualStyleBackColor = true;
@@ -193,9 +193,9 @@
             //
             // chkObstacles
             //
-            this.chkObstacles.Location = new System.Drawing.Point(24, 232);
+            this.chkObstacles.Location = new System.Drawing.Point(22, 202);
             this.chkObstacles.Name = "chkObstacles";
-            this.chkObstacles.Size = new System.Drawing.Size(312, 34);
+            this.chkObstacles.Size = new System.Drawing.Size(282, 28);
             this.chkObstacles.TabIndex = 8;
             this.chkObstacles.Text = "Obstacles";
             this.chkObstacles.UseVisualStyleBackColor = true;
@@ -203,9 +203,9 @@
             //
             // lblStartSpeed
             //
-            this.lblStartSpeed.Location = new System.Drawing.Point(76, 138);
+            this.lblStartSpeed.Location = new System.Drawing.Point(64, 116);
             this.lblStartSpeed.Name = "lblStartSpeed";
-            this.lblStartSpeed.Size = new System.Drawing.Size(208, 38);
+            this.lblStartSpeed.Size = new System.Drawing.Size(198, 32);
             this.lblStartSpeed.TabIndex = 4;
             this.lblStartSpeed.Text = "Speed 5+";
             this.lblStartSpeed.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -237,17 +237,17 @@
         private System.Windows.Forms.Label lblStartTitle;
         private System.Windows.Forms.Label lblStartHint;
         private System.Windows.Forms.Timer timer1;
-        private System.Windows.Forms.Button btnStartGame;
-        private System.Windows.Forms.Button btnSpeedDown;
-        private System.Windows.Forms.Button btnSpeedUp;
+        private SnakeGame.ThemeButton btnStartGame;
+        private SnakeGame.ThemeButton btnSpeedDown;
+        private SnakeGame.ThemeButton btnSpeedUp;
         private System.Windows.Forms.Label lblScore;
         private System.Windows.Forms.Label lblHighScore;
         private System.Windows.Forms.Label lblSpeed;
         private System.Windows.Forms.Label lblStatus;
-        private System.Windows.Forms.Button btnPause;
-        private System.Windows.Forms.CheckBox chkWrapWalls;
-        private System.Windows.Forms.CheckBox chkProgressiveSpeed;
-        private System.Windows.Forms.CheckBox chkObstacles;
+        private SnakeGame.ThemeButton btnPause;
+        private SnakeGame.ThemeToggle chkWrapWalls;
+        private SnakeGame.ThemeToggle chkProgressiveSpeed;
+        private SnakeGame.ThemeToggle chkObstacles;
         private System.Windows.Forms.Label lblStartSpeed;
     }
 }

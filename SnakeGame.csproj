@@ -49,6 +49,7 @@
     <Compile Include="GameEngine.cs" />
     <Compile Include="GameSpeed.cs" />
     <Compile Include="GameTypes.cs" />
+    <Compile Include="ThemeControls.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

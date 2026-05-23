@@ -8,18 +8,23 @@ namespace SnakeGame
     public partial class Form1 : Form
     {
         private const int CellSize = 16;
-        private const int HudHeight = 48;
-        private const int HudPadding = 12;
-        private const int HudGap = 10;
-        private const int HudControlTop = 10;
-        private const int HudControlHeight = 28;
-        private const int StartPanelWidth = 360;
-        private const int StartPanelHeight = 286;
+        private const int HudHeight = 44;
+        private const int HudPadding = 10;
+        private const int HudGap = 8;
+        private const int HudControlTop = 8;
+        private const int HudControlHeight = 26;
+        private const int HudPauseButtonWidth = 76;
+        private const int StartPanelWidth = 326;
+        private const int StartPanelHeight = 246;
         private const int StartPanelRadius = 8;
-        private const int StartPanelPadding = 24;
-        private const int StartPanelGap = 8;
-        private const int SpeedButtonWidth = 44;
+        private const int StartPanelPadding = 22;
+        private const int StartPanelGap = 6;
+        private const int SpeedButtonWidth = 36;
+        private const int SpeedRowHeight = 32;
+        private const int StartButtonHeight = 36;
+        private const int ToggleHeight = 28;
         private const string UiFontFamily = "Segoe UI";
+        private const string UiHeadingFontFamily = "Segoe UI Semibold";
         private const bool DefaultWrapWalls = true;
         private const bool DefaultObstacles = false;
         private static readonly Color WindowBackColor = Color.FromArgb(18, 24, 27);
@@ -160,31 +165,31 @@ namespace SnakeGame
             int x = StartPanelPadding;
             int toggleWidth = Math.Max(80, (contentWidth - StartPanelGap) / 2);
 
-            lblStartTitle.SetBounds(x, 18, contentWidth, 34);
-            lblStartHint.SetBounds(x, 52, contentWidth, 22);
-            btnStartGame.SetBounds(x, 80, contentWidth, 44);
-            btnSpeedDown.SetBounds(x, 138, SpeedButtonWidth, 38);
-            lblStartSpeed.SetBounds(x + SpeedButtonWidth + StartPanelGap, 138, contentWidth - SpeedButtonWidth * 2 - StartPanelGap * 2, 38);
-            btnSpeedUp.SetBounds(x + contentWidth - SpeedButtonWidth, 138, SpeedButtonWidth, 38);
-            chkWrapWalls.SetBounds(x, 190, toggleWidth, 34);
-            chkProgressiveSpeed.SetBounds(x + toggleWidth + StartPanelGap, 190, toggleWidth, 34);
-            chkObstacles.SetBounds(x, 232, contentWidth, 34);
+            lblStartTitle.SetBounds(x, 14, contentWidth, 30);
+            lblStartHint.SetBounds(x, 43, contentWidth, 20);
+            btnStartGame.SetBounds(x, 68, contentWidth, StartButtonHeight);
+            btnSpeedDown.SetBounds(x, 116, SpeedButtonWidth, SpeedRowHeight);
+            lblStartSpeed.SetBounds(x + SpeedButtonWidth + StartPanelGap, 116, contentWidth - SpeedButtonWidth * 2 - StartPanelGap * 2, SpeedRowHeight);
+            btnSpeedUp.SetBounds(x + contentWidth - SpeedButtonWidth, 116, SpeedButtonWidth, SpeedRowHeight);
+            chkWrapWalls.SetBounds(x, 166, toggleWidth, ToggleHeight);
+            chkProgressiveSpeed.SetBounds(x + toggleWidth + StartPanelGap, 166, toggleWidth, ToggleHeight);
+            chkObstacles.SetBounds(x, 202, contentWidth, ToggleHeight);
             LayoutHudControls();
         }
 
         private void ConfigureFonts()
         {
-            hudFont = CreateUiFont(9f, FontStyle.Regular);
-            primaryButtonFont = CreateUiFont(12f, FontStyle.Bold);
-            secondaryButtonFont = CreateUiFont(9.5f, FontStyle.Bold);
-            startTitleFont = CreateUiFont(22f, FontStyle.Bold);
-            startHintFont = CreateUiFont(9.5f, FontStyle.Regular);
-            toggleFont = CreateUiFont(9.25f, FontStyle.Bold);
+            hudFont = CreateUiFont(UiFontFamily, 8.75f, FontStyle.Regular);
+            primaryButtonFont = CreateUiFont(UiHeadingFontFamily, 10.5f, FontStyle.Regular);
+            secondaryButtonFont = CreateUiFont(UiHeadingFontFamily, 8.75f, FontStyle.Regular);
+            startTitleFont = CreateUiFont(UiHeadingFontFamily, 18f, FontStyle.Regular);
+            startHintFont = CreateUiFont(UiFontFamily, 8.75f, FontStyle.Regular);
+            toggleFont = CreateUiFont(UiHeadingFontFamily, 8.5f, FontStyle.Regular);
         }
 
-        private Font CreateUiFont(float size, FontStyle style)
+        private Font CreateUiFont(string familyName, float size, FontStyle style)
         {
-            return new Font(UiFontFamily, size, style, GraphicsUnit.Point);
+            return new Font(familyName, size, style, GraphicsUnit.Point);
         }
 
         private void ConfigureHudLabels()
@@ -273,6 +278,19 @@ namespace SnakeGame
             button.UseVisualStyleBackColor = false;
             button.FlatAppearance.MouseOverBackColor = isPrimary ? SnakeHeadColor : Color.FromArgb(47, 65, 70);
             button.FlatAppearance.MouseDownBackColor = isPrimary ? SnakeBodyColor : Color.FromArgb(31, 43, 48);
+
+            ThemeButton themeButton = button as ThemeButton;
+            if (themeButton != null)
+            {
+                themeButton.CornerRadius = isPrimary ? 7 : 6;
+                themeButton.NormalBackColor = isPrimary ? SnakeBodyColor : ToggleBackColor;
+                themeButton.HoverBackColor = isPrimary ? SnakeHeadColor : Color.FromArgb(47, 65, 70);
+                themeButton.PressedBackColor = isPrimary ? Color.FromArgb(94, 207, 133) : Color.FromArgb(31, 43, 48);
+                themeButton.DisabledBackColor = SpeedStepInactiveBackColor;
+                themeButton.NormalTextColor = isPrimary ? Color.FromArgb(8, 22, 14) : HudTextColor;
+                themeButton.DisabledTextColor = SpeedStepInactiveTextColor;
+                themeButton.BorderColor = isPrimary ? Color.Transparent : ToggleBorderColor;
+            }
         }
 
         private void ConfigureCheckBox(CheckBox checkBox)
@@ -289,6 +307,21 @@ namespace SnakeGame
             checkBox.Font = toggleFont;
             checkBox.TextAlign = ContentAlignment.MiddleCenter;
             checkBox.UseVisualStyleBackColor = false;
+
+            ThemeToggle themeToggle = checkBox as ThemeToggle;
+            if (themeToggle != null)
+            {
+                themeToggle.CornerRadius = 6;
+                themeToggle.NormalBackColor = ToggleBackColor;
+                themeToggle.CheckedBackColor = ToggleActiveBackColor;
+                themeToggle.HoverBackColor = Color.FromArgb(47, 65, 70);
+                themeToggle.PressedBackColor = Color.FromArgb(31, 43, 48);
+                themeToggle.NormalTextColor = HudTextColor;
+                themeToggle.CheckedTextColor = ToggleActiveTextColor;
+                themeToggle.BorderColor = ToggleBorderColor;
+                themeToggle.CheckedBorderColor = ToggleActiveBackColor;
+            }
+
             StyleToggle(checkBox);
         }
 
@@ -303,6 +336,13 @@ namespace SnakeGame
         {
             if (checkBox == null)
             {
+                return;
+            }
+
+            ThemeToggle themeToggle = checkBox as ThemeToggle;
+            if (themeToggle != null)
+            {
+                themeToggle.Invalidate();
                 return;
             }
 
@@ -322,8 +362,8 @@ namespace SnakeGame
                 return;
             }
 
-            int pauseX = Math.Max(HudPadding, ClientSize.Width - btnPause.Width - HudPadding);
-            btnPause.Location = new Point(pauseX, HudControlTop);
+            int pauseX = Math.Max(HudPadding, ClientSize.Width - HudPauseButtonWidth - HudPadding);
+            btnPause.SetBounds(pauseX, HudControlTop, HudPauseButtonWidth, HudControlHeight);
 
             int availableWidth = Math.Max(160, pauseX - HudPadding - HudGap);
             int columnWidth = Math.Max(72, (availableWidth - HudGap * 3) / 4);
@@ -415,6 +455,14 @@ namespace SnakeGame
         {
             if (button == null)
             {
+                return;
+            }
+
+            button.Enabled = canChange;
+            ThemeButton themeButton = button as ThemeButton;
+            if (themeButton != null)
+            {
+                themeButton.Invalidate();
                 return;
             }
 
@@ -804,8 +852,8 @@ namespace SnakeGame
 
         private void ConfigureOverlayFonts()
         {
-            overlayTitleFont = CreateUiFont(24f, FontStyle.Bold);
-            overlayTextFont = CreateUiFont(10f, FontStyle.Regular);
+            overlayTitleFont = CreateUiFont(UiHeadingFontFamily, 22f, FontStyle.Regular);
+            overlayTextFont = CreateUiFont(UiFontFamily, 9.5f, FontStyle.Regular);
         }
 
         private void pnlStartMenu_Paint(object sender, PaintEventArgs e)
