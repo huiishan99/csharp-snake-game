@@ -200,6 +200,7 @@ namespace SnakeGame.Tests
             AssertEqual(114, GameSpeed.GetTimerInterval(5, 1000, true), "progressive speed bonus cap");
             AssertEqual(80, GameSpeed.GetTimerInterval(10, 1000, true), "progressive speed minimum interval");
             AssertEqual("Speed: 5+", GameSpeed.GetDisplayLabel(5, true), "progressive speed label");
+            AssertEqual("5+", GameSpeed.GetDisplayValue(5, true), "progressive speed value");
         }
 
         private static void AssertEqual<T>(T expected, T actual, string label)

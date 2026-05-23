@@ -107,3 +107,7 @@
 ### Changed
 - Extracted speed clamping, timer interval calculation, and speed labels into a reusable `GameSpeed` rule class.
 - Added checks for fixed speed, progressive speed, interval caps, and speed display labels.
+
+### Changed
+- Added a themed starting-speed label above the speed slider so menu changes give immediate feedback.
+- Added a solid-wall board border so the selected boundary mode is visually clear before and during play.

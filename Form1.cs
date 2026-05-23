@@ -24,6 +24,7 @@ namespace SnakeGame
         private static readonly Color SnakeShadowColor = Color.FromArgb(42, 116, 82);
         private static readonly Color FoodColor = Color.FromArgb(255, 94, 94);
         private static readonly Color FoodHighlightColor = Color.FromArgb(255, 176, 128);
+        private static readonly Color SolidWallColor = Color.FromArgb(235, 93, 93);
         private static readonly Color OverlayColor = Color.FromArgb(190, 9, 15, 18);
         private static readonly Color OverlayTitleColor = Color.FromArgb(234, 255, 238);
         private static readonly Color OverlayTextColor = Color.FromArgb(184, 207, 200);
@@ -48,6 +49,7 @@ namespace SnakeGame
 
             ConfigureHudLabels();
             ConfigureButtons();
+            ConfigureSetupLabels();
             ConfigureOverlayFonts();
             LoadHighScore();
             LoadPlayerSettings();
@@ -59,6 +61,7 @@ namespace SnakeGame
         private void StartGame()
         {
             btnStartGame.Visible = false;
+            lblStartSpeed.Visible = false;
             trackBarSpeed.Visible = false;
             chkWrapWalls.Visible = false;
             chkProgressiveSpeed.Visible = false;
@@ -110,17 +113,18 @@ namespace SnakeGame
 
         private void LayoutControls()
         {
-            if (btnStartGame == null || trackBarSpeed == null || btnPause == null || chkWrapWalls == null || chkProgressiveSpeed == null)
+            if (btnStartGame == null || lblStartSpeed == null || trackBarSpeed == null || btnPause == null || chkWrapWalls == null || chkProgressiveSpeed == null)
             {
                 return;
             }
 
             int centerX = Math.Max(0, (ClientSize.Width - btnStartGame.Width) / 2);
-            int menuHeight = btnStartGame.Height + trackBarSpeed.Height + chkWrapWalls.Height + chkProgressiveSpeed.Height + 46;
+            int menuHeight = btnStartGame.Height + lblStartSpeed.Height + trackBarSpeed.Height + chkWrapWalls.Height + chkProgressiveSpeed.Height + 58;
             int menuTop = Math.Max(HudHeight + 20, (ClientSize.Height - menuHeight) / 2);
 
             btnStartGame.Location = new Point(centerX, menuTop);
-            trackBarSpeed.Location = new Point(centerX, btnStartGame.Bottom + 24);
+            lblStartSpeed.SetBounds(centerX, btnStartGame.Bottom + 16, btnStartGame.Width, 24);
+            trackBarSpeed.Location = new Point(centerX, lblStartSpeed.Bottom + 4);
             chkWrapWalls.Location = new Point(centerX, trackBarSpeed.Bottom + 8);
             chkProgressiveSpeed.Location = new Point(centerX, chkWrapWalls.Bottom + 6);
             LayoutHudControls();
@@ -143,6 +147,21 @@ namespace SnakeGame
                 label.TextAlign = ContentAlignment.MiddleLeft;
                 label.Height = HudControlHeight;
             }
+        }
+
+        private void ConfigureSetupLabels()
+        {
+            if (lblStartSpeed == null)
+            {
+                return;
+            }
+
+            lblStartSpeed.AutoSize = false;
+            lblStartSpeed.AutoEllipsis = true;
+            lblStartSpeed.ForeColor = OverlayTextColor;
+            lblStartSpeed.BackColor = WindowBackColor;
+            lblStartSpeed.Font = secondaryButtonFont;
+            lblStartSpeed.TextAlign = ContentAlignment.MiddleCenter;
         }
 
         private void ConfigureButtons()
@@ -217,6 +236,17 @@ namespace SnakeGame
             lblHighScore.Text = "Best: " + highScore;
             lblSpeed.Text = GameSpeed.GetDisplayLabel(selectedSpeed, useProgressiveSpeed);
             lblStatus.Text = GetStatusText();
+            UpdateSetupLabels();
+        }
+
+        private void UpdateSetupLabels()
+        {
+            if (lblStartSpeed == null)
+            {
+                return;
+            }
+
+            lblStartSpeed.Text = "Starting speed: " + GameSpeed.GetDisplayValue(selectedSpeed, useProgressiveSpeed);
         }
 
         private string GetStatusText()
@@ -354,6 +384,7 @@ namespace SnakeGame
             btnPause.Text = "Pause";
             btnStartGame.Visible = true;
             btnStartGame.Text = "Restart Game";
+            lblStartSpeed.Visible = true;
             trackBarSpeed.Visible = true;
             chkWrapWalls.Visible = true;
             chkProgressiveSpeed.Visible = true;
@@ -409,6 +440,7 @@ namespace SnakeGame
             }
 
             DrawGrid(canvas);
+            DrawBoundaryIndicator(canvas);
         }
 
         private Rectangle GetBoardBounds()
@@ -431,6 +463,42 @@ namespace SnakeGame
                     canvas.DrawLine(gridPen, board.Left, y, board.Right, y);
                 }
             }
+        }
+
+        private void DrawBoundaryIndicator(Graphics canvas)
+        {
+            if (!ShouldDrawSolidWallBorder())
+            {
+                return;
+            }
+
+            Rectangle board = GetBoardBounds();
+            if (board.Width <= 3 || board.Height <= 3)
+            {
+                return;
+            }
+
+            Rectangle border = new Rectangle(board.Left + 1, board.Top + 1, board.Width - 3, board.Height - 3);
+            using (Pen wallPen = new Pen(SolidWallColor, 3))
+            {
+                wallPen.Alignment = PenAlignment.Inset;
+                canvas.DrawRectangle(wallPen, border);
+            }
+        }
+
+        private bool ShouldDrawSolidWallBorder()
+        {
+            if (game.Status == GameStatus.Playing || game.Status == GameStatus.Paused)
+            {
+                return game.CurrentBoundaryMode == BoundaryMode.SolidWalls;
+            }
+
+            if (chkWrapWalls != null)
+            {
+                return !chkWrapWalls.Checked;
+            }
+
+            return false;
         }
 
         private void DrawFood(Graphics canvas)
@@ -529,6 +597,7 @@ namespace SnakeGame
                 canvas.DrawString(title, overlayTitleFont, titleBrush, titleBounds, centeredFormat);
                 canvas.DrawString(subtitle, overlayTextFont, textBrush, subtitleBounds, centeredFormat);
                 canvas.DrawString(hint, overlayTextFont, textBrush, hintBounds, centeredFormat);
+                DrawBoundaryIndicator(canvas);
             }
         }
 
@@ -620,6 +689,7 @@ namespace SnakeGame
         private void chkWrapWalls_CheckedChanged(object sender, EventArgs e)
         {
             SavePlayerSettings();
+            Invalidate();
             Focus();
         }
 

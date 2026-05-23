@@ -37,7 +37,12 @@ namespace SnakeGame
 
         public static string GetDisplayLabel(int selectedSpeed, bool useProgressiveSpeed)
         {
-            return "Speed: " + ClampSpeed(selectedSpeed) + (useProgressiveSpeed ? "+" : string.Empty);
+            return "Speed: " + GetDisplayValue(selectedSpeed, useProgressiveSpeed);
+        }
+
+        public static string GetDisplayValue(int selectedSpeed, bool useProgressiveSpeed)
+        {
+            return ClampSpeed(selectedSpeed) + (useProgressiveSpeed ? "+" : string.Empty);
         }
 
         private static int GetProgressiveTimerBonus(int score, bool useProgressiveSpeed)

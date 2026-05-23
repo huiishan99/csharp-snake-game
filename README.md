@@ -37,6 +37,7 @@ When the workflow passes, download the `SnakeGame-Windows-Release` artifact from
 ## Features
 
 - Themed board with grid, styled snake, and highlighted food
+- Solid-wall mode shows a visible board border before and during play
 - In-board start, pause, game-over, and win overlays
 - Persistent best score, speed, wall-mode, and progressive-speed preferences
 - Optional classic wrap-wall or solid-wall play
