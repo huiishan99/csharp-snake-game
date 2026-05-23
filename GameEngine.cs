@@ -7,8 +7,13 @@ namespace SnakeGame
     {
         private const int MaxQueuedDirections = 2;
         private const int PointsPerFood = 10;
+        private const int MinimumCellsForObstacles = 20;
+        private const int ObstacleCellRatio = 80;
+        private const int MinimumObstacleCount = 3;
+        private const int MaximumObstacleCount = 18;
 
         private readonly List<GridCell> snake = new List<GridCell>();
+        private readonly List<GridCell> obstacles = new List<GridCell>();
         private readonly Queue<Direction> directionQueue = new Queue<Direction>();
         private readonly Random random;
         private GridCell food;
@@ -31,6 +36,11 @@ namespace SnakeGame
             get { return snake; }
         }
 
+        public IReadOnlyList<GridCell> Obstacles
+        {
+            get { return obstacles; }
+        }
+
         public GridCell Food
         {
             get { return food; }
@@ -41,6 +51,7 @@ namespace SnakeGame
         public int GridHeight { get; private set; }
         public Direction CurrentDirection { get; private set; }
         public BoundaryMode CurrentBoundaryMode { get; private set; }
+        public bool UsesObstacles { get; private set; }
         public GameStatus Status { get; private set; }
 
         public bool IsFinished
@@ -55,16 +66,23 @@ namespace SnakeGame
 
         public void StartNew(int gridWidth, int gridHeight, BoundaryMode boundaryMode)
         {
+            StartNew(gridWidth, gridHeight, boundaryMode, false);
+        }
+
+        public void StartNew(int gridWidth, int gridHeight, BoundaryMode boundaryMode, bool useObstacles)
+        {
             GridWidth = NormalizeDimension(gridWidth);
             GridHeight = NormalizeDimension(gridHeight);
             Score = 0;
             Status = GameStatus.Playing;
             CurrentBoundaryMode = boundaryMode;
+            UsesObstacles = useObstacles;
             CurrentDirection = Direction.Down;
             directionQueue.Clear();
 
             snake.Clear();
             snake.Add(new GridCell(GridWidth / 2, GridHeight / 2));
+            GenerateObstacles();
 
             GenerateFood();
         }
@@ -76,7 +94,8 @@ namespace SnakeGame
             GridCell initialFood,
             Direction initialDirection,
             int score,
-            BoundaryMode boundaryMode = BoundaryMode.Wrap)
+            BoundaryMode boundaryMode = BoundaryMode.Wrap,
+            IEnumerable<GridCell> initialObstacles = null)
         {
             GridWidth = NormalizeDimension(gridWidth);
             GridHeight = NormalizeDimension(gridHeight);
@@ -85,6 +104,7 @@ namespace SnakeGame
             CurrentBoundaryMode = boundaryMode;
             CurrentDirection = initialDirection;
             directionQueue.Clear();
+            obstacles.Clear();
 
             snake.Clear();
             foreach (GridCell part in initialSnake)
@@ -97,6 +117,20 @@ namespace SnakeGame
                 snake.Add(new GridCell(GridWidth / 2, GridHeight / 2));
             }
 
+            if (initialObstacles != null)
+            {
+                HashSet<GridCell> occupied = UniqueSnakeCells();
+                foreach (GridCell obstacle in initialObstacles)
+                {
+                    GridCell wrappedObstacle = WrapCell(obstacle);
+                    if (!occupied.Contains(wrappedObstacle) && !obstacles.Contains(wrappedObstacle))
+                    {
+                        obstacles.Add(wrappedObstacle);
+                    }
+                }
+            }
+
+            UsesObstacles = obstacles.Count > 0;
             food = WrapCell(initialFood);
         }
 
@@ -111,19 +145,20 @@ namespace SnakeGame
             }
 
             KeepSnakeInBounds();
+            KeepObstaclesInBounds();
 
             if (Status != GameStatus.Playing && Status != GameStatus.Paused)
             {
                 return;
             }
 
-            if (UniqueSnakeCells().Count >= GridWidth * GridHeight)
+            if (UniqueSnakeCells().Count + obstacles.Count >= GridWidth * GridHeight)
             {
                 Status = GameStatus.Won;
                 return;
             }
 
-            if (!IsInBounds(food) || IsCellOnSnake(food))
+            if (!IsInBounds(food) || IsCellOnSnake(food) || IsCellOnObstacle(food))
             {
                 GenerateFood();
             }
@@ -181,6 +216,12 @@ namespace SnakeGame
                 return;
             }
 
+            if (IsCellOnObstacle(nextHead))
+            {
+                Status = GameStatus.GameOver;
+                return;
+            }
+
             bool willEat = nextHead.Equals(food);
 
             HashSet<GridCell> occupied = UniqueSnakeCells();
@@ -200,7 +241,7 @@ namespace SnakeGame
             if (willEat)
             {
                 Score += PointsPerFood;
-                if (snake.Count >= GridWidth * GridHeight)
+                if (snake.Count + obstacles.Count >= GridWidth * GridHeight)
                 {
                     Status = GameStatus.Won;
                     return;
@@ -217,7 +258,7 @@ namespace SnakeGame
         private void GenerateFood()
         {
             HashSet<GridCell> occupied = UniqueSnakeCells();
-            int availableCellCount = GridWidth * GridHeight - occupied.Count;
+            int availableCellCount = CountAvailableFoodCells(occupied);
 
             if (availableCellCount <= 0)
             {
@@ -231,7 +272,7 @@ namespace SnakeGame
                 for (int x = 0; x < GridWidth; x++)
                 {
                     GridCell candidate = new GridCell(x, y);
-                    if (occupied.Contains(candidate))
+                    if (occupied.Contains(candidate) || IsCellOnObstacle(candidate))
                     {
                         continue;
                     }
@@ -243,6 +284,45 @@ namespace SnakeGame
                     }
 
                     selectedIndex--;
+                }
+            }
+        }
+
+        private void GenerateObstacles()
+        {
+            obstacles.Clear();
+            if (!UsesObstacles)
+            {
+                return;
+            }
+
+            int targetCount = Math.Min(GetTargetObstacleCount(), Math.Max(0, CountAvailableObstacleCells() - 1));
+            for (int i = 0; i < targetCount; i++)
+            {
+                int selectedIndex = random.Next(CountAvailableObstacleCells());
+                for (int y = 0; y < GridHeight; y++)
+                {
+                    for (int x = 0; x < GridWidth; x++)
+                    {
+                        GridCell candidate = new GridCell(x, y);
+                        if (!IsAvailableForObstacle(candidate))
+                        {
+                            continue;
+                        }
+
+                        if (selectedIndex == 0)
+                        {
+                            obstacles.Add(candidate);
+                            break;
+                        }
+
+                        selectedIndex--;
+                    }
+
+                    if (obstacles.Count > i)
+                    {
+                        break;
+                    }
                 }
             }
         }
@@ -304,6 +384,30 @@ namespace SnakeGame
             }
         }
 
+        private void KeepObstaclesInBounds()
+        {
+            if (!UsesObstacles)
+            {
+                obstacles.Clear();
+                return;
+            }
+
+            HashSet<GridCell> blocked = UniqueSnakeCells();
+            List<GridCell> normalizedObstacles = new List<GridCell>();
+
+            foreach (GridCell obstacle in obstacles)
+            {
+                GridCell wrappedObstacle = WrapCell(obstacle);
+                if (blocked.Add(wrappedObstacle))
+                {
+                    normalizedObstacles.Add(wrappedObstacle);
+                }
+            }
+
+            obstacles.Clear();
+            obstacles.AddRange(normalizedObstacles);
+        }
+
         private HashSet<GridCell> UniqueSnakeCells()
         {
             return new HashSet<GridCell>(snake);
@@ -312,6 +416,75 @@ namespace SnakeGame
         private bool IsCellOnSnake(GridCell cell)
         {
             return UniqueSnakeCells().Contains(cell);
+        }
+
+        private bool IsCellOnObstacle(GridCell cell)
+        {
+            return obstacles.Contains(cell);
+        }
+
+        private int CountAvailableFoodCells(HashSet<GridCell> occupiedSnakeCells)
+        {
+            int availableCells = 0;
+            for (int y = 0; y < GridHeight; y++)
+            {
+                for (int x = 0; x < GridWidth; x++)
+                {
+                    GridCell candidate = new GridCell(x, y);
+                    if (!occupiedSnakeCells.Contains(candidate) && !IsCellOnObstacle(candidate))
+                    {
+                        availableCells++;
+                    }
+                }
+            }
+
+            return availableCells;
+        }
+
+        private int CountAvailableObstacleCells()
+        {
+            int availableCells = 0;
+            for (int y = 0; y < GridHeight; y++)
+            {
+                for (int x = 0; x < GridWidth; x++)
+                {
+                    if (IsAvailableForObstacle(new GridCell(x, y)))
+                    {
+                        availableCells++;
+                    }
+                }
+            }
+
+            return availableCells;
+        }
+
+        private int GetTargetObstacleCount()
+        {
+            int boardCells = GridWidth * GridHeight;
+            if (boardCells < MinimumCellsForObstacles)
+            {
+                return 0;
+            }
+
+            return Math.Min(MaximumObstacleCount, Math.Max(MinimumObstacleCount, boardCells / ObstacleCellRatio));
+        }
+
+        private bool IsAvailableForObstacle(GridCell cell)
+        {
+            return !IsCellOnSnake(cell)
+                && !IsCellOnObstacle(cell)
+                && !IsProtectedSpawnCell(cell);
+        }
+
+        private bool IsProtectedSpawnCell(GridCell cell)
+        {
+            if (snake.Count == 0)
+            {
+                return false;
+            }
+
+            GridCell spawn = snake[0];
+            return Math.Abs(cell.X - spawn.X) + Math.Abs(cell.Y - spawn.Y) <= 2;
         }
 
         private bool IsInBounds(GridCell cell)

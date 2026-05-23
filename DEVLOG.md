@@ -111,3 +111,8 @@
 ### Changed
 - Added a themed starting-speed label above the speed slider so menu changes give immediate feedback.
 - Added a solid-wall board border so the selected boundary mode is visually clear before and during play.
+
+### Added
+- Added an optional obstacle mode with generated blocked cells and themed obstacle rendering.
+- Prevented food from spawning on obstacles and ended the round when the snake hits one.
+- Persisted the obstacle preference and added obstacle generation/collision checks.

@@ -39,6 +39,7 @@
             this.btnPause = new System.Windows.Forms.Button();
             this.chkWrapWalls = new System.Windows.Forms.CheckBox();
             this.chkProgressiveSpeed = new System.Windows.Forms.CheckBox();
+            this.chkObstacles = new System.Windows.Forms.CheckBox();
             this.lblStartSpeed = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.trackBarSpeed)).BeginInit();
             this.SuspendLayout();
@@ -144,12 +145,23 @@
             this.chkProgressiveSpeed.UseVisualStyleBackColor = true;
             this.chkProgressiveSpeed.CheckedChanged += new System.EventHandler(this.chkProgressiveSpeed_CheckedChanged);
             //
+            // chkObstacles
+            //
+            this.chkObstacles.AutoSize = true;
+            this.chkObstacles.Location = new System.Drawing.Point(280, 406);
+            this.chkObstacles.Name = "chkObstacles";
+            this.chkObstacles.Size = new System.Drawing.Size(86, 20);
+            this.chkObstacles.TabIndex = 9;
+            this.chkObstacles.Text = "Obstacles";
+            this.chkObstacles.UseVisualStyleBackColor = true;
+            this.chkObstacles.CheckedChanged += new System.EventHandler(this.chkObstacles_CheckedChanged);
+            //
             // lblStartSpeed
             //
             this.lblStartSpeed.Location = new System.Drawing.Point(280, 268);
             this.lblStartSpeed.Name = "lblStartSpeed";
             this.lblStartSpeed.Size = new System.Drawing.Size(200, 24);
-            this.lblStartSpeed.TabIndex = 9;
+            this.lblStartSpeed.TabIndex = 10;
             this.lblStartSpeed.Text = "Starting speed: 5+";
             this.lblStartSpeed.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             //
@@ -160,6 +172,7 @@
             this.ClientSize = new System.Drawing.Size(782, 453);
             this.MinimumSize = new System.Drawing.Size(520, 360);
             this.Controls.Add(this.lblStartSpeed);
+            this.Controls.Add(this.chkObstacles);
             this.Controls.Add(this.chkProgressiveSpeed);
             this.Controls.Add(this.chkWrapWalls);
             this.Controls.Add(this.btnPause);
@@ -191,6 +204,7 @@
         private System.Windows.Forms.Button btnPause;
         private System.Windows.Forms.CheckBox chkWrapWalls;
         private System.Windows.Forms.CheckBox chkProgressiveSpeed;
+        private System.Windows.Forms.CheckBox chkObstacles;
         private System.Windows.Forms.Label lblStartSpeed;
     }
 }

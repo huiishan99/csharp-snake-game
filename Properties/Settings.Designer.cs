@@ -86,5 +86,20 @@ namespace SnakeGame.Properties
                 this["ProgressiveSpeed"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Obstacles
+        {
+            get
+            {
+                return ((bool)(this["Obstacles"]));
+            }
+            set
+            {
+                this["Obstacles"] = value;
+            }
+        }
     }
 }

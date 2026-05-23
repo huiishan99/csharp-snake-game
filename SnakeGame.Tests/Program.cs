@@ -31,6 +31,8 @@ namespace SnakeGame.Tests
             EatsFoodAndGrows();
             DetectsSelfCollision();
             WinsWhenFinalCellIsEaten();
+            GeneratesObstaclesAwayFromSnakeAndFood();
+            ObstaclesCauseGameOver();
             ClampsSpeedIntoSupportedRange();
             CalculatesFixedSpeedInterval();
             ProgressiveSpeedGetsFasterAndCaps();
@@ -179,6 +181,37 @@ namespace SnakeGame.Tests
             AssertEqual(2, game.Snake.Count, "filled grid snake length");
         }
 
+        private static void GeneratesObstaclesAwayFromSnakeAndFood()
+        {
+            SnakeGameEngine game = new SnakeGameEngine(new Random(12));
+
+            game.StartNew(12, 12, BoundaryMode.Wrap, true);
+
+            AssertTrue(game.Obstacles.Count > 0, "obstacle generation count");
+            AssertFalse(ContainsCell(game.Obstacles, game.Snake[0]), "obstacle should not be placed on the snake");
+            AssertFalse(ContainsCell(game.Obstacles, game.Food), "food should not be placed on an obstacle");
+        }
+
+        private static void ObstaclesCauseGameOver()
+        {
+            SnakeGameEngine game = new SnakeGameEngine();
+
+            game.LoadStateForTesting(
+                5,
+                5,
+                new[] { new GridCell(1, 1) },
+                new GridCell(4, 4),
+                Direction.Right,
+                0,
+                BoundaryMode.Wrap,
+                new[] { new GridCell(2, 1) });
+
+            game.Step();
+
+            AssertEqual(GameStatus.GameOver, game.Status, "obstacle collision status");
+            AssertEqual(new GridCell(1, 1), game.Snake[0], "obstacle collision head");
+        }
+
         private static void ClampsSpeedIntoSupportedRange()
         {
             AssertEqual(1, GameSpeed.ClampSpeed(-2), "low speed clamp");
@@ -217,6 +250,27 @@ namespace SnakeGame.Tests
             {
                 throw new InvalidOperationException(label + ": expected false");
             }
+        }
+
+        private static void AssertTrue(bool condition, string label)
+        {
+            if (!condition)
+            {
+                throw new InvalidOperationException(label + ": expected true");
+            }
+        }
+
+        private static bool ContainsCell(IEnumerable<GridCell> cells, GridCell expected)
+        {
+            foreach (GridCell cell in cells)
+            {
+                if (cell.Equals(expected))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

@@ -14,6 +14,7 @@ namespace SnakeGame
         private const int HudControlTop = 8;
         private const int HudControlHeight = 24;
         private const bool DefaultWrapWalls = true;
+        private const bool DefaultObstacles = false;
         private static readonly Color WindowBackColor = Color.FromArgb(18, 24, 27);
         private static readonly Color BoardBackColor = Color.FromArgb(25, 35, 39);
         private static readonly Color GridColor = Color.FromArgb(34, 48, 52);
@@ -24,6 +25,8 @@ namespace SnakeGame
         private static readonly Color SnakeShadowColor = Color.FromArgb(42, 116, 82);
         private static readonly Color FoodColor = Color.FromArgb(255, 94, 94);
         private static readonly Color FoodHighlightColor = Color.FromArgb(255, 176, 128);
+        private static readonly Color ObstacleColor = Color.FromArgb(103, 121, 126);
+        private static readonly Color ObstacleHighlightColor = Color.FromArgb(140, 161, 166);
         private static readonly Color SolidWallColor = Color.FromArgb(235, 93, 93);
         private static readonly Color OverlayColor = Color.FromArgb(190, 9, 15, 18);
         private static readonly Color OverlayTitleColor = Color.FromArgb(234, 255, 238);
@@ -33,6 +36,7 @@ namespace SnakeGame
         private int highScore = 0;
         private int selectedSpeed = GameSpeed.DefaultSpeed;
         private bool useProgressiveSpeed = GameSpeed.DefaultProgressiveSpeed;
+        private bool useObstacles = DefaultObstacles;
         private bool suppressPlayerSettingSave;
         private Font primaryButtonFont;
         private Font secondaryButtonFont;
@@ -65,12 +69,13 @@ namespace SnakeGame
             trackBarSpeed.Visible = false;
             chkWrapWalls.Visible = false;
             chkProgressiveSpeed.Visible = false;
+            chkObstacles.Visible = false;
             btnPause.Visible = true;
             btnPause.Text = "Pause";
 
             UpdateSettingsFromUI();
             SavePlayerSettings();
-            game.StartNew(GetMaxGridX(), GetMaxGridY(), GetSelectedBoundaryMode());
+            game.StartNew(GetMaxGridX(), GetMaxGridY(), GetSelectedBoundaryMode(), useObstacles);
             UpdateHighScore();
             UpdateHud();
 
@@ -88,6 +93,7 @@ namespace SnakeGame
         {
             selectedSpeed = trackBarSpeed.Value;
             useProgressiveSpeed = chkProgressiveSpeed.Checked;
+            useObstacles = chkObstacles.Checked;
             ApplySpeedSetting();
         }
 
@@ -113,13 +119,13 @@ namespace SnakeGame
 
         private void LayoutControls()
         {
-            if (btnStartGame == null || lblStartSpeed == null || trackBarSpeed == null || btnPause == null || chkWrapWalls == null || chkProgressiveSpeed == null)
+            if (btnStartGame == null || lblStartSpeed == null || trackBarSpeed == null || btnPause == null || chkWrapWalls == null || chkProgressiveSpeed == null || chkObstacles == null)
             {
                 return;
             }
 
             int centerX = Math.Max(0, (ClientSize.Width - btnStartGame.Width) / 2);
-            int menuHeight = btnStartGame.Height + lblStartSpeed.Height + trackBarSpeed.Height + chkWrapWalls.Height + chkProgressiveSpeed.Height + 58;
+            int menuHeight = btnStartGame.Height + lblStartSpeed.Height + trackBarSpeed.Height + chkWrapWalls.Height + chkProgressiveSpeed.Height + chkObstacles.Height + 64;
             int menuTop = Math.Max(HudHeight + 20, (ClientSize.Height - menuHeight) / 2);
 
             btnStartGame.Location = new Point(centerX, menuTop);
@@ -127,6 +133,7 @@ namespace SnakeGame
             trackBarSpeed.Location = new Point(centerX, lblStartSpeed.Bottom + 4);
             chkWrapWalls.Location = new Point(centerX, trackBarSpeed.Bottom + 8);
             chkProgressiveSpeed.Location = new Point(centerX, chkWrapWalls.Bottom + 6);
+            chkObstacles.Location = new Point(centerX, chkProgressiveSpeed.Bottom + 6);
             LayoutHudControls();
         }
 
@@ -172,6 +179,7 @@ namespace SnakeGame
             ConfigureButton(btnPause, false);
             ConfigureCheckBox(chkWrapWalls);
             ConfigureCheckBox(chkProgressiveSpeed);
+            ConfigureCheckBox(chkObstacles);
         }
 
         private void ConfigureButton(Button button, bool isPrimary)
@@ -286,12 +294,14 @@ namespace SnakeGame
                 trackBarSpeed.Value = ClampSpeed(SnakeGame.Properties.Settings.Default.Speed);
                 chkWrapWalls.Checked = SnakeGame.Properties.Settings.Default.WrapWalls;
                 chkProgressiveSpeed.Checked = SnakeGame.Properties.Settings.Default.ProgressiveSpeed;
+                chkObstacles.Checked = SnakeGame.Properties.Settings.Default.Obstacles;
             }
             catch
             {
                 trackBarSpeed.Value = ClampSpeed(GameSpeed.DefaultSpeed);
                 chkWrapWalls.Checked = DefaultWrapWalls;
                 chkProgressiveSpeed.Checked = GameSpeed.DefaultProgressiveSpeed;
+                chkObstacles.Checked = DefaultObstacles;
             }
             finally
             {
@@ -316,6 +326,7 @@ namespace SnakeGame
                 SnakeGame.Properties.Settings.Default.Speed = trackBarSpeed.Value;
                 SnakeGame.Properties.Settings.Default.WrapWalls = chkWrapWalls.Checked;
                 SnakeGame.Properties.Settings.Default.ProgressiveSpeed = chkProgressiveSpeed.Checked;
+                SnakeGame.Properties.Settings.Default.Obstacles = chkObstacles.Checked;
                 SnakeGame.Properties.Settings.Default.Save();
             }
             catch
@@ -388,6 +399,7 @@ namespace SnakeGame
             trackBarSpeed.Visible = true;
             chkWrapWalls.Visible = true;
             chkProgressiveSpeed.Visible = true;
+            chkObstacles.Visible = true;
             UpdateHud();
             Invalidate();
         }
@@ -421,6 +433,7 @@ namespace SnakeGame
                 return;
             }
 
+            DrawObstacles(e.Graphics);
             DrawFood(e.Graphics);
             DrawSnake(e.Graphics);
 
@@ -514,6 +527,24 @@ namespace SnakeGame
 
                 Rectangle highlight = new Rectangle(foodRect.Left + 4, foodRect.Top + 3, 5, 5);
                 canvas.FillEllipse(highlightBrush, highlight);
+            }
+        }
+
+        private void DrawObstacles(Graphics canvas)
+        {
+            foreach (GridCell obstacle in game.Obstacles)
+            {
+                Rectangle obstacleRect = GetCellBounds(obstacle);
+                obstacleRect.Inflate(-2, -2);
+
+                Rectangle highlightRect = new Rectangle(obstacleRect.Left + 3, obstacleRect.Top + 3, Math.Max(2, obstacleRect.Width / 3), 3);
+                using (GraphicsPath obstaclePath = CreateRoundedRectangle(obstacleRect, 3))
+                using (Brush obstacleBrush = new SolidBrush(ObstacleColor))
+                using (Brush highlightBrush = new SolidBrush(ObstacleHighlightColor))
+                {
+                    canvas.FillPath(obstacleBrush, obstaclePath);
+                    canvas.FillRectangle(highlightBrush, highlightRect);
+                }
             }
         }
 
@@ -697,6 +728,13 @@ namespace SnakeGame
         {
             UpdateSettingsFromUI();
             UpdateHud();
+            SavePlayerSettings();
+            Focus();
+        }
+
+        private void chkObstacles_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateSettingsFromUI();
             SavePlayerSettings();
             Focus();
         }
