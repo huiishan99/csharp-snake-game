@@ -10,7 +10,7 @@ namespace SnakeGame.Tests
             try
             {
                 RunAll();
-                Console.WriteLine("All SnakeGameEngine checks passed.");
+                Console.WriteLine("All SnakeGame checks passed.");
                 return 0;
             }
             catch (Exception ex)
@@ -31,6 +31,9 @@ namespace SnakeGame.Tests
             EatsFoodAndGrows();
             DetectsSelfCollision();
             WinsWhenFinalCellIsEaten();
+            ClampsSpeedIntoSupportedRange();
+            CalculatesFixedSpeedInterval();
+            ProgressiveSpeedGetsFasterAndCaps();
         }
 
         private static void StartsCenteredAndPlacesFoodOffSnake()
@@ -174,6 +177,29 @@ namespace SnakeGame.Tests
             AssertEqual(GameStatus.Won, game.Status, "filled grid status");
             AssertEqual(10, game.Score, "filled grid score");
             AssertEqual(2, game.Snake.Count, "filled grid snake length");
+        }
+
+        private static void ClampsSpeedIntoSupportedRange()
+        {
+            AssertEqual(1, GameSpeed.ClampSpeed(-2), "low speed clamp");
+            AssertEqual(10, GameSpeed.ClampSpeed(99), "high speed clamp");
+            AssertEqual(5, GameSpeed.ClampSpeed(5), "in-range speed clamp");
+        }
+
+        private static void CalculatesFixedSpeedInterval()
+        {
+            AssertEqual(210, GameSpeed.GetTimerInterval(5, 0, false), "fixed speed interval");
+            AssertEqual(210, GameSpeed.GetTimerInterval(5, 400, false), "fixed speed ignores score");
+            AssertEqual("Speed: 5", GameSpeed.GetDisplayLabel(5, false), "fixed speed label");
+        }
+
+        private static void ProgressiveSpeedGetsFasterAndCaps()
+        {
+            AssertEqual(210, GameSpeed.GetTimerInterval(5, 0, true), "progressive speed starting interval");
+            AssertEqual(194, GameSpeed.GetTimerInterval(5, 80, true), "progressive speed interval");
+            AssertEqual(114, GameSpeed.GetTimerInterval(5, 1000, true), "progressive speed bonus cap");
+            AssertEqual(80, GameSpeed.GetTimerInterval(10, 1000, true), "progressive speed minimum interval");
+            AssertEqual("Speed: 5+", GameSpeed.GetDisplayLabel(5, true), "progressive speed label");
         }
 
         private static void AssertEqual<T>(T expected, T actual, string label)

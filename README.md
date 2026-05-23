@@ -15,9 +15,9 @@ A small classic Snake game built with C# WinForms.
 2. Restore/build the solution.
 3. Start the `SnakeGame` project.
 
-## Engine Checks
+## Checks
 
-The solution includes a small `SnakeGame.Tests` console project for rule-level checks. Run it from Visual Studio, or build the solution and run `SnakeGame.Tests.exe`.
+The solution includes a small `SnakeGame.Tests` console project for rule-level engine and speed checks. Run it from Visual Studio, or build the solution and run `SnakeGame.Tests.exe`.
 
 ## GitHub Actions
 
@@ -41,7 +41,7 @@ When the workflow passes, download the `SnakeGame-Windows-Release` artifact from
 - Persistent best score, speed, wall-mode, and progressive-speed preferences
 - Optional classic wrap-wall or solid-wall play
 - Optional progressive speed for longer, more intense runs
-- Rule-level engine checks in `SnakeGame.Tests`
+- Rule-level engine and speed checks in `SnakeGame.Tests`
 
 ## Project Notes
 

@@ -8,20 +8,12 @@ namespace SnakeGame
     public partial class Form1 : Form
     {
         private const int CellSize = 16;
-        private const int MinimumTimerInterval = 80;
-        private const int BaseTimerInterval = 320;
-        private const int TimerIntervalStep = 22;
-        private const int ProgressiveScoreStep = 40;
-        private const int ProgressiveTimerStep = 8;
-        private const int ProgressiveTimerBonusMax = 96;
         private const int HudHeight = 40;
         private const int HudPadding = 12;
         private const int HudGap = 10;
         private const int HudControlTop = 8;
         private const int HudControlHeight = 24;
-        private const int DefaultSpeed = 5;
         private const bool DefaultWrapWalls = true;
-        private const bool DefaultProgressiveSpeed = true;
         private static readonly Color WindowBackColor = Color.FromArgb(18, 24, 27);
         private static readonly Color BoardBackColor = Color.FromArgb(25, 35, 39);
         private static readonly Color GridColor = Color.FromArgb(34, 48, 52);
@@ -38,8 +30,8 @@ namespace SnakeGame
 
         private readonly SnakeGameEngine game = new SnakeGameEngine();
         private int highScore = 0;
-        private int selectedSpeed = DefaultSpeed;
-        private bool useProgressiveSpeed = DefaultProgressiveSpeed;
+        private int selectedSpeed = GameSpeed.DefaultSpeed;
+        private bool useProgressiveSpeed = GameSpeed.DefaultProgressiveSpeed;
         private bool suppressPlayerSettingSave;
         private Font primaryButtonFont;
         private Font secondaryButtonFont;
@@ -98,19 +90,7 @@ namespace SnakeGame
 
         private void ApplySpeedSetting()
         {
-            int interval = BaseTimerInterval - selectedSpeed * TimerIntervalStep - GetProgressiveTimerBonus();
-            timer1.Interval = Math.Max(MinimumTimerInterval, interval);
-        }
-
-        private int GetProgressiveTimerBonus()
-        {
-            if (!useProgressiveSpeed)
-            {
-                return 0;
-            }
-
-            int scoreSteps = Math.Max(0, game.Score / ProgressiveScoreStep);
-            return Math.Min(ProgressiveTimerBonusMax, scoreSteps * ProgressiveTimerStep);
+            timer1.Interval = GameSpeed.GetTimerInterval(selectedSpeed, game.Score, useProgressiveSpeed);
         }
 
         private int GetMaxGridX()
@@ -235,7 +215,7 @@ namespace SnakeGame
         {
             lblScore.Text = "Score: " + game.Score;
             lblHighScore.Text = "Best: " + highScore;
-            lblSpeed.Text = "Speed: " + selectedSpeed + (useProgressiveSpeed ? "+" : string.Empty);
+            lblSpeed.Text = GameSpeed.GetDisplayLabel(selectedSpeed, useProgressiveSpeed);
             lblStatus.Text = GetStatusText();
         }
 
@@ -279,9 +259,9 @@ namespace SnakeGame
             }
             catch
             {
-                trackBarSpeed.Value = ClampSpeed(DefaultSpeed);
+                trackBarSpeed.Value = ClampSpeed(GameSpeed.DefaultSpeed);
                 chkWrapWalls.Checked = DefaultWrapWalls;
-                chkProgressiveSpeed.Checked = DefaultProgressiveSpeed;
+                chkProgressiveSpeed.Checked = GameSpeed.DefaultProgressiveSpeed;
             }
             finally
             {
@@ -291,7 +271,7 @@ namespace SnakeGame
 
         private int ClampSpeed(int speed)
         {
-            return Math.Max(trackBarSpeed.Minimum, Math.Min(trackBarSpeed.Maximum, speed));
+            return GameSpeed.ClampSpeed(speed, trackBarSpeed.Minimum, trackBarSpeed.Maximum);
         }
 
         private void SavePlayerSettings()

@@ -103,3 +103,7 @@
 - Added an optional progressive-speed mode that increases game pace as score rises.
 - Added a start-menu checkbox and saved preference for progressive speed.
 - Updated the HUD speed label to show when progressive speed is active.
+
+### Changed
+- Extracted speed clamping, timer interval calculation, and speed labels into a reusable `GameSpeed` rule class.
+- Added checks for fixed speed, progressive speed, interval caps, and speed display labels.
