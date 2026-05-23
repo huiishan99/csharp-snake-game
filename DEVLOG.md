@@ -82,3 +82,7 @@
 
 ### Changed
 - Updated README with current UI features and GitHub Actions usage.
+
+### Changed
+- Added a short direction input queue so fast corner turns are preserved across ticks.
+- Added an engine check for buffered corner input behavior.

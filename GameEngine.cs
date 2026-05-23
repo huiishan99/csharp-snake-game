@@ -5,11 +5,12 @@ namespace SnakeGame
 {
     public class SnakeGameEngine
     {
+        private const int MaxQueuedDirections = 2;
         private const int PointsPerFood = 10;
 
         private readonly List<GridCell> snake = new List<GridCell>();
+        private readonly Queue<Direction> directionQueue = new Queue<Direction>();
         private readonly Random random;
-        private Direction pendingDirection;
         private GridCell food;
 
         public SnakeGameEngine()
@@ -22,7 +23,6 @@ namespace SnakeGame
             this.random = random;
             Status = GameStatus.Ready;
             CurrentDirection = Direction.Down;
-            pendingDirection = CurrentDirection;
         }
 
         public IReadOnlyList<GridCell> Snake
@@ -53,7 +53,7 @@ namespace SnakeGame
             Score = 0;
             Status = GameStatus.Playing;
             CurrentDirection = Direction.Down;
-            pendingDirection = CurrentDirection;
+            directionQueue.Clear();
 
             snake.Clear();
             snake.Add(new GridCell(GridWidth / 2, GridHeight / 2));
@@ -74,7 +74,7 @@ namespace SnakeGame
             Score = Math.Max(0, score);
             Status = GameStatus.Playing;
             CurrentDirection = initialDirection;
-            pendingDirection = initialDirection;
+            directionQueue.Clear();
 
             snake.Clear();
             foreach (GridCell part in initialSnake)
@@ -138,12 +138,18 @@ namespace SnakeGame
                 return;
             }
 
-            if (IsOppositeDirection(CurrentDirection, newDirection))
+            Direction comparisonDirection = GetDirectionForQueueValidation();
+            if (comparisonDirection == newDirection || IsOppositeDirection(comparisonDirection, newDirection))
             {
                 return;
             }
 
-            pendingDirection = newDirection;
+            if (directionQueue.Count >= MaxQueuedDirections)
+            {
+                return;
+            }
+
+            directionQueue.Enqueue(newDirection);
         }
 
         public void Step()
@@ -153,7 +159,11 @@ namespace SnakeGame
                 return;
             }
 
-            CurrentDirection = pendingDirection;
+            if (directionQueue.Count > 0)
+            {
+                CurrentDirection = directionQueue.Dequeue();
+            }
+
             GridCell nextHead = GetNextHead();
             bool willEat = nextHead.Equals(food);
 
@@ -235,6 +245,17 @@ namespace SnakeGame
                 default:
                     return WrapCell(new GridCell(head.X, head.Y + 1));
             }
+        }
+
+        private Direction GetDirectionForQueueValidation()
+        {
+            Direction direction = CurrentDirection;
+            foreach (Direction queuedDirection in directionQueue)
+            {
+                direction = queuedDirection;
+            }
+
+            return direction;
         }
 
         private void KeepSnakeInBounds()

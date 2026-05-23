@@ -25,6 +25,7 @@ namespace SnakeGame.Tests
             StartsCenteredAndPlacesFoodOffSnake();
             MovesAndWrapsAcrossEdges();
             IgnoresImmediateReverseDirection();
+            BuffersCornerInputs();
             DoesNotMoveWhilePaused();
             EatsFoodAndGrows();
             DetectsSelfCollision();
@@ -64,6 +65,30 @@ namespace SnakeGame.Tests
 
             AssertEqual(Direction.Down, game.CurrentDirection, "reverse input should be ignored");
             AssertEqual(new GridCell(2, 3), game.Snake[0], "snake should continue downward");
+        }
+
+        private static void BuffersCornerInputs()
+        {
+            SnakeGameEngine game = new SnakeGameEngine();
+
+            game.LoadStateForTesting(
+                5,
+                5,
+                new[] { new GridCell(2, 2) },
+                new GridCell(0, 0),
+                Direction.Down,
+                0);
+
+            game.QueueDirection(Direction.Right);
+            game.QueueDirection(Direction.Up);
+
+            game.Step();
+            AssertEqual(Direction.Right, game.CurrentDirection, "first queued direction");
+            AssertEqual(new GridCell(3, 2), game.Snake[0], "first queued head");
+
+            game.Step();
+            AssertEqual(Direction.Up, game.CurrentDirection, "second queued direction");
+            AssertEqual(new GridCell(3, 1), game.Snake[0], "second queued head");
         }
 
         private static void DoesNotMoveWhilePaused()
