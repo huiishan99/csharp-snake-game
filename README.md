@@ -27,7 +27,7 @@ The solution includes a small `SnakeGame.Tests` console project for rule-level e
 
 The `Windows Build` workflow builds the solution and runs the engine checks on push, pull request, or manual runs from the GitHub Actions tab.
 
-When the workflow passes, download the `SnakeGame-Windows-Release` artifact from the workflow run to get the packaged executable and config file.
+When the workflow passes, download the versioned `SnakeGame-Windows-Release-<version>-<sha>` artifact from the workflow run to get the packaged executable, config file, docs, and `BUILD_INFO.txt`.
 
 ## Controls
 
@@ -38,6 +38,7 @@ When the workflow passes, download the `SnakeGame-Windows-Release` artifact from
 - Wrap walls: turn classic edge wrapping on or off before starting
 - Progressive speed: make the snake gradually speed up as the score rises
 - Obstacles: add blocked cells for a harder run
+- Sound: mute or enable short menu and gameplay sounds
 
 ## Features
 
@@ -50,8 +51,9 @@ When the workflow passes, download the `SnakeGame-Windows-Release` artifact from
 - Compact self-painted HUD pills with status-aware colors
 - Solid-wall mode shows a visible board border before and during play
 - Optional obstacle mode with collision checks and safe food placement
+- Optional sound effects for start, eat, pause/resume, and finish events
 - In-board start, pause, game-over, and win overlays
-- Persistent best score, speed, wall-mode, progressive-speed, and obstacle preferences
+- Persistent best score, speed, wall-mode, progressive-speed, obstacle, and sound preferences
 - Optional classic wrap-wall or solid-wall play
 - Optional progressive speed for longer, more intense runs
 - Rule-level engine and speed checks in `SnakeGame.Tests`

@@ -16,6 +16,20 @@ jobs:
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v2
 
+      - name: Set build metadata
+        id: metadata
+        shell: pwsh
+        run: |
+          $shortSha = "${{ github.sha }}".Substring(0, 7)
+          $version = "0.1.${{ github.run_number }}"
+          $packageName = "SnakeGame-Windows-Release-$version-$shortSha"
+          "BUILD_VERSION=$version" >> $env:GITHUB_ENV
+          "SHORT_SHA=$shortSha" >> $env:GITHUB_ENV
+          "PACKAGE_NAME=$packageName" >> $env:GITHUB_ENV
+          "build_version=$version" >> $env:GITHUB_OUTPUT
+          "short_sha=$shortSha" >> $env:GITHUB_OUTPUT
+          "package_name=$packageName" >> $env:GITHUB_OUTPUT
+
       - name: Build solution
         run: msbuild SnakeGame.sln /p:Configuration=Release /m
 
@@ -30,9 +44,27 @@ jobs:
           Copy-Item bin\Release\SnakeGame.exe.config artifacts\SnakeGame\
           Copy-Item README.md artifacts\SnakeGame\
           Copy-Item docs artifacts\SnakeGame\docs -Recurse
+          $buildInfo = @(
+            "SnakeGame Windows Release",
+            "Version: $env:BUILD_VERSION",
+            "Commit: $env:GITHUB_SHA",
+            "Run: $env:GITHUB_RUN_NUMBER"
+          )
+          $buildInfo | Set-Content artifacts\SnakeGame\BUILD_INFO.txt
+          Compress-Archive -Path artifacts\SnakeGame\* -DestinationPath artifacts\$env:PACKAGE_NAME.zip -Force
 
       - name: Upload app artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SnakeGame-Windows-Release
-          path: artifacts/SnakeGame
+          name: ${{ steps.metadata.outputs.package_name }}
+          path: artifacts/${{ steps.metadata.outputs.package_name }}.zip
+
+      - name: Write build summary
+        shell: pwsh
+        run: |
+          "### SnakeGame Windows Build" >> $env:GITHUB_STEP_SUMMARY
+          "" >> $env:GITHUB_STEP_SUMMARY
+          "- Version: ``$env:BUILD_VERSION``" >> $env:GITHUB_STEP_SUMMARY
+          "- Commit: ``$env:SHORT_SHA``" >> $env:GITHUB_STEP_SUMMARY
+          "- Artifact: ``$env:PACKAGE_NAME``" >> $env:GITHUB_STEP_SUMMARY
+          "- Includes: executable, config, README, docs, and BUILD_INFO.txt" >> $env:GITHUB_STEP_SUMMARY

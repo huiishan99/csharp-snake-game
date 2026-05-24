@@ -27,13 +27,14 @@ If `msbuild` is not found, open the terminal from Visual Studio's Developer Powe
 
 ## GitHub Actions
 
-The `Windows Build` workflow builds the Release solution, runs `SnakeGame.Tests`, and uploads a packaged executable.
+The `Windows Build` workflow builds the Release solution, runs `SnakeGame.Tests`, writes a build summary, and uploads a versioned zip artifact.
 
 1. Push the branch to GitHub.
 2. Open the repository's `Actions` tab.
 3. Choose `Windows Build`.
 4. Use `Run workflow` for a manual build, or wait for the push build.
-5. Open the finished run and download the `SnakeGame-Windows-Release` artifact.
+5. Open the finished run and download the `SnakeGame-Windows-Release-<version>-<sha>` artifact.
+6. Unzip it and check `BUILD_INFO.txt` before running the executable.
 
 ## Smoke Test
 
@@ -45,4 +46,6 @@ The `Windows Build` workflow builds the Release solution, runs `SnakeGame.Tests`
 6. Turn off `Wrap walls` and confirm the board shows a red border and wall collision ends the run.
 7. Turn on `Progressive speed` and confirm the HUD shows a `+` next to speed.
 8. Turn on `Obstacles` and confirm blocked cells appear and collision ends the run.
-9. Close and reopen the app to confirm speed and mode settings are restored.
+9. Toggle `Sound` and confirm start, eat, pause/resume, and finish sounds respect the setting.
+10. Confirm the start panel preview snake animates smoothly and the eat feedback is visible without feeling distracting.
+11. Close and reopen the app to confirm speed, mode, sound, and best-score settings are restored.

@@ -50,8 +50,14 @@
     <Compile Include="GameSpeed.cs" />
     <Compile Include="GameTypes.cs" />
     <Compile Include="ThemeControls.cs" />
+    <Compile Include="Form1.Audio.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form1.Rendering.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>

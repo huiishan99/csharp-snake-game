@@ -44,12 +44,14 @@
             this.chkWrapWalls = new SnakeGame.ThemeToggle();
             this.chkProgressiveSpeed = new SnakeGame.ThemeToggle();
             this.chkObstacles = new SnakeGame.ThemeToggle();
+            this.chkSound = new SnakeGame.ThemeToggle();
             this.lblStartSpeed = new System.Windows.Forms.Label();
             this.pnlStartMenu.SuspendLayout();
             this.SuspendLayout();
             //
             // pnlStartMenu
             //
+            this.pnlStartMenu.Controls.Add(this.chkSound);
             this.pnlStartMenu.Controls.Add(this.chkObstacles);
             this.pnlStartMenu.Controls.Add(this.chkProgressiveSpeed);
             this.pnlStartMenu.Controls.Add(this.chkWrapWalls);
@@ -195,11 +197,23 @@
             //
             this.chkObstacles.Location = new System.Drawing.Point(22, 252);
             this.chkObstacles.Name = "chkObstacles";
-            this.chkObstacles.Size = new System.Drawing.Size(296, 26);
+            this.chkObstacles.Size = new System.Drawing.Size(145, 26);
             this.chkObstacles.TabIndex = 8;
             this.chkObstacles.Text = "Obstacles";
             this.chkObstacles.UseVisualStyleBackColor = true;
             this.chkObstacles.CheckedChanged += new System.EventHandler(this.chkObstacles_CheckedChanged);
+            //
+            // chkSound
+            //
+            this.chkSound.Checked = true;
+            this.chkSound.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkSound.Location = new System.Drawing.Point(173, 252);
+            this.chkSound.Name = "chkSound";
+            this.chkSound.Size = new System.Drawing.Size(145, 26);
+            this.chkSound.TabIndex = 9;
+            this.chkSound.Text = "Sound";
+            this.chkSound.UseVisualStyleBackColor = true;
+            this.chkSound.CheckedChanged += new System.EventHandler(this.chkSound_CheckedChanged);
             //
             // lblStartSpeed
             //
@@ -248,6 +262,7 @@
         private SnakeGame.ThemeToggle chkWrapWalls;
         private SnakeGame.ThemeToggle chkProgressiveSpeed;
         private SnakeGame.ThemeToggle chkObstacles;
+        private SnakeGame.ThemeToggle chkSound;
         private System.Windows.Forms.Label lblStartSpeed;
     }
 }

@@ -7,7 +7,8 @@ Use this checklist before tagging or sharing a Windows build.
 1. Build `SnakeGame.sln` in `Release` mode on Windows.
 2. Run `SnakeGame.Tests`.
 3. Confirm the `Windows Build` GitHub Action passes.
-4. Download and inspect the `SnakeGame-Windows-Release` artifact.
+4. Download and inspect the versioned `SnakeGame-Windows-Release-<version>-<sha>` artifact.
+5. Confirm the zip contains `SnakeGame.exe`, config, README, docs, and `BUILD_INFO.txt`.
 
 ## Gameplay Smoke Test
 
@@ -18,8 +19,9 @@ Use this checklist before tagging or sharing a Windows build.
 5. Confirm progressive speed shows a `+` next to speed.
 6. Confirm solid-wall mode shows the red border and ends the run on wall collision.
 7. Confirm obstacle mode draws blocked cells and ends the run on obstacle collision.
-8. Confirm game-over and win states return to the restart panel.
-9. Close and reopen the app, then confirm saved options and best score are restored.
+8. Confirm the sound toggle mutes start, eat, pause/resume, and finish sounds.
+9. Confirm game-over and win states return to the restart panel.
+10. Close and reopen the app, then confirm saved options and best score are restored.
 
 ## UI Review
 
@@ -28,6 +30,7 @@ Use this checklist before tagging or sharing a Windows build.
 3. Check button hover and pressed states.
 4. Check solid-wall border visibility with and without overlays.
 5. Check that no text overlaps in the start panel or HUD.
+6. Check that the animated title-screen preview and eat feedback are smooth at normal Windows scaling.
 
 ## Release Notes
 
@@ -38,4 +41,5 @@ Mention these player-facing changes:
 - Optional wrap-wall or solid-wall play
 - Optional progressive speed
 - Optional obstacles
+- Optional sound effects with a mute toggle
 - Keyboard support for movement, pause, restart, and speed setup

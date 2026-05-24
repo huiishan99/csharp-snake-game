@@ -27,12 +27,14 @@ namespace SnakeGame.Tests
             SolidWallsEndAtBoundary();
             IgnoresImmediateReverseDirection();
             BuffersCornerInputs();
+            KeepsDirectionQueueBounded();
             DoesNotMoveWhilePaused();
             EatsFoodAndGrows();
             DetectsSelfCollision();
             WinsWhenFinalCellIsEaten();
             GeneratesObstaclesAwayFromSnakeAndFood();
             ObstaclesCauseGameOver();
+            RegeneratesFoodWhenResizeFindsObstacleConflict();
             ClampsSpeedIntoSupportedRange();
             CalculatesFixedSpeedInterval();
             ProgressiveSpeedGetsFasterAndCaps();
@@ -114,6 +116,32 @@ namespace SnakeGame.Tests
             game.Step();
             AssertEqual(Direction.Up, game.CurrentDirection, "second queued direction");
             AssertEqual(new GridCell(3, 1), game.Snake[0], "second queued head");
+        }
+
+        private static void KeepsDirectionQueueBounded()
+        {
+            SnakeGameEngine game = new SnakeGameEngine();
+
+            game.LoadStateForTesting(
+                5,
+                5,
+                new[] { new GridCell(2, 2) },
+                new GridCell(0, 0),
+                Direction.Down,
+                0);
+
+            game.QueueDirection(Direction.Right);
+            game.QueueDirection(Direction.Up);
+            game.QueueDirection(Direction.Left);
+
+            game.Step();
+            AssertEqual(Direction.Right, game.CurrentDirection, "bounded queue first direction");
+
+            game.Step();
+            AssertEqual(Direction.Up, game.CurrentDirection, "bounded queue second direction");
+
+            game.Step();
+            AssertEqual(Direction.Up, game.CurrentDirection, "bounded queue should ignore third direction");
         }
 
         private static void DoesNotMoveWhilePaused()
@@ -210,6 +238,27 @@ namespace SnakeGame.Tests
 
             AssertEqual(GameStatus.GameOver, game.Status, "obstacle collision status");
             AssertEqual(new GridCell(1, 1), game.Snake[0], "obstacle collision head");
+        }
+
+        private static void RegeneratesFoodWhenResizeFindsObstacleConflict()
+        {
+            SnakeGameEngine game = new SnakeGameEngine(new Random(3));
+            GridCell blockedFood = new GridCell(2, 2);
+
+            game.LoadStateForTesting(
+                6,
+                6,
+                new[] { new GridCell(1, 1) },
+                blockedFood,
+                Direction.Right,
+                0,
+                BoundaryMode.Wrap,
+                new[] { blockedFood });
+
+            game.ResizeGrid(6, 6);
+
+            AssertFalse(game.Food.Equals(blockedFood), "resize should move food off obstacles");
+            AssertFalse(ContainsCell(game.Obstacles, game.Food), "resized food should avoid every obstacle");
         }
 
         private static void ClampsSpeedIntoSupportedRange()

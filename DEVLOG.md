@@ -1,5 +1,16 @@
 # Devlog
 
+## 2026-05-25
+
+### Added
+- Added a sound toggle and persisted sound preference for short start, eat, pause/resume, and finish sounds.
+- Added extra engine checks for bounded direction input queues and food regeneration after resize/obstacle conflicts.
+- Added versioned GitHub Actions zip artifacts with `BUILD_INFO.txt` and a workflow run summary.
+
+### Changed
+- Split rendering, overlays, board drawing, start-screen painting, and sound helpers into focused `Form1` partial files to keep the main form code easier to maintain.
+- Updated Windows testing and release checklists for sound, animated title-screen preview, eat feedback, and versioned artifacts.
+
 ## 2026-05-24
 
 ### Changed
