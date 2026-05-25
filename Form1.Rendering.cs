@@ -420,7 +420,7 @@ namespace SnakeGame
                 canvas.DrawLine(cornerPen, border.Left + inset, border.Top + inset, border.Left + inset, border.Top + inset + markLength);
                 canvas.DrawLine(cornerPen, border.Right - inset - markLength, border.Top + inset, border.Right - inset, border.Top + inset);
                 canvas.DrawLine(cornerPen, border.Right - inset, border.Top + inset, border.Right - inset, border.Top + inset + markLength);
-                canvas.DrawLine(mutedPen, StartPanelPadding, 66, pnlStartMenu.Width - StartPanelPadding, 66);
+                canvas.DrawLine(mutedPen, StartPanelPadding, 70, pnlStartMenu.Width - StartPanelPadding, 70);
                 TextRenderer.DrawText(
                     canvas,
                     "BEST " + highScore,
@@ -452,7 +452,7 @@ namespace SnakeGame
 
         private Rectangle GetStartPreviewBounds()
         {
-            return new Rectangle(StartPanelPadding, 74, Math.Max(0, pnlStartMenu.Width - StartPanelPadding * 2), 44);
+            return new Rectangle(StartPanelPadding, 78, Math.Max(0, pnlStartMenu.Width - StartPanelPadding * 2), 50);
         }
 
         private void DrawStartPreviewGrid(Graphics canvas, Rectangle preview)

@@ -21,7 +21,8 @@ Use this checklist before tagging or sharing a Windows build.
 7. Confirm obstacle mode draws blocked cells and ends the run on obstacle collision.
 8. Confirm the sound toggle mutes start, eat, pause/resume, and finish sounds.
 9. Confirm game-over and win states return to the restart panel.
-10. Close and reopen the app, then confirm saved options and best score are restored.
+10. Confirm the window cannot be resized during an active run and can be resized again after game-over or win.
+11. Close and reopen the app, then confirm saved options and best score are restored.
 
 ## UI Review
 
@@ -30,7 +31,8 @@ Use this checklist before tagging or sharing a Windows build.
 3. Check button hover and pressed states.
 4. Check solid-wall border visibility with and without overlays.
 5. Check that no text overlaps in the start panel or HUD.
-6. Check that the animated title-screen preview and eat feedback are smooth at normal Windows scaling.
+6. Check that the start panel still covers every menu control at normal Windows scaling.
+7. Check that the animated title-screen preview and eat feedback are smooth at normal Windows scaling.
 
 ## Release Notes
 

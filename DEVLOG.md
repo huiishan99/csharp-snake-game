@@ -10,6 +10,8 @@
 ### Changed
 - Split rendering, overlays, board drawing, start-screen painting, and sound helpers into focused `Form1` partial files to keep the main form code easier to maintain.
 - Updated Windows testing and release checklists for sound, animated title-screen preview, eat feedback, and versioned artifacts.
+- Locked the window size during active runs so resizing cannot change the live board dimensions mid-game.
+- Enlarged the start panel and minimum window size so all menu controls stay covered with comfortable padding on Windows.
 
 ## 2026-05-24
 

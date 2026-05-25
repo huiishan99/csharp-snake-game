@@ -39,6 +39,7 @@ When the workflow passes, download the versioned `SnakeGame-Windows-Release-<ver
 - Progressive speed: make the snake gradually speed up as the score rises
 - Obstacles: add blocked cells for a harder run
 - Sound: mute or enable short menu and gameplay sounds
+- Window resize: available from menu/end screens; active runs lock the current window size
 
 ## Features
 
@@ -52,6 +53,7 @@ When the workflow passes, download the versioned `SnakeGame-Windows-Release-<ver
 - Solid-wall mode shows a visible board border before and during play
 - Optional obstacle mode with collision checks and safe food placement
 - Optional sound effects for start, eat, pause/resume, and finish events
+- Active runs lock the current window size so resizing cannot change the live board
 - In-board start, pause, game-over, and win overlays
 - Persistent best score, speed, wall-mode, progressive-speed, obstacle, and sound preferences
 - Optional classic wrap-wall or solid-wall play

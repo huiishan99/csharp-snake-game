@@ -61,26 +61,26 @@
             this.pnlStartMenu.Controls.Add(this.btnStartGame);
             this.pnlStartMenu.Controls.Add(this.lblStartHint);
             this.pnlStartMenu.Controls.Add(this.lblStartTitle);
-            this.pnlStartMenu.Location = new System.Drawing.Point(221, 80);
+            this.pnlStartMenu.Location = new System.Drawing.Point(211, 68);
             this.pnlStartMenu.Name = "pnlStartMenu";
-            this.pnlStartMenu.Size = new System.Drawing.Size(340, 286);
+            this.pnlStartMenu.Size = new System.Drawing.Size(360, 314);
             this.pnlStartMenu.TabIndex = 0;
             this.pnlStartMenu.Paint += new System.Windows.Forms.PaintEventHandler(this.pnlStartMenu_Paint);
             //
             // lblStartTitle
             //
-            this.lblStartTitle.Location = new System.Drawing.Point(22, 14);
+            this.lblStartTitle.Location = new System.Drawing.Point(24, 16);
             this.lblStartTitle.Name = "lblStartTitle";
-            this.lblStartTitle.Size = new System.Drawing.Size(296, 32);
+            this.lblStartTitle.Size = new System.Drawing.Size(312, 32);
             this.lblStartTitle.TabIndex = 0;
             this.lblStartTitle.Text = "SNAKE";
             this.lblStartTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             //
             // lblStartHint
             //
-            this.lblStartHint.Location = new System.Drawing.Point(22, 44);
+            this.lblStartHint.Location = new System.Drawing.Point(24, 48);
             this.lblStartHint.Name = "lblStartHint";
-            this.lblStartHint.Size = new System.Drawing.Size(296, 20);
+            this.lblStartHint.Size = new System.Drawing.Size(312, 20);
             this.lblStartHint.TabIndex = 1;
             this.lblStartHint.Text = "SURVIVE THE GRID";
             this.lblStartHint.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -94,9 +94,9 @@
             //
             this.btnStartGame.AccessibleName = "";
             this.btnStartGame.AccessibleRole = System.Windows.Forms.AccessibleRole.None;
-            this.btnStartGame.Location = new System.Drawing.Point(22, 132);
+            this.btnStartGame.Location = new System.Drawing.Point(24, 144);
             this.btnStartGame.Name = "btnStartGame";
-            this.btnStartGame.Size = new System.Drawing.Size(296, 34);
+            this.btnStartGame.Size = new System.Drawing.Size(312, 34);
             this.btnStartGame.TabIndex = 2;
             this.btnStartGame.Text = "START RUN";
             this.btnStartGame.UseVisualStyleBackColor = true;
@@ -104,7 +104,7 @@
             //
             // btnSpeedDown
             //
-            this.btnSpeedDown.Location = new System.Drawing.Point(22, 178);
+            this.btnSpeedDown.Location = new System.Drawing.Point(24, 192);
             this.btnSpeedDown.Name = "btnSpeedDown";
             this.btnSpeedDown.Size = new System.Drawing.Size(36, 30);
             this.btnSpeedDown.TabIndex = 3;
@@ -114,7 +114,7 @@
             //
             // btnSpeedUp
             //
-            this.btnSpeedUp.Location = new System.Drawing.Point(282, 178);
+            this.btnSpeedUp.Location = new System.Drawing.Point(300, 192);
             this.btnSpeedUp.Name = "btnSpeedUp";
             this.btnSpeedUp.Size = new System.Drawing.Size(36, 30);
             this.btnSpeedUp.TabIndex = 5;
@@ -173,9 +173,9 @@
             //
             this.chkWrapWalls.Checked = true;
             this.chkWrapWalls.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkWrapWalls.Location = new System.Drawing.Point(22, 220);
+            this.chkWrapWalls.Location = new System.Drawing.Point(24, 236);
             this.chkWrapWalls.Name = "chkWrapWalls";
-            this.chkWrapWalls.Size = new System.Drawing.Size(145, 26);
+            this.chkWrapWalls.Size = new System.Drawing.Size(153, 26);
             this.chkWrapWalls.TabIndex = 6;
             this.chkWrapWalls.Text = "Wrap";
             this.chkWrapWalls.UseVisualStyleBackColor = true;
@@ -185,9 +185,9 @@
             //
             this.chkProgressiveSpeed.Checked = true;
             this.chkProgressiveSpeed.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkProgressiveSpeed.Location = new System.Drawing.Point(173, 220);
+            this.chkProgressiveSpeed.Location = new System.Drawing.Point(183, 236);
             this.chkProgressiveSpeed.Name = "chkProgressiveSpeed";
-            this.chkProgressiveSpeed.Size = new System.Drawing.Size(145, 26);
+            this.chkProgressiveSpeed.Size = new System.Drawing.Size(153, 26);
             this.chkProgressiveSpeed.TabIndex = 7;
             this.chkProgressiveSpeed.Text = "Progressive";
             this.chkProgressiveSpeed.UseVisualStyleBackColor = true;
@@ -195,9 +195,9 @@
             //
             // chkObstacles
             //
-            this.chkObstacles.Location = new System.Drawing.Point(22, 252);
+            this.chkObstacles.Location = new System.Drawing.Point(24, 268);
             this.chkObstacles.Name = "chkObstacles";
-            this.chkObstacles.Size = new System.Drawing.Size(145, 26);
+            this.chkObstacles.Size = new System.Drawing.Size(153, 26);
             this.chkObstacles.TabIndex = 8;
             this.chkObstacles.Text = "Obstacles";
             this.chkObstacles.UseVisualStyleBackColor = true;
@@ -207,9 +207,9 @@
             //
             this.chkSound.Checked = true;
             this.chkSound.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkSound.Location = new System.Drawing.Point(173, 252);
+            this.chkSound.Location = new System.Drawing.Point(183, 268);
             this.chkSound.Name = "chkSound";
-            this.chkSound.Size = new System.Drawing.Size(145, 26);
+            this.chkSound.Size = new System.Drawing.Size(153, 26);
             this.chkSound.TabIndex = 9;
             this.chkSound.Text = "Sound";
             this.chkSound.UseVisualStyleBackColor = true;
@@ -217,9 +217,9 @@
             //
             // lblStartSpeed
             //
-            this.lblStartSpeed.Location = new System.Drawing.Point(64, 178);
+            this.lblStartSpeed.Location = new System.Drawing.Point(66, 192);
             this.lblStartSpeed.Name = "lblStartSpeed";
-            this.lblStartSpeed.Size = new System.Drawing.Size(212, 30);
+            this.lblStartSpeed.Size = new System.Drawing.Size(228, 30);
             this.lblStartSpeed.TabIndex = 4;
             this.lblStartSpeed.Text = "Speed 5+";
             this.lblStartSpeed.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -229,7 +229,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(782, 453);
-            this.MinimumSize = new System.Drawing.Size(520, 420);
+            this.MinimumSize = new System.Drawing.Size(560, 470);
             this.Controls.Add(this.pnlStartMenu);
             this.Controls.Add(this.btnPause);
             this.Controls.Add(this.lblStatus);

@@ -13,10 +13,10 @@ namespace SnakeGame
         private const int HudControlTop = 8;
         private const int HudControlHeight = 26;
         private const int HudPauseButtonWidth = 76;
-        private const int StartPanelWidth = 340;
-        private const int StartPanelHeight = 286;
+        private const int StartPanelWidth = 360;
+        private const int StartPanelHeight = 314;
         private const int StartPanelRadius = 6;
-        private const int StartPanelPadding = 22;
+        private const int StartPanelPadding = 24;
         private const int StartPanelGap = 6;
         private const int SpeedButtonWidth = 36;
         private const int SpeedRowHeight = 30;
@@ -85,6 +85,10 @@ namespace SnakeGame
         private bool useObstacles = DefaultObstacles;
         private bool useSound = DefaultSoundEnabled;
         private bool suppressPlayerSettingSave;
+        private Size unlockedMinimumSize;
+        private Size unlockedMaximumSize;
+        private bool unlockedMaximizeBox;
+        private bool isWindowSizeLocked;
         private Font hudFont;
         private Font primaryButtonFont;
         private Font secondaryButtonFont;
@@ -101,6 +105,9 @@ namespace SnakeGame
             DoubleBuffered = true;
             KeyPreview = true;
             BackColor = WindowBackColor;
+            unlockedMinimumSize = MinimumSize;
+            unlockedMaximumSize = MaximumSize;
+            unlockedMaximizeBox = MaximizeBox;
 
             ConfigureAttractTimer();
             ConfigureFeedbackTimer();
@@ -124,6 +131,7 @@ namespace SnakeGame
             btnPause.Visible = true;
             btnPause.Text = "Pause";
             ClearEatFeedback();
+            LockWindowSizeForRun();
 
             UpdateSettingsFromUI();
             SavePlayerSettings();
@@ -178,7 +186,7 @@ namespace SnakeGame
                 return;
             }
 
-            int panelWidth = Math.Max(280, Math.Min(StartPanelWidth, ClientSize.Width - 40));
+            int panelWidth = Math.Max(300, Math.Min(StartPanelWidth, ClientSize.Width - 40));
             int panelHeight = StartPanelHeight;
             int panelX = Math.Max(0, (ClientSize.Width - panelWidth) / 2);
             int boardHeight = Math.Max(0, ClientSize.Height - HudHeight);
@@ -190,17 +198,48 @@ namespace SnakeGame
             int x = StartPanelPadding;
             int toggleWidth = Math.Max(80, (contentWidth - StartPanelGap) / 2);
 
-            lblStartTitle.SetBounds(x, 14, contentWidth, 32);
-            lblStartHint.SetBounds(x, 44, contentWidth, 20);
-            btnStartGame.SetBounds(x, 132, contentWidth, StartButtonHeight);
-            btnSpeedDown.SetBounds(x, 178, SpeedButtonWidth, SpeedRowHeight);
-            lblStartSpeed.SetBounds(x + SpeedButtonWidth + StartPanelGap, 178, contentWidth - SpeedButtonWidth * 2 - StartPanelGap * 2, SpeedRowHeight);
-            btnSpeedUp.SetBounds(x + contentWidth - SpeedButtonWidth, 178, SpeedButtonWidth, SpeedRowHeight);
-            chkWrapWalls.SetBounds(x, 220, toggleWidth, ToggleHeight);
-            chkProgressiveSpeed.SetBounds(x + toggleWidth + StartPanelGap, 220, toggleWidth, ToggleHeight);
-            chkObstacles.SetBounds(x, 252, toggleWidth, ToggleHeight);
-            chkSound.SetBounds(x + toggleWidth + StartPanelGap, 252, toggleWidth, ToggleHeight);
+            lblStartTitle.SetBounds(x, 16, contentWidth, 32);
+            lblStartHint.SetBounds(x, 48, contentWidth, 20);
+            btnStartGame.SetBounds(x, 144, contentWidth, StartButtonHeight);
+            btnSpeedDown.SetBounds(x, 192, SpeedButtonWidth, SpeedRowHeight);
+            lblStartSpeed.SetBounds(x + SpeedButtonWidth + StartPanelGap, 192, contentWidth - SpeedButtonWidth * 2 - StartPanelGap * 2, SpeedRowHeight);
+            btnSpeedUp.SetBounds(x + contentWidth - SpeedButtonWidth, 192, SpeedButtonWidth, SpeedRowHeight);
+            chkWrapWalls.SetBounds(x, 236, toggleWidth, ToggleHeight);
+            chkProgressiveSpeed.SetBounds(x + toggleWidth + StartPanelGap, 236, toggleWidth, ToggleHeight);
+            chkObstacles.SetBounds(x, 268, toggleWidth, ToggleHeight);
+            chkSound.SetBounds(x + toggleWidth + StartPanelGap, 268, toggleWidth, ToggleHeight);
             LayoutHudControls();
+        }
+
+        private void LockWindowSizeForRun()
+        {
+            if (isWindowSizeLocked)
+            {
+                return;
+            }
+
+            unlockedMinimumSize = MinimumSize;
+            unlockedMaximumSize = MaximumSize;
+
+            Size lockedSize = Size;
+            MinimumSize = lockedSize;
+            MaximumSize = lockedSize;
+            unlockedMaximizeBox = MaximizeBox;
+            MaximizeBox = false;
+            isWindowSizeLocked = true;
+        }
+
+        private void UnlockWindowSizeAfterRun()
+        {
+            if (!isWindowSizeLocked)
+            {
+                return;
+            }
+
+            MinimumSize = unlockedMinimumSize;
+            MaximumSize = unlockedMaximumSize;
+            MaximizeBox = unlockedMaximizeBox;
+            isWindowSizeLocked = false;
         }
 
         private void ConfigureAttractTimer()
@@ -728,6 +767,7 @@ namespace SnakeGame
             UpdateHighScore();
             btnPause.Visible = false;
             btnPause.Text = "Pause";
+            UnlockWindowSizeAfterRun();
             SetStartMenuVisible(true);
             UpdateHud();
             Invalidate();

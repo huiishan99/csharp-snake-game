@@ -47,5 +47,7 @@ The `Windows Build` workflow builds the Release solution, runs `SnakeGame.Tests`
 7. Turn on `Progressive speed` and confirm the HUD shows a `+` next to speed.
 8. Turn on `Obstacles` and confirm blocked cells appear and collision ends the run.
 9. Toggle `Sound` and confirm start, eat, pause/resume, and finish sounds respect the setting.
-10. Confirm the start panel preview snake animates smoothly and the eat feedback is visible without feeling distracting.
-11. Close and reopen the app to confirm speed, mode, sound, and best-score settings are restored.
+10. Start a run and confirm the window cannot be resized until the game returns to the restart panel.
+11. Confirm the start panel covers all controls at the minimum window size and normal Windows scaling.
+12. Confirm the start panel preview snake animates smoothly and the eat feedback is visible without feeling distracting.
+13. Close and reopen the app to confirm speed, mode, sound, and best-score settings are restored.
