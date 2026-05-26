@@ -47,6 +47,7 @@ When the workflow passes, download the versioned `SnakeGame-Windows-Release-<ver
 ## Features
 
 - Layered board background with subtle cell texture, major-grid rhythm, styled snake, and highlighted food
+- Start and resume countdown overlays before movement begins
 - Short score flash and board burst feedback when food is eaten
 - Directional snake-head detail, clearer food shape, and textured obstacles
 - Arcade-style start panel with display typography, best-score callout, and animated snake preview

@@ -78,6 +78,7 @@ namespace SnakeGame
         private readonly SnakeGameEngine game = new SnakeGameEngine();
         private readonly Timer attractTimer = new Timer();
         private readonly Timer feedbackTimer = new Timer();
+        private readonly Timer countdownTimer = new Timer();
         private LeaderboardStore leaderboard = new LeaderboardStore();
         private int highScore = 0;
         private int selectedSpeed = GameSpeed.DefaultSpeed;
@@ -93,6 +94,10 @@ namespace SnakeGame
         private VisualThemePreset selectedThemePreset = GamePresets.DefaultTheme;
         private string activeChallengeSeed = string.Empty;
         private bool hasRecordedFinishedRun;
+        private bool isCountdownActive;
+        private int countdownValue;
+        private string countdownTitle = string.Empty;
+        private string countdownSubtitle = string.Empty;
         private bool suppressPlayerSettingSave;
         private Size unlockedMinimumSize;
         private Size unlockedMaximumSize;
@@ -120,6 +125,7 @@ namespace SnakeGame
 
             ConfigureAttractTimer();
             ConfigureFeedbackTimer();
+            ConfigureCountdownTimer();
             ConfigureFonts();
             ConfigureHudLabels();
             ConfigureStartPanel();
@@ -160,7 +166,7 @@ namespace SnakeGame
                 return;
             }
 
-            timer1.Start();
+            StartCountdown(3, "GET READY");
             Focus();
         }
 
@@ -299,6 +305,12 @@ namespace SnakeGame
         {
             feedbackTimer.Interval = 34;
             feedbackTimer.Tick += feedbackTimer_Tick;
+        }
+
+        private void ConfigureCountdownTimer()
+        {
+            countdownTimer.Interval = 650;
+            countdownTimer.Tick += countdownTimer_Tick;
         }
 
         private void ConfigureFonts()
@@ -774,6 +786,11 @@ namespace SnakeGame
 
         private string GetStatusText()
         {
+            if (isCountdownActive)
+            {
+                return "Ready";
+            }
+
             switch (game.Status)
             {
                 case GameStatus.Won:
@@ -940,6 +957,11 @@ namespace SnakeGame
 
         private void TogglePause()
         {
+            if (isCountdownActive)
+            {
+                return;
+            }
+
             if (game.Status != GameStatus.Playing && game.Status != GameStatus.Paused)
             {
                 return;
@@ -954,9 +976,10 @@ namespace SnakeGame
             }
             else
             {
-                timer1.Start();
+                timer1.Stop();
                 btnPause.Text = "Pause";
                 PlayResumeSound();
+                StartCountdown(1, "RESUME");
             }
 
             UpdateHud();
@@ -971,6 +994,7 @@ namespace SnakeGame
             }
 
             timer1.Stop();
+            StopCountdown();
             UpdateHighScore();
             RecordFinishedRun();
             btnPause.Visible = false;
@@ -1080,7 +1104,7 @@ namespace SnakeGame
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (game.Status != GameStatus.Playing)
+            if (isCountdownActive || game.Status != GameStatus.Playing)
             {
                 return;
             }
@@ -1107,6 +1131,64 @@ namespace SnakeGame
             UpdateHud();
             Invalidate();
             FinishRoundIfNeeded();
+        }
+
+        private void StartCountdown(int startValue, string subtitle)
+        {
+            countdownValue = Math.Max(0, startValue);
+            countdownSubtitle = subtitle;
+            countdownTitle = countdownValue > 0 ? countdownValue.ToString() : "GO";
+            isCountdownActive = true;
+            timer1.Stop();
+            countdownTimer.Stop();
+            countdownTimer.Start();
+            UpdateHud();
+            Invalidate();
+        }
+
+        private void StopCountdown()
+        {
+            countdownTimer.Stop();
+            isCountdownActive = false;
+            countdownTitle = string.Empty;
+            countdownSubtitle = string.Empty;
+        }
+
+        private void countdownTimer_Tick(object sender, EventArgs e)
+        {
+            if (!isCountdownActive)
+            {
+                countdownTimer.Stop();
+                return;
+            }
+
+            if (countdownValue > 1)
+            {
+                countdownValue--;
+                countdownTitle = countdownValue.ToString();
+                UpdateHud();
+                Invalidate();
+                return;
+            }
+
+            if (countdownValue == 1)
+            {
+                countdownValue = 0;
+                countdownTitle = "GO";
+                UpdateHud();
+                Invalidate();
+                return;
+            }
+
+            StopCountdown();
+            if (game.Status == GameStatus.Playing)
+            {
+                timer1.Start();
+            }
+
+            UpdateHud();
+            Invalidate();
+            Focus();
         }
 
         private void TriggerEatFeedback(GridCell eatenCell)
@@ -1373,6 +1455,10 @@ namespace SnakeGame
             feedbackTimer.Stop();
             feedbackTimer.Tick -= feedbackTimer_Tick;
             feedbackTimer.Dispose();
+
+            countdownTimer.Stop();
+            countdownTimer.Tick -= countdownTimer_Tick;
+            countdownTimer.Dispose();
 
             if (hudFont != null)
             {

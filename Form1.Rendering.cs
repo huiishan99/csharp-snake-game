@@ -26,6 +26,12 @@ namespace SnakeGame
             DrawSnake(e.Graphics);
             DrawEatFeedback(e.Graphics);
 
+            if (isCountdownActive)
+            {
+                DrawOverlay(e.Graphics, countdownTitle, countdownSubtitle, "Use arrows or WASD", PauseOverlayColor, SnakeHeadColor);
+                return;
+            }
+
             if (game.IsFinished)
             {
                 DrawStartBackdrop(e.Graphics);
