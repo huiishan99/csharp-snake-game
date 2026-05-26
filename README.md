@@ -36,6 +36,7 @@ When the workflow passes, download the versioned `SnakeGame-Windows-Release-<ver
 - Enter: start or restart when the game is ready
 - Mode: choose Classic, Arcade, Maze, Speed Run, or Zen presets before starting
 - Board: choose a fixed Compact, Standard, or Wide playfield before starting
+- Theme: choose Classic, Neon, Handheld, or Soft visual skins
 - Challenge: type a seed or press `NEW` to replay a deterministic layout
 - Speed `-` / `+`, Left / Right: choose the starting speed before the game begins
 - Wrap walls: turn classic edge wrapping on or off before starting
@@ -52,6 +53,7 @@ When the workflow passes, download the versioned `SnakeGame-Windows-Release-<ver
 - Directional snake-head detail, clearer food shape, and textured obstacles
 - Arcade-style start panel with display typography, best-score callout, and animated snake preview
 - Mode presets and fixed board-size presets for repeatable game setups
+- Selectable Classic, Neon, Handheld, and Soft visual themes
 - Per-mode local leaderboards with the top scores shown on the start panel
 - Challenge seeds for deterministic food and obstacle layouts
 - Custom rounded buttons and toggles with restrained proportions, subtle depth, and focus states

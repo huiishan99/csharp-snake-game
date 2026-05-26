@@ -19,15 +19,16 @@ Use this checklist before tagging or sharing a Windows build.
 5. Adjust menu speed with `-`, `+`, Left, and Right.
 6. Confirm each mode preset updates speed, wall, progressive, and obstacle options.
 7. Confirm each board-size preset resizes the window before starting.
-8. Confirm challenge seeds replay the same initial food and obstacle layout.
-9. Confirm a scoring run updates the per-mode leaderboard.
-10. Confirm progressive speed shows a `+` next to speed.
-11. Confirm solid-wall mode shows the red border and ends the run on wall collision.
-12. Confirm obstacle mode draws blocked cells and ends the run on obstacle collision.
-13. Confirm the sound toggle mutes start, eat, pause/resume, and finish sounds.
-14. Confirm game-over and win states return to the restart panel.
-15. Confirm the window cannot be resized during an active run and can be resized again after game-over or win.
-16. Close and reopen the app, then confirm saved options and best score are restored.
+8. Confirm each theme preset recolors the board, HUD, snake, food, and menu controls.
+9. Confirm challenge seeds replay the same initial food and obstacle layout.
+10. Confirm a scoring run updates the per-mode leaderboard.
+11. Confirm progressive speed shows a `+` next to speed.
+12. Confirm solid-wall mode shows the red border and ends the run on wall collision.
+13. Confirm obstacle mode draws blocked cells and ends the run on obstacle collision.
+14. Confirm the sound toggle mutes start, eat, pause/resume, and finish sounds.
+15. Confirm game-over and win states return to the restart panel.
+16. Confirm the window cannot be resized during an active run and can be resized again after game-over or win.
+17. Close and reopen the app, then confirm saved options and best score are restored.
 
 ## UI Review
 
@@ -49,6 +50,7 @@ Mention these player-facing changes:
 - Optional progressive speed
 - Optional obstacles
 - Mode presets and fixed board-size presets
+- Selectable visual themes
 - Per-mode local leaderboards
 - Deterministic challenge seeds
 - Start and resume countdowns

@@ -46,13 +46,14 @@ The `Windows Build` workflow builds the Release solution, runs `SnakeGame.Tests`
 6. Change menu speed with `-`, `+`, Left, and Right.
 7. Choose each `Mode` preset and confirm speed, wall, progressive, and obstacle options update.
 8. Choose each `Board` preset and confirm the window resizes before the run starts.
-9. Type a `Challenge` seed, restart with the same seed, and confirm obstacle/food placement is repeatable.
-10. Finish a scoring run and confirm the mode leaderboard updates on the start panel.
-11. Turn off `Wrap walls` and confirm the board shows a red border and wall collision ends the run.
-12. Turn on `Progressive speed` and confirm the HUD shows a `+` next to speed.
-13. Turn on `Obstacles` and confirm blocked cells appear and collision ends the run.
-14. Toggle `Sound` and confirm start, eat, pause/resume, and finish sounds respect the setting.
-15. Start a run and confirm the window cannot be resized until the game returns to the restart panel.
-16. Confirm the start panel covers all controls at the minimum window size and normal Windows scaling.
-17. Confirm the start panel preview snake animates smoothly and the eat feedback is visible without feeling distracting.
-18. Close and reopen the app to confirm speed, mode, board, challenge, leaderboard, sound, and best-score settings are restored.
+9. Choose each `Theme` preset and confirm the board, HUD, snake, food, and menu controls recolor.
+10. Type a `Challenge` seed, restart with the same seed, and confirm obstacle/food placement is repeatable.
+11. Finish a scoring run and confirm the mode leaderboard updates on the start panel.
+12. Turn off `Wrap walls` and confirm the board shows a red border and wall collision ends the run.
+13. Turn on `Progressive speed` and confirm the HUD shows a `+` next to speed.
+14. Turn on `Obstacles` and confirm blocked cells appear and collision ends the run.
+15. Toggle `Sound` and confirm start, eat, pause/resume, and finish sounds respect the setting.
+16. Start a run and confirm the window cannot be resized until the game returns to the restart panel.
+17. Confirm the start panel covers all controls at the minimum window size and normal Windows scaling.
+18. Confirm the start panel preview snake animates smoothly and the eat feedback is visible without feeling distracting.
+19. Close and reopen the app to confirm speed, mode, board, theme, challenge, leaderboard, sound, and best-score settings are restored.

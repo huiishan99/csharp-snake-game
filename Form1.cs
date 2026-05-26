@@ -31,49 +31,49 @@ namespace SnakeGame
         private const bool DefaultWrapWalls = true;
         private const bool DefaultObstacles = false;
         private const bool DefaultSoundEnabled = true;
-        private static readonly Color WindowBackColor = Color.FromArgb(18, 24, 27);
-        private static readonly Color BoardTopColor = Color.FromArgb(28, 40, 44);
-        private static readonly Color BoardBottomColor = Color.FromArgb(19, 28, 31);
-        private static readonly Color BoardTextureColor = Color.FromArgb(22, 65, 82, 76);
-        private static readonly Color GridColor = Color.FromArgb(34, 48, 52);
-        private static readonly Color GridMajorColor = Color.FromArgb(43, 62, 66);
-        private static readonly Color HudBackColor = Color.FromArgb(14, 19, 22);
-        private static readonly Color HudPillBackColor = Color.FromArgb(31, 43, 47);
-        private static readonly Color HudPillBorderColor = Color.FromArgb(44, 62, 66);
-        private static readonly Color HudDividerColor = Color.FromArgb(50, 70, 75);
-        private static readonly Color HudTextColor = Color.FromArgb(225, 239, 235);
-        private static readonly Color SnakeHeadColor = Color.FromArgb(180, 255, 190);
-        private static readonly Color SnakeBodyColor = Color.FromArgb(80, 205, 132);
-        private static readonly Color SnakeShadowColor = Color.FromArgb(42, 116, 82);
-        private static readonly Color FoodColor = Color.FromArgb(255, 94, 94);
-        private static readonly Color FoodHighlightColor = Color.FromArgb(255, 176, 128);
-        private static readonly Color ObstacleColor = Color.FromArgb(103, 121, 126);
-        private static readonly Color ObstacleHighlightColor = Color.FromArgb(140, 161, 166);
-        private static readonly Color SolidWallColor = Color.FromArgb(235, 93, 93);
-        private static readonly Color StartPanelBackColor = Color.FromArgb(22, 31, 34);
-        private static readonly Color StartPanelTopColor = Color.FromArgb(25, 36, 39);
-        private static readonly Color StartPanelBottomColor = Color.FromArgb(18, 27, 30);
-        private static readonly Color StartPanelBorderColor = Color.FromArgb(64, 93, 91);
-        private static readonly Color StartPanelMutedTextColor = Color.FromArgb(156, 184, 178);
-        private static readonly Color ToggleBackColor = Color.FromArgb(37, 52, 57);
-        private static readonly Color ToggleBorderColor = Color.FromArgb(76, 99, 104);
-        private static readonly Color ToggleActiveBackColor = Color.FromArgb(90, 220, 145);
-        private static readonly Color ToggleActiveTextColor = Color.FromArgb(8, 24, 15);
-        private static readonly Color SpeedStepInactiveBackColor = Color.FromArgb(25, 34, 38);
-        private static readonly Color SpeedStepInactiveTextColor = Color.FromArgb(104, 126, 128);
-        private static readonly Color StatusReadyColor = Color.FromArgb(68, 92, 100);
-        private static readonly Color StatusPlayingColor = Color.FromArgb(66, 166, 108);
-        private static readonly Color StatusPausedColor = Color.FromArgb(205, 166, 74);
-        private static readonly Color StatusFinishedColor = Color.FromArgb(206, 83, 83);
-        private static readonly Color StatusTextDarkColor = Color.FromArgb(8, 24, 15);
-        private static readonly Color OverlayColor = Color.FromArgb(190, 9, 15, 18);
-        private static readonly Color PauseOverlayColor = Color.FromArgb(172, 22, 22, 18);
-        private static readonly Color WinBackdropColor = Color.FromArgb(154, 22, 58, 37);
-        private static readonly Color GameOverBackdropColor = Color.FromArgb(166, 58, 22, 24);
-        private static readonly Color OverlayTextColor = Color.FromArgb(184, 207, 200);
-        private static readonly Color ScoreFlashBackColor = Color.FromArgb(217, 183, 83);
-        private static readonly Color ScoreFlashTextColor = Color.FromArgb(30, 22, 9);
-        private static readonly Color ScoreFlashBorderColor = Color.FromArgb(255, 219, 120);
+        private Color WindowBackColor = Color.FromArgb(18, 24, 27);
+        private Color BoardTopColor = Color.FromArgb(28, 40, 44);
+        private Color BoardBottomColor = Color.FromArgb(19, 28, 31);
+        private Color BoardTextureColor = Color.FromArgb(22, 65, 82, 76);
+        private Color GridColor = Color.FromArgb(34, 48, 52);
+        private Color GridMajorColor = Color.FromArgb(43, 62, 66);
+        private Color HudBackColor = Color.FromArgb(14, 19, 22);
+        private Color HudPillBackColor = Color.FromArgb(31, 43, 47);
+        private Color HudPillBorderColor = Color.FromArgb(44, 62, 66);
+        private Color HudDividerColor = Color.FromArgb(50, 70, 75);
+        private Color HudTextColor = Color.FromArgb(225, 239, 235);
+        private Color SnakeHeadColor = Color.FromArgb(180, 255, 190);
+        private Color SnakeBodyColor = Color.FromArgb(80, 205, 132);
+        private Color SnakeShadowColor = Color.FromArgb(42, 116, 82);
+        private Color FoodColor = Color.FromArgb(255, 94, 94);
+        private Color FoodHighlightColor = Color.FromArgb(255, 176, 128);
+        private Color ObstacleColor = Color.FromArgb(103, 121, 126);
+        private Color ObstacleHighlightColor = Color.FromArgb(140, 161, 166);
+        private Color SolidWallColor = Color.FromArgb(235, 93, 93);
+        private Color StartPanelBackColor = Color.FromArgb(22, 31, 34);
+        private Color StartPanelTopColor = Color.FromArgb(25, 36, 39);
+        private Color StartPanelBottomColor = Color.FromArgb(18, 27, 30);
+        private Color StartPanelBorderColor = Color.FromArgb(64, 93, 91);
+        private Color StartPanelMutedTextColor = Color.FromArgb(156, 184, 178);
+        private Color ToggleBackColor = Color.FromArgb(37, 52, 57);
+        private Color ToggleBorderColor = Color.FromArgb(76, 99, 104);
+        private Color ToggleActiveBackColor = Color.FromArgb(90, 220, 145);
+        private Color ToggleActiveTextColor = Color.FromArgb(8, 24, 15);
+        private Color SpeedStepInactiveBackColor = Color.FromArgb(25, 34, 38);
+        private Color SpeedStepInactiveTextColor = Color.FromArgb(104, 126, 128);
+        private Color StatusReadyColor = Color.FromArgb(68, 92, 100);
+        private Color StatusPlayingColor = Color.FromArgb(66, 166, 108);
+        private Color StatusPausedColor = Color.FromArgb(205, 166, 74);
+        private Color StatusFinishedColor = Color.FromArgb(206, 83, 83);
+        private Color StatusTextDarkColor = Color.FromArgb(8, 24, 15);
+        private Color OverlayColor = Color.FromArgb(190, 9, 15, 18);
+        private Color PauseOverlayColor = Color.FromArgb(172, 22, 22, 18);
+        private Color WinBackdropColor = Color.FromArgb(154, 22, 58, 37);
+        private Color GameOverBackdropColor = Color.FromArgb(166, 58, 22, 24);
+        private Color OverlayTextColor = Color.FromArgb(184, 207, 200);
+        private Color ScoreFlashBackColor = Color.FromArgb(217, 183, 83);
+        private Color ScoreFlashTextColor = Color.FromArgb(30, 22, 9);
+        private Color ScoreFlashBorderColor = Color.FromArgb(255, 219, 120);
 
         private readonly SnakeGameEngine game = new SnakeGameEngine();
         private readonly Timer attractTimer = new Timer();
@@ -136,6 +136,7 @@ namespace SnakeGame
             LoadHighScore();
             LoadLeaderboard();
             LoadPlayerSettings();
+            ApplyVisualTheme(selectedThemePreset);
             UpdateSettingsFromUI();
             UpdateHud();
             LayoutControls();
@@ -459,11 +460,21 @@ namespace SnakeGame
             comboBox.Items.AddRange(items);
             comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBox.FlatStyle = FlatStyle.Flat;
-            comboBox.BackColor = ToggleBackColor;
-            comboBox.ForeColor = HudTextColor;
             comboBox.Font = startHintFont;
             comboBox.IntegralHeight = false;
             comboBox.MaxDropDownItems = 6;
+            StyleComboBox(comboBox);
+        }
+
+        private void StyleComboBox(ComboBox comboBox)
+        {
+            if (comboBox == null)
+            {
+                return;
+            }
+
+            comboBox.BackColor = ToggleBackColor;
+            comboBox.ForeColor = HudTextColor;
         }
 
         private void ConfigureTextBox(TextBox textBox)
@@ -474,10 +485,245 @@ namespace SnakeGame
             }
 
             textBox.BorderStyle = BorderStyle.FixedSingle;
-            textBox.BackColor = ToggleBackColor;
-            textBox.ForeColor = HudTextColor;
             textBox.Font = startHintFont;
             textBox.CharacterCasing = CharacterCasing.Upper;
+            StyleTextBox(textBox);
+        }
+
+        private void StyleTextBox(TextBox textBox)
+        {
+            if (textBox == null)
+            {
+                return;
+            }
+
+            textBox.BackColor = ToggleBackColor;
+            textBox.ForeColor = HudTextColor;
+        }
+
+        private void ApplyVisualTheme(VisualThemePreset theme)
+        {
+            selectedThemePreset = theme;
+            switch (theme)
+            {
+                case VisualThemePreset.Neon:
+                    ApplyNeonTheme();
+                    break;
+                case VisualThemePreset.Handheld:
+                    ApplyHandheldTheme();
+                    break;
+                case VisualThemePreset.Soft:
+                    ApplySoftTheme();
+                    break;
+                default:
+                    ApplyClassicTheme();
+                    break;
+            }
+
+            RefreshThemeStyles();
+        }
+
+        private void RefreshThemeStyles()
+        {
+            BackColor = WindowBackColor;
+            ConfigureHudLabels();
+            ConfigureStartPanel();
+            ConfigureSetupLabels();
+            ConfigureButtons();
+            StyleComboBox(cmbMode);
+            StyleComboBox(cmbBoardSize);
+            StyleComboBox(cmbTheme);
+            StyleTextBox(txtChallengeSeed);
+            UpdateHud();
+            Invalidate();
+        }
+
+        private void ApplyClassicTheme()
+        {
+            WindowBackColor = Color.FromArgb(18, 24, 27);
+            BoardTopColor = Color.FromArgb(28, 40, 44);
+            BoardBottomColor = Color.FromArgb(19, 28, 31);
+            BoardTextureColor = Color.FromArgb(22, 65, 82, 76);
+            GridColor = Color.FromArgb(34, 48, 52);
+            GridMajorColor = Color.FromArgb(43, 62, 66);
+            HudBackColor = Color.FromArgb(14, 19, 22);
+            HudPillBackColor = Color.FromArgb(31, 43, 47);
+            HudPillBorderColor = Color.FromArgb(44, 62, 66);
+            HudDividerColor = Color.FromArgb(50, 70, 75);
+            HudTextColor = Color.FromArgb(225, 239, 235);
+            SnakeHeadColor = Color.FromArgb(180, 255, 190);
+            SnakeBodyColor = Color.FromArgb(80, 205, 132);
+            SnakeShadowColor = Color.FromArgb(42, 116, 82);
+            FoodColor = Color.FromArgb(255, 94, 94);
+            FoodHighlightColor = Color.FromArgb(255, 176, 128);
+            ObstacleColor = Color.FromArgb(103, 121, 126);
+            ObstacleHighlightColor = Color.FromArgb(140, 161, 166);
+            SolidWallColor = Color.FromArgb(235, 93, 93);
+            StartPanelBackColor = Color.FromArgb(22, 31, 34);
+            StartPanelTopColor = Color.FromArgb(25, 36, 39);
+            StartPanelBottomColor = Color.FromArgb(18, 27, 30);
+            StartPanelBorderColor = Color.FromArgb(64, 93, 91);
+            StartPanelMutedTextColor = Color.FromArgb(156, 184, 178);
+            ToggleBackColor = Color.FromArgb(37, 52, 57);
+            ToggleBorderColor = Color.FromArgb(76, 99, 104);
+            ToggleActiveBackColor = Color.FromArgb(90, 220, 145);
+            ToggleActiveTextColor = Color.FromArgb(8, 24, 15);
+            SpeedStepInactiveBackColor = Color.FromArgb(25, 34, 38);
+            SpeedStepInactiveTextColor = Color.FromArgb(104, 126, 128);
+            StatusReadyColor = Color.FromArgb(68, 92, 100);
+            StatusPlayingColor = Color.FromArgb(66, 166, 108);
+            StatusPausedColor = Color.FromArgb(205, 166, 74);
+            StatusFinishedColor = Color.FromArgb(206, 83, 83);
+            StatusTextDarkColor = Color.FromArgb(8, 24, 15);
+            OverlayColor = Color.FromArgb(190, 9, 15, 18);
+            PauseOverlayColor = Color.FromArgb(172, 22, 22, 18);
+            WinBackdropColor = Color.FromArgb(154, 22, 58, 37);
+            GameOverBackdropColor = Color.FromArgb(166, 58, 22, 24);
+            OverlayTextColor = Color.FromArgb(184, 207, 200);
+            ScoreFlashBackColor = Color.FromArgb(217, 183, 83);
+            ScoreFlashTextColor = Color.FromArgb(30, 22, 9);
+            ScoreFlashBorderColor = Color.FromArgb(255, 219, 120);
+        }
+
+        private void ApplyNeonTheme()
+        {
+            WindowBackColor = Color.FromArgb(12, 14, 28);
+            BoardTopColor = Color.FromArgb(22, 27, 55);
+            BoardBottomColor = Color.FromArgb(10, 14, 31);
+            BoardTextureColor = Color.FromArgb(20, 0, 214, 188);
+            GridColor = Color.FromArgb(35, 45, 82);
+            GridMajorColor = Color.FromArgb(53, 76, 120);
+            HudBackColor = Color.FromArgb(8, 11, 22);
+            HudPillBackColor = Color.FromArgb(28, 34, 61);
+            HudPillBorderColor = Color.FromArgb(64, 92, 132);
+            HudDividerColor = Color.FromArgb(57, 88, 126);
+            HudTextColor = Color.FromArgb(230, 246, 255);
+            SnakeHeadColor = Color.FromArgb(140, 255, 244);
+            SnakeBodyColor = Color.FromArgb(51, 218, 201);
+            SnakeShadowColor = Color.FromArgb(19, 92, 109);
+            FoodColor = Color.FromArgb(255, 76, 142);
+            FoodHighlightColor = Color.FromArgb(255, 205, 101);
+            ObstacleColor = Color.FromArgb(91, 101, 154);
+            ObstacleHighlightColor = Color.FromArgb(136, 159, 212);
+            SolidWallColor = Color.FromArgb(255, 88, 128);
+            StartPanelBackColor = Color.FromArgb(16, 20, 39);
+            StartPanelTopColor = Color.FromArgb(25, 31, 59);
+            StartPanelBottomColor = Color.FromArgb(10, 14, 30);
+            StartPanelBorderColor = Color.FromArgb(72, 213, 213);
+            StartPanelMutedTextColor = Color.FromArgb(162, 196, 226);
+            ToggleBackColor = Color.FromArgb(33, 39, 69);
+            ToggleBorderColor = Color.FromArgb(77, 106, 150);
+            ToggleActiveBackColor = Color.FromArgb(86, 241, 220);
+            ToggleActiveTextColor = Color.FromArgb(4, 22, 28);
+            SpeedStepInactiveBackColor = Color.FromArgb(21, 25, 49);
+            SpeedStepInactiveTextColor = Color.FromArgb(112, 130, 160);
+            StatusReadyColor = Color.FromArgb(64, 84, 130);
+            StatusPlayingColor = Color.FromArgb(72, 222, 186);
+            StatusPausedColor = Color.FromArgb(244, 185, 83);
+            StatusFinishedColor = Color.FromArgb(242, 82, 126);
+            StatusTextDarkColor = Color.FromArgb(4, 22, 28);
+            OverlayColor = Color.FromArgb(188, 8, 10, 24);
+            PauseOverlayColor = Color.FromArgb(172, 12, 12, 28);
+            WinBackdropColor = Color.FromArgb(154, 8, 58, 66);
+            GameOverBackdropColor = Color.FromArgb(168, 78, 18, 46);
+            OverlayTextColor = Color.FromArgb(214, 236, 248);
+            ScoreFlashBackColor = Color.FromArgb(255, 205, 101);
+            ScoreFlashTextColor = Color.FromArgb(28, 17, 0);
+            ScoreFlashBorderColor = Color.FromArgb(255, 232, 151);
+        }
+
+        private void ApplyHandheldTheme()
+        {
+            WindowBackColor = Color.FromArgb(35, 39, 35);
+            BoardTopColor = Color.FromArgb(126, 145, 94);
+            BoardBottomColor = Color.FromArgb(94, 116, 78);
+            BoardTextureColor = Color.FromArgb(28, 47, 62, 37);
+            GridColor = Color.FromArgb(78, 96, 67);
+            GridMajorColor = Color.FromArgb(67, 82, 58);
+            HudBackColor = Color.FromArgb(30, 34, 31);
+            HudPillBackColor = Color.FromArgb(60, 71, 56);
+            HudPillBorderColor = Color.FromArgb(91, 107, 77);
+            HudDividerColor = Color.FromArgb(86, 101, 75);
+            HudTextColor = Color.FromArgb(224, 238, 191);
+            SnakeHeadColor = Color.FromArgb(19, 55, 29);
+            SnakeBodyColor = Color.FromArgb(37, 84, 42);
+            SnakeShadowColor = Color.FromArgb(79, 99, 61);
+            FoodColor = Color.FromArgb(92, 50, 39);
+            FoodHighlightColor = Color.FromArgb(154, 98, 66);
+            ObstacleColor = Color.FromArgb(71, 84, 66);
+            ObstacleHighlightColor = Color.FromArgb(105, 121, 85);
+            SolidWallColor = Color.FromArgb(96, 45, 42);
+            StartPanelBackColor = Color.FromArgb(48, 56, 47);
+            StartPanelTopColor = Color.FromArgb(64, 75, 58);
+            StartPanelBottomColor = Color.FromArgb(38, 45, 39);
+            StartPanelBorderColor = Color.FromArgb(132, 153, 96);
+            StartPanelMutedTextColor = Color.FromArgb(188, 205, 145);
+            ToggleBackColor = Color.FromArgb(66, 78, 61);
+            ToggleBorderColor = Color.FromArgb(111, 130, 87);
+            ToggleActiveBackColor = Color.FromArgb(157, 189, 105);
+            ToggleActiveTextColor = Color.FromArgb(19, 37, 22);
+            SpeedStepInactiveBackColor = Color.FromArgb(44, 52, 44);
+            SpeedStepInactiveTextColor = Color.FromArgb(128, 146, 112);
+            StatusReadyColor = Color.FromArgb(86, 104, 75);
+            StatusPlayingColor = Color.FromArgb(147, 181, 99);
+            StatusPausedColor = Color.FromArgb(183, 154, 77);
+            StatusFinishedColor = Color.FromArgb(142, 70, 58);
+            StatusTextDarkColor = Color.FromArgb(17, 31, 18);
+            OverlayColor = Color.FromArgb(170, 24, 31, 25);
+            PauseOverlayColor = Color.FromArgb(158, 34, 36, 27);
+            WinBackdropColor = Color.FromArgb(142, 55, 83, 42);
+            GameOverBackdropColor = Color.FromArgb(154, 74, 38, 30);
+            OverlayTextColor = Color.FromArgb(223, 237, 188);
+            ScoreFlashBackColor = Color.FromArgb(198, 174, 88);
+            ScoreFlashTextColor = Color.FromArgb(31, 27, 11);
+            ScoreFlashBorderColor = Color.FromArgb(231, 212, 129);
+        }
+
+        private void ApplySoftTheme()
+        {
+            WindowBackColor = Color.FromArgb(25, 30, 31);
+            BoardTopColor = Color.FromArgb(39, 50, 53);
+            BoardBottomColor = Color.FromArgb(28, 37, 39);
+            BoardTextureColor = Color.FromArgb(18, 118, 140, 128);
+            GridColor = Color.FromArgb(48, 63, 66);
+            GridMajorColor = Color.FromArgb(67, 83, 86);
+            HudBackColor = Color.FromArgb(20, 25, 26);
+            HudPillBackColor = Color.FromArgb(42, 52, 54);
+            HudPillBorderColor = Color.FromArgb(73, 91, 92);
+            HudDividerColor = Color.FromArgb(67, 83, 84);
+            HudTextColor = Color.FromArgb(235, 240, 232);
+            SnakeHeadColor = Color.FromArgb(206, 244, 195);
+            SnakeBodyColor = Color.FromArgb(121, 197, 143);
+            SnakeShadowColor = Color.FromArgb(58, 101, 85);
+            FoodColor = Color.FromArgb(242, 118, 107);
+            FoodHighlightColor = Color.FromArgb(255, 205, 153);
+            ObstacleColor = Color.FromArgb(118, 138, 145);
+            ObstacleHighlightColor = Color.FromArgb(158, 177, 181);
+            SolidWallColor = Color.FromArgb(232, 118, 111);
+            StartPanelBackColor = Color.FromArgb(33, 42, 44);
+            StartPanelTopColor = Color.FromArgb(43, 54, 56);
+            StartPanelBottomColor = Color.FromArgb(26, 35, 37);
+            StartPanelBorderColor = Color.FromArgb(111, 152, 146);
+            StartPanelMutedTextColor = Color.FromArgb(178, 196, 189);
+            ToggleBackColor = Color.FromArgb(50, 64, 66);
+            ToggleBorderColor = Color.FromArgb(91, 112, 113);
+            ToggleActiveBackColor = Color.FromArgb(159, 218, 170);
+            ToggleActiveTextColor = Color.FromArgb(18, 34, 23);
+            SpeedStepInactiveBackColor = Color.FromArgb(34, 43, 45);
+            SpeedStepInactiveTextColor = Color.FromArgb(125, 145, 145);
+            StatusReadyColor = Color.FromArgb(91, 113, 116);
+            StatusPlayingColor = Color.FromArgb(124, 197, 145);
+            StatusPausedColor = Color.FromArgb(217, 172, 91);
+            StatusFinishedColor = Color.FromArgb(213, 103, 99);
+            StatusTextDarkColor = Color.FromArgb(15, 29, 19);
+            OverlayColor = Color.FromArgb(184, 15, 19, 20);
+            PauseOverlayColor = Color.FromArgb(164, 28, 29, 25);
+            WinBackdropColor = Color.FromArgb(142, 42, 82, 55);
+            GameOverBackdropColor = Color.FromArgb(154, 82, 37, 38);
+            OverlayTextColor = Color.FromArgb(224, 234, 228);
+            ScoreFlashBackColor = Color.FromArgb(228, 190, 101);
+            ScoreFlashTextColor = Color.FromArgb(33, 25, 10);
+            ScoreFlashBorderColor = Color.FromArgb(255, 226, 139);
         }
 
         private void ConfigureButtons()
@@ -1298,12 +1544,12 @@ namespace SnakeGame
             }
 
             selectedThemePreset = GamePresets.ParseTheme(cmbTheme.SelectedIndex);
+            ApplyVisualTheme(selectedThemePreset);
             if (!suppressPlayerSettingSave)
             {
                 SavePlayerSettings();
             }
 
-            Invalidate();
             Focus();
         }
 
