@@ -6,12 +6,15 @@
 - Added a sound toggle and persisted sound preference for short start, eat, pause/resume, and finish sounds.
 - Added extra engine checks for bounded direction input queues and food regeneration after resize/obstacle conflicts.
 - Added versioned GitHub Actions zip artifacts with `BUILD_INFO.txt` and a workflow run summary.
+- Added mode presets for Classic, Arcade, Maze, Speed Run, and Zen, with saved menu selection.
+- Added fixed board-size presets for Compact, Standard, and Wide playfields.
 
 ### Changed
 - Split rendering, overlays, board drawing, start-screen painting, and sound helpers into focused `Form1` partial files to keep the main form code easier to maintain.
 - Updated Windows testing and release checklists for sound, animated title-screen preview, eat feedback, and versioned artifacts.
 - Locked the window size during active runs so resizing cannot change the live board dimensions mid-game.
 - Enlarged the start panel and minimum window size so all menu controls stay covered with comfortable padding on Windows.
+- Reworked the start panel layout to make room for preset selectors without crowding the existing speed and option controls.
 
 ## 2026-05-24
 

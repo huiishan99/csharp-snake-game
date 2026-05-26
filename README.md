@@ -34,6 +34,8 @@ When the workflow passes, download the versioned `SnakeGame-Windows-Release-<ver
 - Arrow keys or `WASD`: move the snake
 - Space: pause or resume
 - Enter: start or restart when the game is ready
+- Mode: choose Classic, Arcade, Maze, Speed Run, or Zen presets before starting
+- Board: choose a fixed Compact, Standard, or Wide playfield before starting
 - Speed `-` / `+`, Left / Right: choose the starting speed before the game begins
 - Wrap walls: turn classic edge wrapping on or off before starting
 - Progressive speed: make the snake gradually speed up as the score rises
@@ -47,6 +49,7 @@ When the workflow passes, download the versioned `SnakeGame-Windows-Release-<ver
 - Short score flash and board burst feedback when food is eaten
 - Directional snake-head detail, clearer food shape, and textured obstacles
 - Arcade-style start panel with display typography, best-score callout, and animated snake preview
+- Mode presets and fixed board-size presets for repeatable game setups
 - Custom rounded buttons and toggles with restrained proportions, subtle depth, and focus states
 - Theme-matched speed stepper instead of the default Windows slider
 - Compact self-painted HUD pills with status-aware colors

@@ -452,7 +452,7 @@ namespace SnakeGame
 
         private Rectangle GetStartPreviewBounds()
         {
-            return new Rectangle(StartPanelPadding, 78, Math.Max(0, pnlStartMenu.Width - StartPanelPadding * 2), 50);
+            return new Rectangle(StartPanelPadding, 76, Math.Max(0, pnlStartMenu.Width - StartPanelPadding * 2), 42);
         }
 
         private void DrawStartPreviewGrid(Graphics canvas, Rectangle preview)

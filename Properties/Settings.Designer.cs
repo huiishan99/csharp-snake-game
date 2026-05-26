@@ -116,5 +116,50 @@ namespace SnakeGame.Properties
                 this["SoundEnabled"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int ModePreset
+        {
+            get
+            {
+                return ((int)(this["ModePreset"]));
+            }
+            set
+            {
+                this["ModePreset"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int BoardSizePreset
+        {
+            get
+            {
+                return ((int)(this["BoardSizePreset"]));
+            }
+            set
+            {
+                this["BoardSizePreset"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int ThemePreset
+        {
+            get
+            {
+                return ((int)(this["ThemePreset"]));
+            }
+            set
+            {
+                this["ThemePreset"] = value;
+            }
+        }
     }
 }

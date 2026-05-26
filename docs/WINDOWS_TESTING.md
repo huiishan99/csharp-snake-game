@@ -43,11 +43,13 @@ The `Windows Build` workflow builds the Release solution, runs `SnakeGame.Tests`
 3. Pause and resume with `Space`.
 4. Restart from the game-over overlay with `Enter`.
 5. Change menu speed with `-`, `+`, Left, and Right.
-6. Turn off `Wrap walls` and confirm the board shows a red border and wall collision ends the run.
-7. Turn on `Progressive speed` and confirm the HUD shows a `+` next to speed.
-8. Turn on `Obstacles` and confirm blocked cells appear and collision ends the run.
-9. Toggle `Sound` and confirm start, eat, pause/resume, and finish sounds respect the setting.
-10. Start a run and confirm the window cannot be resized until the game returns to the restart panel.
-11. Confirm the start panel covers all controls at the minimum window size and normal Windows scaling.
-12. Confirm the start panel preview snake animates smoothly and the eat feedback is visible without feeling distracting.
-13. Close and reopen the app to confirm speed, mode, sound, and best-score settings are restored.
+6. Choose each `Mode` preset and confirm speed, wall, progressive, and obstacle options update.
+7. Choose each `Board` preset and confirm the window resizes before the run starts.
+8. Turn off `Wrap walls` and confirm the board shows a red border and wall collision ends the run.
+9. Turn on `Progressive speed` and confirm the HUD shows a `+` next to speed.
+10. Turn on `Obstacles` and confirm blocked cells appear and collision ends the run.
+11. Toggle `Sound` and confirm start, eat, pause/resume, and finish sounds respect the setting.
+12. Start a run and confirm the window cannot be resized until the game returns to the restart panel.
+13. Confirm the start panel covers all controls at the minimum window size and normal Windows scaling.
+14. Confirm the start panel preview snake animates smoothly and the eat feedback is visible without feeling distracting.
+15. Close and reopen the app to confirm speed, mode, board, sound, and best-score settings are restored.

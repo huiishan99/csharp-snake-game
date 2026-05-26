@@ -38,6 +38,9 @@ namespace SnakeGame.Tests
             ClampsSpeedIntoSupportedRange();
             CalculatesFixedSpeedInterval();
             ProgressiveSpeedGetsFasterAndCaps();
+            PresetsClampInvalidValues();
+            ModePresetAppliesExpectedRules();
+            BoardPresetHasPlayableDimensions();
         }
 
         private static void StartsCenteredAndPlacesFoodOffSnake()
@@ -283,6 +286,34 @@ namespace SnakeGame.Tests
             AssertEqual(80, GameSpeed.GetTimerInterval(10, 1000, true), "progressive speed minimum interval");
             AssertEqual("Speed: 5+", GameSpeed.GetDisplayLabel(5, true), "progressive speed label");
             AssertEqual("5+", GameSpeed.GetDisplayValue(5, true), "progressive speed value");
+        }
+
+        private static void PresetsClampInvalidValues()
+        {
+            AssertEqual(GameModePreset.Arcade, GamePresets.ParseMode(99), "invalid mode preset");
+            AssertEqual(BoardSizePreset.Standard, GamePresets.ParseBoardSize(-1), "invalid board preset");
+            AssertEqual(VisualThemePreset.Classic, GamePresets.ParseTheme(20), "invalid theme preset");
+        }
+
+        private static void ModePresetAppliesExpectedRules()
+        {
+            GameModeSettings maze = GamePresets.GetMode(GameModePreset.Maze);
+
+            AssertEqual("Maze", maze.Name, "maze name");
+            AssertFalse(maze.WrapWalls, "maze should use solid walls");
+            AssertTrue(maze.ProgressiveSpeed, "maze should use progressive speed");
+            AssertTrue(maze.Obstacles, "maze should enable obstacles");
+        }
+
+        private static void BoardPresetHasPlayableDimensions()
+        {
+            BoardSizeSettings compact = GamePresets.GetBoardSize(BoardSizePreset.Compact);
+            BoardSizeSettings wide = GamePresets.GetBoardSize(BoardSizePreset.Wide);
+
+            AssertTrue(compact.GridWidth > 20, "compact grid width");
+            AssertTrue(compact.GridHeight > 20, "compact grid height");
+            AssertTrue(wide.GridWidth > compact.GridWidth, "wide grid width");
+            AssertEqual("Wide 56x30", wide.DisplayName, "wide display name");
         }
 
         private static void AssertEqual<T>(T expected, T actual, string label)

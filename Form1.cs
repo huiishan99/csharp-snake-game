@@ -13,15 +13,17 @@ namespace SnakeGame
         private const int HudControlTop = 8;
         private const int HudControlHeight = 26;
         private const int HudPauseButtonWidth = 76;
-        private const int StartPanelWidth = 360;
-        private const int StartPanelHeight = 314;
+        private const int StartPanelWidth = 460;
+        private const int StartPanelHeight = 430;
         private const int StartPanelRadius = 6;
         private const int StartPanelPadding = 24;
-        private const int StartPanelGap = 6;
+        private const int StartPanelGap = 8;
         private const int SpeedButtonWidth = 36;
         private const int SpeedRowHeight = 30;
         private const int StartButtonHeight = 34;
         private const int ToggleHeight = 26;
+        private const int SetupLabelHeight = 16;
+        private const int SetupInputHeight = 26;
         private const string UiFontFamily = "Segoe UI";
         private const string UiDisplayFontFamily = "Consolas";
         private const string UiHeadingFontFamily = "Segoe UI Semibold";
@@ -84,6 +86,9 @@ namespace SnakeGame
         private bool useProgressiveSpeed = GameSpeed.DefaultProgressiveSpeed;
         private bool useObstacles = DefaultObstacles;
         private bool useSound = DefaultSoundEnabled;
+        private GameModePreset selectedModePreset = GamePresets.DefaultMode;
+        private BoardSizePreset selectedBoardSizePreset = GamePresets.DefaultBoardSize;
+        private VisualThemePreset selectedThemePreset = GamePresets.DefaultTheme;
         private bool suppressPlayerSettingSave;
         private Size unlockedMinimumSize;
         private Size unlockedMaximumSize;
@@ -116,6 +121,7 @@ namespace SnakeGame
             ConfigureStartPanel();
             ConfigureButtons();
             ConfigureSetupLabels();
+            ConfigurePresetControls();
             ConfigureOverlayFonts();
             LoadHighScore();
             LoadPlayerSettings();
@@ -127,6 +133,7 @@ namespace SnakeGame
 
         private void StartGame()
         {
+            ApplySelectedBoardSize();
             SetStartMenuVisible(false);
             btnPause.Visible = true;
             btnPause.Text = "Pause";
@@ -186,7 +193,7 @@ namespace SnakeGame
                 return;
             }
 
-            int panelWidth = Math.Max(300, Math.Min(StartPanelWidth, ClientSize.Width - 40));
+            int panelWidth = Math.Max(420, Math.Min(StartPanelWidth, ClientSize.Width - 40));
             int panelHeight = StartPanelHeight;
             int panelX = Math.Max(0, (ClientSize.Width - panelWidth) / 2);
             int boardHeight = Math.Max(0, ClientSize.Height - HudHeight);
@@ -196,19 +203,35 @@ namespace SnakeGame
 
             int contentWidth = Math.Max(160, panelWidth - StartPanelPadding * 2);
             int x = StartPanelPadding;
+            int secondColumnX = x + (contentWidth + StartPanelGap) / 2;
+            int columnWidth = Math.Max(120, (contentWidth - StartPanelGap) / 2);
             int toggleWidth = Math.Max(80, (contentWidth - StartPanelGap) / 2);
 
             lblStartTitle.SetBounds(x, 16, contentWidth, 32);
             lblStartHint.SetBounds(x, 48, contentWidth, 20);
-            btnStartGame.SetBounds(x, 144, contentWidth, StartButtonHeight);
-            btnSpeedDown.SetBounds(x, 192, SpeedButtonWidth, SpeedRowHeight);
-            lblStartSpeed.SetBounds(x + SpeedButtonWidth + StartPanelGap, 192, contentWidth - SpeedButtonWidth * 2 - StartPanelGap * 2, SpeedRowHeight);
-            btnSpeedUp.SetBounds(x + contentWidth - SpeedButtonWidth, 192, SpeedButtonWidth, SpeedRowHeight);
-            chkWrapWalls.SetBounds(x, 236, toggleWidth, ToggleHeight);
-            chkProgressiveSpeed.SetBounds(x + toggleWidth + StartPanelGap, 236, toggleWidth, ToggleHeight);
-            chkObstacles.SetBounds(x, 268, toggleWidth, ToggleHeight);
-            chkSound.SetBounds(x + toggleWidth + StartPanelGap, 268, toggleWidth, ToggleHeight);
+            btnStartGame.SetBounds(x, 126, contentWidth, StartButtonHeight);
+            LayoutSetupPair(lblMode, cmbMode, x, 172, columnWidth);
+            LayoutSetupPair(lblBoardSize, cmbBoardSize, secondColumnX, 172, columnWidth);
+            LayoutSetupPair(lblTheme, cmbTheme, x, 226, columnWidth);
+            btnSpeedDown.SetBounds(x, 282, SpeedButtonWidth, SpeedRowHeight);
+            lblStartSpeed.SetBounds(x + SpeedButtonWidth + StartPanelGap, 282, contentWidth - SpeedButtonWidth * 2 - StartPanelGap * 2, SpeedRowHeight);
+            btnSpeedUp.SetBounds(x + contentWidth - SpeedButtonWidth, 282, SpeedButtonWidth, SpeedRowHeight);
+            chkWrapWalls.SetBounds(x, 320, toggleWidth, ToggleHeight);
+            chkProgressiveSpeed.SetBounds(x + toggleWidth + StartPanelGap, 320, toggleWidth, ToggleHeight);
+            chkObstacles.SetBounds(x, 352, toggleWidth, ToggleHeight);
+            chkSound.SetBounds(x + toggleWidth + StartPanelGap, 352, toggleWidth, ToggleHeight);
             LayoutHudControls();
+        }
+
+        private void LayoutSetupPair(Label label, Control input, int x, int y, int width)
+        {
+            if (label == null || input == null)
+            {
+                return;
+            }
+
+            label.SetBounds(x, y, width, SetupLabelHeight);
+            input.SetBounds(x, y + SetupLabelHeight + 2, width, SetupInputHeight);
         }
 
         private void LockWindowSizeForRun()
@@ -343,6 +366,50 @@ namespace SnakeGame
             lblStartSpeed.BackColor = Color.Transparent;
             lblStartSpeed.Font = secondaryButtonFont;
             lblStartSpeed.TextAlign = ContentAlignment.MiddleCenter;
+
+            ConfigureSetupLabel(lblMode);
+            ConfigureSetupLabel(lblBoardSize);
+            ConfigureSetupLabel(lblTheme);
+        }
+
+        private void ConfigureSetupLabel(Label label)
+        {
+            if (label == null)
+            {
+                return;
+            }
+
+            label.AutoSize = false;
+            label.AutoEllipsis = true;
+            label.ForeColor = StartPanelMutedTextColor;
+            label.BackColor = Color.Transparent;
+            label.Font = startHintFont;
+            label.TextAlign = ContentAlignment.MiddleLeft;
+        }
+
+        private void ConfigurePresetControls()
+        {
+            ConfigureComboBox(cmbMode, GamePresets.GetModeNames());
+            ConfigureComboBox(cmbBoardSize, GamePresets.GetBoardSizeNames());
+            ConfigureComboBox(cmbTheme, GamePresets.GetThemeNames());
+        }
+
+        private void ConfigureComboBox(ComboBox comboBox, string[] items)
+        {
+            if (comboBox == null)
+            {
+                return;
+            }
+
+            comboBox.Items.Clear();
+            comboBox.Items.AddRange(items);
+            comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBox.FlatStyle = FlatStyle.Flat;
+            comboBox.BackColor = ToggleBackColor;
+            comboBox.ForeColor = HudTextColor;
+            comboBox.Font = startHintFont;
+            comboBox.IntegralHeight = false;
+            comboBox.MaxDropDownItems = 6;
         }
 
         private void ConfigureButtons()
@@ -577,7 +644,7 @@ namespace SnakeGame
             else
             {
                 lblStartTitle.Text = "SNAKE";
-                lblStartHint.Text = "SURVIVE THE GRID";
+                lblStartHint.Text = GamePresets.GetMode(selectedModePreset).Description;
                 btnStartGame.Text = "START RUN";
             }
 
@@ -660,6 +727,9 @@ namespace SnakeGame
             suppressPlayerSettingSave = true;
             try
             {
+                selectedModePreset = GamePresets.ParseMode(SnakeGame.Properties.Settings.Default.ModePreset);
+                selectedBoardSizePreset = GamePresets.ParseBoardSize(SnakeGame.Properties.Settings.Default.BoardSizePreset);
+                selectedThemePreset = GamePresets.ParseTheme(SnakeGame.Properties.Settings.Default.ThemePreset);
                 selectedSpeed = ClampSpeed(SnakeGame.Properties.Settings.Default.Speed);
                 chkWrapWalls.Checked = SnakeGame.Properties.Settings.Default.WrapWalls;
                 chkProgressiveSpeed.Checked = SnakeGame.Properties.Settings.Default.ProgressiveSpeed;
@@ -668,6 +738,9 @@ namespace SnakeGame
             }
             catch
             {
+                selectedModePreset = GamePresets.DefaultMode;
+                selectedBoardSizePreset = GamePresets.DefaultBoardSize;
+                selectedThemePreset = GamePresets.DefaultTheme;
                 selectedSpeed = ClampSpeed(GameSpeed.DefaultSpeed);
                 chkWrapWalls.Checked = DefaultWrapWalls;
                 chkProgressiveSpeed.Checked = GameSpeed.DefaultProgressiveSpeed;
@@ -676,8 +749,21 @@ namespace SnakeGame
             }
             finally
             {
+                SelectComboIndex(cmbMode, (int)selectedModePreset);
+                SelectComboIndex(cmbBoardSize, (int)selectedBoardSizePreset);
+                SelectComboIndex(cmbTheme, (int)selectedThemePreset);
                 suppressPlayerSettingSave = false;
             }
+        }
+
+        private void SelectComboIndex(ComboBox comboBox, int index)
+        {
+            if (comboBox == null || comboBox.Items.Count == 0)
+            {
+                return;
+            }
+
+            comboBox.SelectedIndex = Math.Max(0, Math.Min(comboBox.Items.Count - 1, index));
         }
 
         private int ClampSpeed(int speed)
@@ -699,6 +785,9 @@ namespace SnakeGame
                 SnakeGame.Properties.Settings.Default.ProgressiveSpeed = chkProgressiveSpeed.Checked;
                 SnakeGame.Properties.Settings.Default.Obstacles = chkObstacles.Checked;
                 SnakeGame.Properties.Settings.Default.SoundEnabled = chkSound.Checked;
+                SnakeGame.Properties.Settings.Default.ModePreset = (int)selectedModePreset;
+                SnakeGame.Properties.Settings.Default.BoardSizePreset = (int)selectedBoardSizePreset;
+                SnakeGame.Properties.Settings.Default.ThemePreset = (int)selectedThemePreset;
                 SnakeGame.Properties.Settings.Default.Save();
             }
             catch
@@ -940,6 +1029,87 @@ namespace SnakeGame
         private void btnSpeedUp_Click(object sender, EventArgs e)
         {
             ChangeSpeed(1);
+        }
+
+        private void cmbMode_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbMode == null || cmbMode.SelectedIndex < 0)
+            {
+                return;
+            }
+
+            selectedModePreset = GamePresets.ParseMode(cmbMode.SelectedIndex);
+            if (!suppressPlayerSettingSave)
+            {
+                ApplyModePreset(selectedModePreset);
+                SavePlayerSettings();
+            }
+
+            UpdateHud();
+            Invalidate();
+            Focus();
+        }
+
+        private void cmbBoardSize_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbBoardSize == null || cmbBoardSize.SelectedIndex < 0)
+            {
+                return;
+            }
+
+            selectedBoardSizePreset = GamePresets.ParseBoardSize(cmbBoardSize.SelectedIndex);
+            if (!suppressPlayerSettingSave)
+            {
+                ApplySelectedBoardSize();
+                SavePlayerSettings();
+            }
+
+            UpdateHud();
+            Invalidate();
+            Focus();
+        }
+
+        private void cmbTheme_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cmbTheme == null || cmbTheme.SelectedIndex < 0)
+            {
+                return;
+            }
+
+            selectedThemePreset = GamePresets.ParseTheme(cmbTheme.SelectedIndex);
+            if (!suppressPlayerSettingSave)
+            {
+                SavePlayerSettings();
+            }
+
+            Invalidate();
+            Focus();
+        }
+
+        private void ApplyModePreset(GameModePreset preset)
+        {
+            GameModeSettings mode = GamePresets.GetMode(preset);
+            bool wasSuppressing = suppressPlayerSettingSave;
+            suppressPlayerSettingSave = true;
+            selectedSpeed = mode.Speed;
+            chkWrapWalls.Checked = mode.WrapWalls;
+            chkProgressiveSpeed.Checked = mode.ProgressiveSpeed;
+            chkObstacles.Checked = mode.Obstacles;
+            suppressPlayerSettingSave = wasSuppressing;
+
+            UpdateSettingsFromUI();
+            UpdateHud();
+        }
+
+        private void ApplySelectedBoardSize()
+        {
+            if (isWindowSizeLocked)
+            {
+                return;
+            }
+
+            BoardSizeSettings boardSize = GamePresets.GetBoardSize(selectedBoardSizePreset);
+            ClientSize = new Size(boardSize.GridWidth * CellSize, HudHeight + boardSize.GridHeight * CellSize);
         }
 
         private void ChangeSpeed(int delta)
