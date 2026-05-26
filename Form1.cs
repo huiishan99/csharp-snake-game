@@ -748,24 +748,28 @@ namespace SnakeGame
 
             button.FlatStyle = FlatStyle.Flat;
             button.FlatAppearance.BorderSize = 0;
-            button.BackColor = isPrimary ? Color.FromArgb(24, 70, 50) : Color.FromArgb(35, 48, 53);
+            Color normalBackColor = isPrimary ? ThemeButton.Mix(ToggleActiveBackColor, HudBackColor, 56) : ToggleBackColor;
+            Color hoverBackColor = isPrimary ? ThemeButton.Mix(ToggleActiveBackColor, HudBackColor, 38) : ThemeButton.Mix(ToggleBackColor, HudTextColor, 14);
+            Color pressedBackColor = isPrimary ? ThemeButton.Mix(ToggleActiveBackColor, HudBackColor, 70) : ThemeButton.Mix(ToggleBackColor, HudBackColor, 58);
+
+            button.BackColor = normalBackColor;
             button.ForeColor = isPrimary ? SnakeHeadColor : HudTextColor;
             button.Font = isPrimary ? primaryButtonFont : secondaryButtonFont;
             button.UseVisualStyleBackColor = false;
-            button.FlatAppearance.MouseOverBackColor = isPrimary ? Color.FromArgb(31, 88, 61) : Color.FromArgb(47, 65, 70);
-            button.FlatAppearance.MouseDownBackColor = isPrimary ? Color.FromArgb(20, 59, 43) : Color.FromArgb(31, 43, 48);
+            button.FlatAppearance.MouseOverBackColor = hoverBackColor;
+            button.FlatAppearance.MouseDownBackColor = pressedBackColor;
 
             ThemeButton themeButton = button as ThemeButton;
             if (themeButton != null)
             {
                 themeButton.CornerRadius = isPrimary ? 7 : 6;
-                themeButton.NormalBackColor = isPrimary ? Color.FromArgb(24, 70, 50) : ToggleBackColor;
-                themeButton.HoverBackColor = isPrimary ? Color.FromArgb(31, 88, 61) : Color.FromArgb(47, 65, 70);
-                themeButton.PressedBackColor = isPrimary ? Color.FromArgb(20, 59, 43) : Color.FromArgb(31, 43, 48);
+                themeButton.NormalBackColor = normalBackColor;
+                themeButton.HoverBackColor = hoverBackColor;
+                themeButton.PressedBackColor = pressedBackColor;
                 themeButton.DisabledBackColor = SpeedStepInactiveBackColor;
                 themeButton.NormalTextColor = isPrimary ? SnakeHeadColor : HudTextColor;
                 themeButton.DisabledTextColor = SpeedStepInactiveTextColor;
-                themeButton.BorderColor = isPrimary ? Color.FromArgb(87, 171, 112) : ToggleBorderColor;
+                themeButton.BorderColor = isPrimary ? ToggleActiveBackColor : ToggleBorderColor;
             }
         }
 

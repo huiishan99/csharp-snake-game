@@ -13,6 +13,7 @@
 - Added rule checks for challenge seed normalization, seeded layout determinism, and leaderboard trimming.
 - Added a 3-2-1-GO start countdown and a shorter resume countdown so players have a buffer before movement resumes.
 - Added selectable Classic, Neon, Handheld, and Soft visual themes that recolor the board, snake, food, HUD, and setup controls.
+- Updated button hover, pressed, and primary colors to derive from the active theme instead of fixed green values.
 
 ### Changed
 - Split rendering, overlays, board drawing, start-screen painting, and sound helpers into focused `Form1` partial files to keep the main form code easier to maintain.
