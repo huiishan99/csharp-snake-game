@@ -47,9 +47,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameEngine.cs" />
+    <Compile Include="ChallengeSeed.cs" />
     <Compile Include="GamePresets.cs" />
     <Compile Include="GameSpeed.cs" />
     <Compile Include="GameTypes.cs" />
+    <Compile Include="Leaderboard.cs" />
     <Compile Include="ThemeControls.cs" />
     <Compile Include="Form1.Audio.cs">
       <DependentUpon>Form1.cs</DependentUpon>

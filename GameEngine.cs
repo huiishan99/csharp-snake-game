@@ -15,7 +15,7 @@ namespace SnakeGame
         private readonly List<GridCell> snake = new List<GridCell>();
         private readonly List<GridCell> obstacles = new List<GridCell>();
         private readonly Queue<Direction> directionQueue = new Queue<Direction>();
-        private readonly Random random;
+        private Random random;
         private GridCell food;
 
         public SnakeGameEngine()
@@ -71,6 +71,11 @@ namespace SnakeGame
 
         public void StartNew(int gridWidth, int gridHeight, BoundaryMode boundaryMode, bool useObstacles)
         {
+            StartNew(gridWidth, gridHeight, boundaryMode, useObstacles, null);
+        }
+
+        public void StartNew(int gridWidth, int gridHeight, BoundaryMode boundaryMode, bool useObstacles, int? randomSeed)
+        {
             GridWidth = NormalizeDimension(gridWidth);
             GridHeight = NormalizeDimension(gridHeight);
             Score = 0;
@@ -79,6 +84,10 @@ namespace SnakeGame
             UsesObstacles = useObstacles;
             CurrentDirection = Direction.Down;
             directionQueue.Clear();
+            if (randomSeed.HasValue)
+            {
+                random = new Random(randomSeed.Value);
+            }
 
             snake.Clear();
             snake.Add(new GridCell(GridWidth / 2, GridHeight / 2));

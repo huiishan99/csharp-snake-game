@@ -24,6 +24,7 @@ namespace SnakeGame
         private const int ToggleHeight = 26;
         private const int SetupLabelHeight = 16;
         private const int SetupInputHeight = 26;
+        private const int ChallengeButtonWidth = 52;
         private const string UiFontFamily = "Segoe UI";
         private const string UiDisplayFontFamily = "Consolas";
         private const string UiHeadingFontFamily = "Segoe UI Semibold";
@@ -77,6 +78,7 @@ namespace SnakeGame
         private readonly SnakeGameEngine game = new SnakeGameEngine();
         private readonly Timer attractTimer = new Timer();
         private readonly Timer feedbackTimer = new Timer();
+        private LeaderboardStore leaderboard = new LeaderboardStore();
         private int highScore = 0;
         private int selectedSpeed = GameSpeed.DefaultSpeed;
         private int attractFrame = 0;
@@ -89,6 +91,8 @@ namespace SnakeGame
         private GameModePreset selectedModePreset = GamePresets.DefaultMode;
         private BoardSizePreset selectedBoardSizePreset = GamePresets.DefaultBoardSize;
         private VisualThemePreset selectedThemePreset = GamePresets.DefaultTheme;
+        private string activeChallengeSeed = string.Empty;
+        private bool hasRecordedFinishedRun;
         private bool suppressPlayerSettingSave;
         private Size unlockedMinimumSize;
         private Size unlockedMaximumSize;
@@ -124,6 +128,7 @@ namespace SnakeGame
             ConfigurePresetControls();
             ConfigureOverlayFonts();
             LoadHighScore();
+            LoadLeaderboard();
             LoadPlayerSettings();
             UpdateSettingsFromUI();
             UpdateHud();
@@ -138,11 +143,13 @@ namespace SnakeGame
             btnPause.Visible = true;
             btnPause.Text = "Pause";
             ClearEatFeedback();
+            hasRecordedFinishedRun = false;
+            activeChallengeSeed = ChallengeSeed.Normalize(txtChallengeSeed.Text);
             LockWindowSizeForRun();
 
             UpdateSettingsFromUI();
             SavePlayerSettings();
-            game.StartNew(GetMaxGridX(), GetMaxGridY(), GetSelectedBoundaryMode(), useObstacles);
+            game.StartNew(GetMaxGridX(), GetMaxGridY(), GetSelectedBoundaryMode(), useObstacles, ChallengeSeed.ToRandomSeed(activeChallengeSeed));
             PlayRunStartSound();
             UpdateHighScore();
             UpdateHud();
@@ -213,6 +220,7 @@ namespace SnakeGame
             LayoutSetupPair(lblMode, cmbMode, x, 172, columnWidth);
             LayoutSetupPair(lblBoardSize, cmbBoardSize, secondColumnX, 172, columnWidth);
             LayoutSetupPair(lblTheme, cmbTheme, x, 226, columnWidth);
+            LayoutChallengeControls(secondColumnX, 226, columnWidth);
             btnSpeedDown.SetBounds(x, 282, SpeedButtonWidth, SpeedRowHeight);
             lblStartSpeed.SetBounds(x + SpeedButtonWidth + StartPanelGap, 282, contentWidth - SpeedButtonWidth * 2 - StartPanelGap * 2, SpeedRowHeight);
             btnSpeedUp.SetBounds(x + contentWidth - SpeedButtonWidth, 282, SpeedButtonWidth, SpeedRowHeight);
@@ -220,6 +228,10 @@ namespace SnakeGame
             chkProgressiveSpeed.SetBounds(x + toggleWidth + StartPanelGap, 320, toggleWidth, ToggleHeight);
             chkObstacles.SetBounds(x, 352, toggleWidth, ToggleHeight);
             chkSound.SetBounds(x + toggleWidth + StartPanelGap, 352, toggleWidth, ToggleHeight);
+            if (lblLeaderboard != null)
+            {
+                lblLeaderboard.SetBounds(x, 388, contentWidth, 28);
+            }
             LayoutHudControls();
         }
 
@@ -232,6 +244,18 @@ namespace SnakeGame
 
             label.SetBounds(x, y, width, SetupLabelHeight);
             input.SetBounds(x, y + SetupLabelHeight + 2, width, SetupInputHeight);
+        }
+
+        private void LayoutChallengeControls(int x, int y, int width)
+        {
+            if (lblChallenge == null || txtChallengeSeed == null || btnChallengeSeed == null)
+            {
+                return;
+            }
+
+            lblChallenge.SetBounds(x, y, width, SetupLabelHeight);
+            txtChallengeSeed.SetBounds(x, y + SetupLabelHeight + 2, width - ChallengeButtonWidth - StartPanelGap, SetupInputHeight);
+            btnChallengeSeed.SetBounds(x + width - ChallengeButtonWidth, y + SetupLabelHeight + 2, ChallengeButtonWidth, SetupInputHeight);
         }
 
         private void LockWindowSizeForRun()
@@ -370,6 +394,8 @@ namespace SnakeGame
             ConfigureSetupLabel(lblMode);
             ConfigureSetupLabel(lblBoardSize);
             ConfigureSetupLabel(lblTheme);
+            ConfigureSetupLabel(lblChallenge);
+            ConfigureLeaderboardLabel();
         }
 
         private void ConfigureSetupLabel(Label label)
@@ -387,11 +413,27 @@ namespace SnakeGame
             label.TextAlign = ContentAlignment.MiddleLeft;
         }
 
+        private void ConfigureLeaderboardLabel()
+        {
+            if (lblLeaderboard == null)
+            {
+                return;
+            }
+
+            lblLeaderboard.AutoSize = false;
+            lblLeaderboard.AutoEllipsis = true;
+            lblLeaderboard.ForeColor = OverlayTextColor;
+            lblLeaderboard.BackColor = Color.Transparent;
+            lblLeaderboard.Font = hudFont;
+            lblLeaderboard.TextAlign = ContentAlignment.MiddleLeft;
+        }
+
         private void ConfigurePresetControls()
         {
             ConfigureComboBox(cmbMode, GamePresets.GetModeNames());
             ConfigureComboBox(cmbBoardSize, GamePresets.GetBoardSizeNames());
             ConfigureComboBox(cmbTheme, GamePresets.GetThemeNames());
+            ConfigureTextBox(txtChallengeSeed);
         }
 
         private void ConfigureComboBox(ComboBox comboBox, string[] items)
@@ -412,12 +454,27 @@ namespace SnakeGame
             comboBox.MaxDropDownItems = 6;
         }
 
+        private void ConfigureTextBox(TextBox textBox)
+        {
+            if (textBox == null)
+            {
+                return;
+            }
+
+            textBox.BorderStyle = BorderStyle.FixedSingle;
+            textBox.BackColor = ToggleBackColor;
+            textBox.ForeColor = HudTextColor;
+            textBox.Font = startHintFont;
+            textBox.CharacterCasing = CharacterCasing.Upper;
+        }
+
         private void ConfigureButtons()
         {
             ConfigureButton(btnStartGame, true);
             ConfigureButton(btnPause, false);
             ConfigureButton(btnSpeedDown, false);
             ConfigureButton(btnSpeedUp, false);
+            ConfigureButton(btnChallengeSeed, false);
             ConfigureCheckBox(chkWrapWalls);
             ConfigureCheckBox(chkProgressiveSpeed);
             ConfigureCheckBox(chkObstacles);
@@ -556,6 +613,7 @@ namespace SnakeGame
             StyleScoreLabel();
             StyleStatusLabel();
             UpdateStartMenuText();
+            UpdateLeaderboardText();
         }
 
         private void StyleScoreLabel()
@@ -653,6 +711,27 @@ namespace SnakeGame
             StyleSpeedButton(btnSpeedUp, selectedSpeed < GameSpeed.MaximumSpeed);
         }
 
+        private void UpdateLeaderboardText()
+        {
+            if (lblLeaderboard == null || leaderboard == null)
+            {
+                return;
+            }
+
+            string modeName = GamePresets.GetMode(selectedModePreset).Name;
+            System.Collections.Generic.IList<LeaderboardEntry> topEntries = leaderboard.GetTopEntries(modeName);
+            if (topEntries.Count == 0)
+            {
+                lblLeaderboard.Text = "Top " + modeName + ": -";
+                return;
+            }
+
+            string first = topEntries[0].Score.ToString();
+            string second = topEntries.Count > 1 ? topEntries[1].Score.ToString() : "-";
+            string third = topEntries.Count > 2 ? topEntries[2].Score.ToString() : "-";
+            lblLeaderboard.Text = "Top " + modeName + ": 1 " + first + "   2 " + second + "   3 " + third;
+        }
+
         private void StyleSpeedButton(Button button, bool canChange)
         {
             if (button == null)
@@ -722,6 +801,18 @@ namespace SnakeGame
             }
         }
 
+        private void LoadLeaderboard()
+        {
+            try
+            {
+                leaderboard = LeaderboardStore.Deserialize(SnakeGame.Properties.Settings.Default.LeaderboardData);
+            }
+            catch
+            {
+                leaderboard = new LeaderboardStore();
+            }
+        }
+
         private void LoadPlayerSettings()
         {
             suppressPlayerSettingSave = true;
@@ -730,6 +821,7 @@ namespace SnakeGame
                 selectedModePreset = GamePresets.ParseMode(SnakeGame.Properties.Settings.Default.ModePreset);
                 selectedBoardSizePreset = GamePresets.ParseBoardSize(SnakeGame.Properties.Settings.Default.BoardSizePreset);
                 selectedThemePreset = GamePresets.ParseTheme(SnakeGame.Properties.Settings.Default.ThemePreset);
+                activeChallengeSeed = ChallengeSeed.Normalize(SnakeGame.Properties.Settings.Default.ChallengeSeed);
                 selectedSpeed = ClampSpeed(SnakeGame.Properties.Settings.Default.Speed);
                 chkWrapWalls.Checked = SnakeGame.Properties.Settings.Default.WrapWalls;
                 chkProgressiveSpeed.Checked = SnakeGame.Properties.Settings.Default.ProgressiveSpeed;
@@ -741,6 +833,7 @@ namespace SnakeGame
                 selectedModePreset = GamePresets.DefaultMode;
                 selectedBoardSizePreset = GamePresets.DefaultBoardSize;
                 selectedThemePreset = GamePresets.DefaultTheme;
+                activeChallengeSeed = string.Empty;
                 selectedSpeed = ClampSpeed(GameSpeed.DefaultSpeed);
                 chkWrapWalls.Checked = DefaultWrapWalls;
                 chkProgressiveSpeed.Checked = GameSpeed.DefaultProgressiveSpeed;
@@ -752,8 +845,19 @@ namespace SnakeGame
                 SelectComboIndex(cmbMode, (int)selectedModePreset);
                 SelectComboIndex(cmbBoardSize, (int)selectedBoardSizePreset);
                 SelectComboIndex(cmbTheme, (int)selectedThemePreset);
+                SetChallengeSeedText(activeChallengeSeed);
                 suppressPlayerSettingSave = false;
             }
+        }
+
+        private void SetChallengeSeedText(string challengeSeed)
+        {
+            if (txtChallengeSeed == null)
+            {
+                return;
+            }
+
+            txtChallengeSeed.Text = ChallengeSeed.Normalize(challengeSeed);
         }
 
         private void SelectComboIndex(ComboBox comboBox, int index)
@@ -788,6 +892,7 @@ namespace SnakeGame
                 SnakeGame.Properties.Settings.Default.ModePreset = (int)selectedModePreset;
                 SnakeGame.Properties.Settings.Default.BoardSizePreset = (int)selectedBoardSizePreset;
                 SnakeGame.Properties.Settings.Default.ThemePreset = (int)selectedThemePreset;
+                SnakeGame.Properties.Settings.Default.ChallengeSeed = ChallengeSeed.Normalize(txtChallengeSeed == null ? activeChallengeSeed : txtChallengeSeed.Text);
                 SnakeGame.Properties.Settings.Default.Save();
             }
             catch
@@ -817,6 +922,19 @@ namespace SnakeGame
             catch
             {
                 // High score persistence should never interrupt gameplay.
+            }
+        }
+
+        private void SaveLeaderboard()
+        {
+            try
+            {
+                SnakeGame.Properties.Settings.Default.LeaderboardData = leaderboard.Serialize();
+                SnakeGame.Properties.Settings.Default.Save();
+            }
+            catch
+            {
+                // Leaderboard persistence should never interrupt gameplay.
             }
         }
 
@@ -854,12 +972,33 @@ namespace SnakeGame
 
             timer1.Stop();
             UpdateHighScore();
+            RecordFinishedRun();
             btnPause.Visible = false;
             btnPause.Text = "Pause";
             UnlockWindowSizeAfterRun();
             SetStartMenuVisible(true);
             UpdateHud();
             Invalidate();
+        }
+
+        private void RecordFinishedRun()
+        {
+            if (hasRecordedFinishedRun || game.Score <= 0)
+            {
+                return;
+            }
+
+            hasRecordedFinishedRun = true;
+            GameModeSettings mode = GamePresets.GetMode(selectedModePreset);
+            BoardSizeSettings board = GamePresets.GetBoardSize(selectedBoardSizePreset);
+            leaderboard.Add(new LeaderboardEntry(
+                mode.Name,
+                game.Score,
+                GameSpeed.GetDisplayValue(selectedSpeed, useProgressiveSpeed),
+                board.DisplayName,
+                activeChallengeSeed,
+                DateTime.UtcNow));
+            SaveLeaderboard();
         }
 
         private BoundaryMode GetSelectedBoundaryMode()
@@ -1083,6 +1222,45 @@ namespace SnakeGame
             }
 
             Invalidate();
+            Focus();
+        }
+
+        private void txtChallengeSeed_TextChanged(object sender, EventArgs e)
+        {
+            if (txtChallengeSeed == null)
+            {
+                return;
+            }
+
+            activeChallengeSeed = ChallengeSeed.Normalize(txtChallengeSeed.Text);
+            if (!suppressPlayerSettingSave)
+            {
+                SavePlayerSettings();
+            }
+        }
+
+        private void txtChallengeSeed_Leave(object sender, EventArgs e)
+        {
+            if (txtChallengeSeed == null)
+            {
+                return;
+            }
+
+            string normalized = ChallengeSeed.Normalize(txtChallengeSeed.Text);
+            if (!string.Equals(txtChallengeSeed.Text, normalized, StringComparison.Ordinal))
+            {
+                txtChallengeSeed.Text = normalized;
+            }
+
+            activeChallengeSeed = normalized;
+            SavePlayerSettings();
+        }
+
+        private void btnChallengeSeed_Click(object sender, EventArgs e)
+        {
+            SetChallengeSeedText(ChallengeSeed.Generate(DateTime.UtcNow));
+            activeChallengeSeed = ChallengeSeed.Normalize(txtChallengeSeed.Text);
+            SavePlayerSettings();
             Focus();
         }
 

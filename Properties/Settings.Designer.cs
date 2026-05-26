@@ -161,5 +161,35 @@ namespace SnakeGame.Properties
                 this["ThemePreset"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string ChallengeSeed
+        {
+            get
+            {
+                return ((string)(this["ChallengeSeed"]));
+            }
+            set
+            {
+                this["ChallengeSeed"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string LeaderboardData
+        {
+            get
+            {
+                return ((string)(this["LeaderboardData"]));
+            }
+            set
+            {
+                this["LeaderboardData"] = value;
+            }
+        }
     }
 }

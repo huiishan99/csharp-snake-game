@@ -52,11 +52,19 @@
             this.cmbBoardSize = new System.Windows.Forms.ComboBox();
             this.lblTheme = new System.Windows.Forms.Label();
             this.cmbTheme = new System.Windows.Forms.ComboBox();
+            this.lblChallenge = new System.Windows.Forms.Label();
+            this.txtChallengeSeed = new System.Windows.Forms.TextBox();
+            this.btnChallengeSeed = new SnakeGame.ThemeButton();
+            this.lblLeaderboard = new System.Windows.Forms.Label();
             this.pnlStartMenu.SuspendLayout();
             this.SuspendLayout();
             //
             // pnlStartMenu
             //
+            this.pnlStartMenu.Controls.Add(this.lblLeaderboard);
+            this.pnlStartMenu.Controls.Add(this.btnChallengeSeed);
+            this.pnlStartMenu.Controls.Add(this.txtChallengeSeed);
+            this.pnlStartMenu.Controls.Add(this.lblChallenge);
             this.pnlStartMenu.Controls.Add(this.cmbTheme);
             this.pnlStartMenu.Controls.Add(this.lblTheme);
             this.pnlStartMenu.Controls.Add(this.cmbBoardSize);
@@ -293,6 +301,43 @@
             this.cmbTheme.TabIndex = 15;
             this.cmbTheme.SelectedIndexChanged += new System.EventHandler(this.cmbTheme_SelectedIndexChanged);
             //
+            // lblChallenge
+            //
+            this.lblChallenge.Location = new System.Drawing.Point(234, 226);
+            this.lblChallenge.Name = "lblChallenge";
+            this.lblChallenge.Size = new System.Drawing.Size(202, 16);
+            this.lblChallenge.TabIndex = 16;
+            this.lblChallenge.Text = "CHALLENGE";
+            this.lblChallenge.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            //
+            // txtChallengeSeed
+            //
+            this.txtChallengeSeed.Location = new System.Drawing.Point(234, 244);
+            this.txtChallengeSeed.Name = "txtChallengeSeed";
+            this.txtChallengeSeed.Size = new System.Drawing.Size(144, 22);
+            this.txtChallengeSeed.TabIndex = 17;
+            this.txtChallengeSeed.TextChanged += new System.EventHandler(this.txtChallengeSeed_TextChanged);
+            this.txtChallengeSeed.Leave += new System.EventHandler(this.txtChallengeSeed_Leave);
+            //
+            // btnChallengeSeed
+            //
+            this.btnChallengeSeed.Location = new System.Drawing.Point(384, 244);
+            this.btnChallengeSeed.Name = "btnChallengeSeed";
+            this.btnChallengeSeed.Size = new System.Drawing.Size(52, 26);
+            this.btnChallengeSeed.TabIndex = 18;
+            this.btnChallengeSeed.Text = "NEW";
+            this.btnChallengeSeed.UseVisualStyleBackColor = true;
+            this.btnChallengeSeed.Click += new System.EventHandler(this.btnChallengeSeed_Click);
+            //
+            // lblLeaderboard
+            //
+            this.lblLeaderboard.Location = new System.Drawing.Point(24, 388);
+            this.lblLeaderboard.Name = "lblLeaderboard";
+            this.lblLeaderboard.Size = new System.Drawing.Size(412, 28);
+            this.lblLeaderboard.TabIndex = 19;
+            this.lblLeaderboard.Text = "Top: -";
+            this.lblLeaderboard.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            //
             // Form1
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -339,5 +384,9 @@
         private System.Windows.Forms.ComboBox cmbBoardSize;
         private System.Windows.Forms.Label lblTheme;
         private System.Windows.Forms.ComboBox cmbTheme;
+        private System.Windows.Forms.Label lblChallenge;
+        private System.Windows.Forms.TextBox txtChallengeSeed;
+        private SnakeGame.ThemeButton btnChallengeSeed;
+        private System.Windows.Forms.Label lblLeaderboard;
     }
 }

@@ -36,6 +36,7 @@ When the workflow passes, download the versioned `SnakeGame-Windows-Release-<ver
 - Enter: start or restart when the game is ready
 - Mode: choose Classic, Arcade, Maze, Speed Run, or Zen presets before starting
 - Board: choose a fixed Compact, Standard, or Wide playfield before starting
+- Challenge: type a seed or press `NEW` to replay a deterministic layout
 - Speed `-` / `+`, Left / Right: choose the starting speed before the game begins
 - Wrap walls: turn classic edge wrapping on or off before starting
 - Progressive speed: make the snake gradually speed up as the score rises
@@ -50,6 +51,8 @@ When the workflow passes, download the versioned `SnakeGame-Windows-Release-<ver
 - Directional snake-head detail, clearer food shape, and textured obstacles
 - Arcade-style start panel with display typography, best-score callout, and animated snake preview
 - Mode presets and fixed board-size presets for repeatable game setups
+- Per-mode local leaderboards with the top scores shown on the start panel
+- Challenge seeds for deterministic food and obstacle layouts
 - Custom rounded buttons and toggles with restrained proportions, subtle depth, and focus states
 - Theme-matched speed stepper instead of the default Windows slider
 - Compact self-painted HUD pills with status-aware colors
@@ -58,7 +61,7 @@ When the workflow passes, download the versioned `SnakeGame-Windows-Release-<ver
 - Optional sound effects for start, eat, pause/resume, and finish events
 - Active runs lock the current window size so resizing cannot change the live board
 - In-board start, pause, game-over, and win overlays
-- Persistent best score, speed, wall-mode, progressive-speed, obstacle, and sound preferences
+- Persistent best score, leaderboards, speed, wall-mode, progressive-speed, obstacle, board, challenge, and sound preferences
 - Optional classic wrap-wall or solid-wall play
 - Optional progressive speed for longer, more intense runs
 - Rule-level engine and speed checks in `SnakeGame.Tests`

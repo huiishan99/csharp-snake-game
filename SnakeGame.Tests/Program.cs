@@ -41,6 +41,9 @@ namespace SnakeGame.Tests
             PresetsClampInvalidValues();
             ModePresetAppliesExpectedRules();
             BoardPresetHasPlayableDimensions();
+            ChallengeSeedNormalizesAndHashes();
+            ChallengeSeedMakesFoodDeterministic();
+            LeaderboardKeepsTopFivePerMode();
         }
 
         private static void StartsCenteredAndPlacesFoodOffSnake()
@@ -314,6 +317,50 @@ namespace SnakeGame.Tests
             AssertTrue(compact.GridHeight > 20, "compact grid height");
             AssertTrue(wide.GridWidth > compact.GridWidth, "wide grid width");
             AssertEqual("Wide 56x30", wide.DisplayName, "wide display name");
+        }
+
+        private static void ChallengeSeedNormalizesAndHashes()
+        {
+            AssertEqual("ABC-123", ChallengeSeed.Normalize(" abc-123! "), "challenge seed normalize");
+            AssertEqual(ChallengeSeed.ToRandomSeed("abc-123"), ChallengeSeed.ToRandomSeed("ABC-123"), "challenge seed hash casing");
+            AssertFalse(ChallengeSeed.ToRandomSeed("").HasValue, "empty challenge seed");
+        }
+
+        private static void ChallengeSeedMakesFoodDeterministic()
+        {
+            int seed = ChallengeSeed.ToRandomSeed("MAZE-0421").Value;
+            SnakeGameEngine first = new SnakeGameEngine();
+            SnakeGameEngine second = new SnakeGameEngine();
+
+            first.StartNew(20, 20, BoundaryMode.Wrap, true, seed);
+            second.StartNew(20, 20, BoundaryMode.Wrap, true, seed);
+
+            AssertEqual(first.Food, second.Food, "seeded food");
+            AssertEqual(first.Obstacles.Count, second.Obstacles.Count, "seeded obstacle count");
+            for (int i = 0; i < first.Obstacles.Count; i++)
+            {
+                AssertEqual(first.Obstacles[i], second.Obstacles[i], "seeded obstacle " + i);
+            }
+        }
+
+        private static void LeaderboardKeepsTopFivePerMode()
+        {
+            LeaderboardStore store = new LeaderboardStore();
+            for (int score = 10; score <= 70; score += 10)
+            {
+                store.Add(new LeaderboardEntry("Arcade", score, "5+", "Standard", string.Empty, new DateTime(2026, 1, score / 10, 0, 0, 0, DateTimeKind.Utc)));
+            }
+
+            store.Add(new LeaderboardEntry("Classic", 5, "5", "Compact", string.Empty, DateTime.UtcNow));
+
+            System.Collections.Generic.IList<LeaderboardEntry> arcade = store.GetTopEntries("Arcade");
+            AssertEqual(5, arcade.Count, "leaderboard trim count");
+            AssertEqual(70, arcade[0].Score, "leaderboard top score");
+            AssertEqual(30, arcade[4].Score, "leaderboard fifth score");
+
+            LeaderboardStore restored = LeaderboardStore.Deserialize(store.Serialize());
+            AssertEqual(5, restored.GetTopEntries("Arcade").Count, "leaderboard deserialize count");
+            AssertEqual(1, restored.GetTopEntries("Classic").Count, "leaderboard separate modes");
         }
 
         private static void AssertEqual<T>(T expected, T actual, string label)
